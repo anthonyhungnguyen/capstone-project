@@ -22,8 +22,9 @@ public class SubjectTimetable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
 
-    @Column(name = "subject_id")
-    private String subject_id;
+    @ManyToOne
+    @JoinColumn(name = "subject_id")
+    private Subject subject;
 
     @Column(name = "start_time")
     private String start_time;

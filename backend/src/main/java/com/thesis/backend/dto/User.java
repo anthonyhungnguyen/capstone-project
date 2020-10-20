@@ -8,8 +8,7 @@ import lombok.RequiredArgsConstructor;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
-import java.sql.Timestamp;
-import java.util.ArrayList;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @AllArgsConstructor
@@ -24,7 +23,8 @@ public class User {
     private String id;
     @NotBlank(message = "User Name is Mandatory")
     private String name;
-    private Timestamp register_at;
+    private LocalDateTime register_at;
+    private LocalDateTime update_at;
     private String image_link;
 
     @OneToMany(targetEntity = UserSubject.class, mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -32,12 +32,12 @@ public class User {
     private List<UserSubject> userSubjects;
 
     @PrePersist
-    void registerAtOnCreation() {
-        this.register_at = new Timestamp(System.currentTimeMillis());
+    void onPersist() {
+        this.register_at = LocalDateTime.now().plusHours(7);
     }
 
     @PreUpdate
-    void registerAtOnUpdate() {
-        this.register_at = new Timestamp(System.currentTimeMillis());
+    void onUpdate() {
+        this.update_at = LocalDateTime.now().plusHours(7);
     }
 }

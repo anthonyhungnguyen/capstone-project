@@ -12,18 +12,13 @@ import org.apache.coyote.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
+import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/register")
@@ -45,47 +40,80 @@ public class RegisterController {
 
     @PostMapping("user")
     public ResponseEntity<String> addNewUser(@Valid @RequestBody User user) {
-        if (userRepository.existsById(user.getId())) {
-            logger.error(String.format("%s exists", user));
-            return new ResponseEntity<>("User already exists", HttpStatus.BAD_REQUEST);
-        } else {
-            logger.info(String.format("%s created successfully", user));
+        Optional<User> userExist = userRepository.findById(user.getId());
+        if (userExist.isEmpty()) {
             userRepository.save(user);
-            return new ResponseEntity<>("User created successfully", HttpStatus.OK);
+            return ResponseEntity.ok().body("Successfully");
+        } else {
+            return ResponseEntity.badRequest().body("Error");
+        }
+    }
+
+    @PostMapping("user/{id}")
+    public ResponseEntity<String> updateUserImage(@Valid @PathVariable("id") String id, @RequestBody String imageUrl) {
+        Optional<User> userToUpdate = userRepository.findById(id);
+        if (userToUpdate.isPresent()) {
+            userToUpdate.get().setImage_link(imageUrl);
+            // Save is used both for persisting and updating
+            userRepository.save(userToUpdate.get());
+            return ResponseEntity.ok().body("Successfully");
+        } else {
+            return ResponseEntity.badRequest().body("Error");
         }
     }
 
     @PostMapping("subject")
     public ResponseEntity<String> addNewSubject(@Valid @RequestBody Subject subject) {
-        if (subjectRepository.existsById(subject.getId())) {
+        Optional<Subject> subjectExist = subjectRepository.findById(subject.getId());
+        if (subjectExist.isPresent()) {
             logger.error(String.format("%s exists", subject));
-            return new ResponseEntity<>("Subject already exists", HttpStatus.BAD_REQUEST);
+            return ResponseEntity.badRequest().body("Already exists");
         } else {
             logger.info(String.format("%s created successfully", subject));
             subjectRepository.save(subject);
-            return new ResponseEntity<>("Subject created successfully", HttpStatus.OK);
+            return ResponseEntity.ok().body("Successfully");
         }
     }
 
     @PostMapping("subject/timetable")
     public ResponseEntity<String> addNewSubjectTimetable(@Valid @RequestBody SubjectTimetable subjectTimetable) {
-        try {
+        Optional<Subject> subjectExist = subjectRepository.findById(subjectTimetable.getSubject().getId());
+        if (subjectExist.isEmpty()) {
             subjectTimetableRepository.save(subjectTimetable);
             logger.info("Insert new timetable successfully");
-            return ResponseEntity.ok().body("Insert new timetable successfully");
-        } catch (DataIntegrityViolationException ex) {
-            throw new DataIntegrityViolationException(String.format("SubjectID: %s not found", subjectTimetable.getSubject_id()));
-        } 
+            return ResponseEntity.ok().body("Successfully");
+        } else {
+            return ResponseEntity.badRequest().body("Error");
+        }
+    }
+
+    @PostMapping("subject/timetable/{id}")
+    public ResponseEntity<Boolean> updateSubjectTimetable(@PathVariable Integer id, @RequestBody Map<String, Object> toUpdate) {
+        Optional<SubjectTimetable> subjectExist = subjectTimetableRepository.findById(id);
+        if (subjectExist.isPresent()) {
+            SubjectTimetable toUpdateSubjectTimetable = subjectExist.get();
+            toUpdateSubjectTimetable.getSubject().setId((String) toUpdate.get("subjectID"));
+            toUpdateSubjectTimetable.getSubject().setName((String) toUpdate.get("subjectName"));
+            toUpdateSubjectTimetable.setStart_time((String) toUpdate.get("startTime"));
+            toUpdateSubjectTimetable.setEnd_time((String) toUpdate.get("endTime"));
+            toUpdateSubjectTimetable.setDay_in_week((Integer) toUpdate.get("weekDay"));
+            subjectTimetableRepository.save(toUpdateSubjectTimetable);
+            return ResponseEntity.ok().body(Boolean.TRUE);
+        } else {
+            return ResponseEntity.badRequest().body(Boolean.FALSE);
+        }
     }
 
     @PostMapping("user_subject")
     public ResponseEntity<String> addNewUserSubject(@Valid @RequestBody UserSubject userSubject) {
-        try {
+        Optional<Subject> checkSubjectExist = subjectRepository.findById(userSubject.getSubject().getId());
+        Optional<User> checkUserExist = userRepository.findById(userSubject.getUser().getId());
+        if (checkSubjectExist.isPresent() && checkUserExist.isPresent()) {
             logger.info(String.format("%s added", userSubject));
             userSubjectRepository.save(userSubject);
-            return new ResponseEntity<>(String.format("%s added", userSubject), HttpStatus.OK);
-        } catch (DataIntegrityViolationException ex) {
-            throw new DataIntegrityViolationException(String.format("SubjectId: %s or UserID: %s not found", userSubject.getSubject().getId(), userSubject.getUser().getId()));
+            return ResponseEntity.ok().body("Successfully");
+        } else {
+            return ResponseEntity.badRequest().body("Error");
         }
     }
 }

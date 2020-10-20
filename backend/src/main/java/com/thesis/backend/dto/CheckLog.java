@@ -27,5 +27,5 @@ public class CheckLog {
     private String type;
 
     @Field(value = "timestamp")
-    private LocalDateTime timestamp = LocalDateTime.now();
+    private LocalDateTime timestamp = LocalDateTime.now().plusHours(7);
 }
