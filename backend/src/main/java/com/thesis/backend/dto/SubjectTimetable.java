@@ -3,14 +3,8 @@ package com.thesis.backend.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import org.apache.tomcat.jni.Local;
 
 import javax.persistence.*;
-import java.time.LocalTime;
-import java.time.OffsetTime;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
 
 @Entity
 @Table(name = "subject_timetable")
@@ -20,7 +14,7 @@ import java.time.format.DateTimeFormatter;
 public class SubjectTimetable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private int id;
+    private Integer id;
 
     @ManyToOne
     @JoinColumn(name = "subject_id")

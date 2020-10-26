@@ -63,8 +63,8 @@ public class QueryController {
         return checkLogRepository.findAllByStudentID(id);
     }
 
-    @GetMapping("/subjects")
-    public ResponseEntity<List<Map<String, Object>>> getAllSubjectsTimetable() {
+    @GetMapping("/timetable")
+    public ResponseEntity<List<Map<String, Object>>> getTimetables() {
         List<SubjectTimetable> subjectTimetableList = subjectTimetableRepository.findAll();
         List<Map<String, Object>> formattedSubjectTimetables = subjectTimetableList.stream().map(st -> {
             Map<String, Object> newItem = new HashMap<>();
@@ -78,5 +78,11 @@ public class QueryController {
         }).collect(Collectors.toList());
 
         return ResponseEntity.ok().body(formattedSubjectTimetables);
+    }
+
+    @GetMapping("/subject")
+    public ResponseEntity<List<Subject>> getSubjects() {
+        List<Subject> subjects = subjectRepository.findAll();
+        return ResponseEntity.ok().body(subjects);
     }
 }
