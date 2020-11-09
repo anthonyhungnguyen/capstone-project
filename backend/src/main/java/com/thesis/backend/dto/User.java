@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
-import java.time.LocalDateTime;
+import java.sql.Blob;
 import java.util.List;
 
 @AllArgsConstructor
@@ -19,25 +19,22 @@ import java.util.List;
 @Table(name = "user")
 public class User {
     @Id
-    @NotBlank(message = "Student ID is Mandatory")
-    private String id;
-    @NotBlank(message = "User Name is Mandatory")
+    @NotBlank(message = "Student ID is required")
+    private int id;
+    @NotBlank(message = "User Name is required")
     private String name;
-    private LocalDateTime register_at;
-    private LocalDateTime update_at;
-    private String image_link;
 
-    @OneToMany(targetEntity = UserSubject.class, mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonIgnore
-    private List<UserSubject> userSubjects;
+    @NotBlank(message = "Gender is required")
+    private int gender;
 
-    @PrePersist
-    void onPersist() {
-        this.register_at = LocalDateTime.now().plusHours(7);
-    }
+    @Column(name = "major_code")
+    private String majorCode;
 
-    @PreUpdate
-    void onUpdate() {
-        this.update_at = LocalDateTime.now().plusHours(7);
-    }
+    // signifies that the annotated field should be represented as BLOB (binary data) in the DataBase.
+    @Lob
+    @Column(name = "image_url")
+    private Blob imageUrl;
+
+    @OneToMany(targetEntity = Enrollment.class, mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Enrollment> enrollments;
 }

@@ -7,6 +7,8 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface UserSubjectRepository extends JpaRepository<Enrollment, String> {
-    List<Enrollment> findUserSubjectsByUser_Id(String id);
+public interface EnrollmentRepository extends JpaRepository<Enrollment, String> {
+    List<Enrollment> findEnrollmentsByUserIdAndSemester(int userId, int semester);
+
+    boolean existsByUserIdAndSubjectIdAndGroupCodeAndSemester(int userId, String subjectId, String groupCode, int semester);
 }

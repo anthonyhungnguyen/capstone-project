@@ -10,17 +10,31 @@ import javax.persistence.*;
 @RequiredArgsConstructor
 @Entity
 @Data
-@Table(name = "user_subject")
-public class UserSubject {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private int id;
+@Table(name = "enrollment")
+public class Enrollment {
 
-    @ManyToOne
+    @Id
+    @Column(name = "user_id")
+    private int userId;
+
+    @Id
+    @Column(name = "subject_id")
+    private String subjectId;
+
+    @Id
+    @Column(name ="group_code")
+    private String groupCode;
+
+    @Id
+    private int semester;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "subject_id")
+    @JoinColumn(name = "group_code")
+    @JoinColumn(name = "semester")
     private Subject subject;
 }

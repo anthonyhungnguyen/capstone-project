@@ -1,6 +1,5 @@
 package com.thesis.backend.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -21,10 +20,31 @@ public class Subject {
     @Id
     private String id;
 
-    @NotBlank(message = "Subject Name is Mandatory")
+    @Id
+    @Column(name = "group_code")
+    private String groupCode;
+
+    @Id
+    private int semester;
+    //The string is not null and the trimmed length is greater than zero.
+    @NotBlank(message = "Subject Name is required")
     private String name;
 
-    @OneToMany(targetEntity = UserSubject.class, mappedBy = "subject", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonIgnore
-    private List<UserSubject> userSubjectList;
+    @NotBlank(message = "Week Day is required")
+    @Column(name = "week_day")
+    private int weekDay;
+
+    @NotBlank(message = "Time Range is required")
+    @Column(name = "time_range")
+    private String timeRange;
+
+    private String room;
+
+    private String base;
+
+    @Column(name = "week_learn")
+    private String weekLearn;
+
+    @OneToMany(targetEntity = Enrollment.class, mappedBy = "subject", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Enrollment> enrollmentList;
 }

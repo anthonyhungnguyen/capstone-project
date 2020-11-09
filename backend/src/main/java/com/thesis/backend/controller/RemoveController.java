@@ -1,9 +1,7 @@
 package com.thesis.backend.controller;
 
 import com.thesis.backend.dto.Subject;
-import com.thesis.backend.dto.SubjectTimetable;
 import com.thesis.backend.repository.SubjectRepository;
-import com.thesis.backend.repository.SubjectTimetableRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
