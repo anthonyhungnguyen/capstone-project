@@ -27,9 +27,9 @@ export default function Timetable() {
 
     useEffect(() => {
         const fetchData = async () => {
-            const data = await get("/query/timetable")
+            const data = await get(`/query/subjects/${201}`)
             if (response.ok) {
-                setData(data)
+                setData(data.map((x, i) => ({ key: i.toString(), ...x })))
             }
         }
         fetchData()
@@ -37,11 +37,14 @@ export default function Timetable() {
 
     const edit = (record) => {
         form.setFieldsValue({
-            subjectID: "",
-            subjectName: "",
-            startTime: "",
-            endTime: "",
+            id: "",
+            name: "",
+            groupCode: "",
+            semester: "",
+            timeRange: "",
             weekDay: "",
+            base: "",
+            weekLearn: "",
             ...record,
         })
         setEditingKey(record.key)
@@ -105,39 +108,68 @@ export default function Timetable() {
     }
 
     const columns = [
+        { title: "Index", dataIndex: "key", key: "key" },
         {
-            title: "Subject Code",
-            dataIndex: "subjectID",
-            key: "subjectID",
+            title: "Code",
+            dataIndex: "id",
+            key: "id",
+            fixed: "left",
             editable: true,
         },
         {
-            title: "Subject Name",
-            dataIndex: "subjectName",
-            key: "subjectName",
+            title: "Name",
+            dataIndex: "name",
+            key: "name",
+            fixed: "left",
             editable: true,
         },
         {
-            title: "Start Time",
-            dataIndex: "startTime",
-            key: "startTime",
+            title: "Group",
+            dataIndex: "groupCode",
+            key: "groupCode",
             editable: true,
         },
+
         {
-            title: "End Time",
-            dataIndex: "endTime",
-            key: "endTime",
+            title: "Semester",
+            dataIndex: "semester",
+            key: "semester",
             editable: true,
         },
         {
             title: "Week Day",
             dataIndex: "weekDay",
-            key: "weekDay",
+            key: "week_day",
+            editable: true,
+        },
+        {
+            title: "Time Range",
+            dataIndex: "timeRange",
+            key: "timeRange",
+            editable: true,
+        },
+        {
+            title: "Room",
+            dataIndex: "room",
+            key: "room",
+            editable: true,
+        },
+        {
+            title: "Base",
+            dataIndex: "base",
+            key: "base",
+            editable: true,
+        },
+        {
+            title: "Week Learn",
+            dataIndex: "weekLearn",
+            key: "weekLearn",
             editable: true,
         },
         {
             title: "Operation",
             dataIndex: "operation",
+            fixed: "right",
             render: (_, record) => {
                 const editable = isEditing(record)
                 return (
@@ -236,8 +268,8 @@ export default function Timetable() {
                     wrapperCol={{ span: 16 }}
                 >
                     <Form.Item
-                        label='Subject ID'
-                        name='subject_id'
+                        label='Code'
+                        name='id'
                         rules={[
                             {
                                 required: true,
@@ -249,8 +281,21 @@ export default function Timetable() {
                     </Form.Item>
 
                     <Form.Item
-                        label='Time Range'
-                        name='time_range'
+                        label='Name'
+                        name='name'
+                        rules={[
+                            {
+                                required: true,
+                                message: "Please input subject id",
+                            },
+                        ]}
+                    >
+                        <Input />
+                    </Form.Item>
+
+                    <Form.Item
+                        label='Group'
+                        name='groupCode'
                         rules={[
                             {
                                 required: true,
@@ -262,8 +307,56 @@ export default function Timetable() {
                     </Form.Item>
 
                     <Form.Item
-                        label='Day In Week'
-                        name='day_in_week'
+                        label='Semester'
+                        name='semester'
+                        rules={[
+                            {
+                                required: true,
+                                message: "Please input day in week",
+                            },
+                        ]}
+                    >
+                        <Input />
+                    </Form.Item>
+                    <Form.Item
+                        label='Time Range'
+                        name='timeRange'
+                        rules={[
+                            {
+                                required: true,
+                                message: "Please input day in week",
+                            },
+                        ]}
+                    >
+                        <Input />
+                    </Form.Item>
+                    <Form.Item
+                        label='Room'
+                        name='room'
+                        rules={[
+                            {
+                                required: true,
+                                message: "Please input day in week",
+                            },
+                        ]}
+                    >
+                        <Input />
+                    </Form.Item>
+                    <Form.Item
+                        label='Base'
+                        name='base'
+                        rules={[
+                            {
+                                required: true,
+                                message: "Please input day in week",
+                            },
+                        ]}
+                    >
+                        <Input />
+                    </Form.Item>
+                    <Form.Item
+                        label='Week Learn'
+                        name='weekLearn'
                         rules={[
                             {
                                 required: true,

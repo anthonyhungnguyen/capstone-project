@@ -1,51 +1,94 @@
-import { Button, Card, Empty, Skeleton, Table } from "antd"
+import { Button, Card, Select, Table } from "antd"
 import React, { useEffect, useState } from "react"
-import useFetch from "use-http"
+import Axios from "axios"
+
+const { Option } = Select
 
 const columns = [
     {
-        title: "Subject Code",
+        title: "Code",
         dataIndex: "id",
         key: "id",
+        fixed: "left",
+        width: 100,
     },
     {
-        title: "Subject Name",
+        title: "Name",
         dataIndex: "name",
         key: "name",
+        fixed: "left",
+        width: 100,
+    },
+    {
+        title: "Group",
+        dataIndex: "groupCode",
+        key: "groupCode",
+        width: 100,
+    },
+
+    {
+        title: "Semester",
+        dataIndex: "semester",
+        key: "semester",
+        width: 100,
+    },
+    {
+        title: "Week Day",
+        dataIndex: "weekDay",
+        key: "week_day",
+        width: 100,
+    },
+    {
+        title: "Time Range",
+        dataIndex: "timeRange",
+        key: "timeRange",
+        width: 200,
+    },
+    {
+        title: "Room",
+        dataIndex: "room",
+        key: "room",
+        width: 100,
+    },
+    {
+        title: "Base",
+        dataIndex: "base",
+        key: "base",
+        width: 100,
+    },
+    {
+        title: "Week Learn",
+        dataIndex: "weekLearn",
+        key: "weekLearn",
+        width: 300,
     },
 ]
 
 export default function Subject({ id }) {
     const [data, setData] = useState(null)
-    const { get, response, loading, error } = useFetch(
-        "/api/query/user_subject/user"
-    )
 
     useEffect(() => {
-        const fetchData = async () => {
-            const dataFetched = await get(`/${id}`)
-            if (response.ok) {
-                setData(dataFetched)
-            }
-        }
-        fetchData()
+        Axios.get(`api/query/user/${id}/${201}/enrollment`)
+            .then((response) => setData(response.data))
+            .catch(console.err)
     }, [id])
-
-    if (error) {
-        return <Empty />
-    }
-
-    if (loading) {
-        return <Skeleton active />
-    }
-
     return (
         <Card
-            title='Subjects'
+            title='Subject'
             headStyle={{ fontWeight: "bold" }}
-            extra={<Button type='primary'>Add</Button>}
+            extra={
+                <>
+                    {/* # TODO: Add Semester Selection */}
+                    <Button type='primary'>Add</Button>
+                </>
+            }
         >
-            <Table dataSource={data} columns={columns}></Table>
+            <Table
+                dataSource={data}
+                columns={columns}
+                scroll={{ y: 500 }}
+                sticky
+            ></Table>
         </Card>
     )
 }

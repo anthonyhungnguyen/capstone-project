@@ -1,45 +1,46 @@
-import { Card, Descriptions, Empty, Image, Skeleton } from "antd"
-import dayjs from "dayjs"
+import { Card, Col, Row } from "antd"
 import React, { useEffect, useState } from "react"
-import useFetch from "use-http"
-
+import Axios from "axios"
 export default function Info({ id }) {
-  const [userInfo, setUserInfo] = useState(null)
-  const { get, response, loading, error } = useFetch("api/query/user")
+    const [userInfo, setUserInfo] = useState(null)
 
-  useEffect(() => {
-    const fetchUserOnMount = async () => {
-      const userData = await get(`/${id}`)
-      if (response.ok) {
-        setUserInfo(userData)
-      }
-    }
-    fetchUserOnMount()
-  }, [id])
-
-  if (error) {
-    return <Empty />
-  }
-
-  if (loading) {
-    return <Skeleton active />
-  }
-
-  return (
-    <Card title="Subjects" headStyle={{ fontWeight: "bold" }}>
-      <Descriptions bordered>
-        <Descriptions.Item label="ID">{userInfo?.["id"]}</Descriptions.Item>
-        <Descriptions.Item label="Name">{userInfo?.["name"]}</Descriptions.Item>
-        <Descriptions.Item label="Register At">
-          {dayjs(userInfo?.["register_at"]).format("YYYY-MM-DD HH:mm:ss")}
-        </Descriptions.Item>
-        <Descriptions.Item label="Updated At">
-          {dayjs(userInfo?.["update_at"]).format("YYYY-MM-DD HH:mm:ss")}
-        </Descriptions.Item>
-        <Descriptions.Item label="Avatar">
-          <Image src={userInfo?.["image_link"]} width={100} />
-        </Descriptions.Item>
-      </Descriptions>
-    </Card>
-  )
+    useEffect(() => {
+        Axios.get(`api/query/user/${id}`)
+            .then((response) => setUserInfo(response.data))
+            .catch(console.err)
+    }, [id])
+    return (
+        <Card title='Identity' headStyle={{ fontWeight: "bold" }}>
+            <Row gutter={[12, 12]}>
+                <Col span={12} className='font-bold'>
+                    Avatar
+                </Col>
+                <Col span={12}>{userInfo?.["image_url"]}</Col>
+            </Row>
+            <Row gutter={[12, 12]}>
+                <Col span={12} className='font-bold'>
+                    ID
+                </Col>
+                <Col span={12}>{userInfo?.["id"]}</Col>
+            </Row>
+            <Row gutter={[12, 12]}>
+                <Col span={12} className='font-bold'>
+                    Name
+                </Col>
+                <Col span={12}>{userInfo?.["name"]}</Col>
+            </Row>
+            <Row gutter={[12, 12]}>
+                <Col span={12} className='font-bold'>
+                    Gender
+                </Col>
+                <Col span={12}>{userInfo?.["gender"]}</Col>
+            </Row>
+            <Row gutter={[12, 12]}>
+                <Col span={12} className='font-bold'>
+                    Major Code
+                </Col>
+                <Col span={12}>{userInfo?.["majorCode"]}</Col>
+            </Row>
+        </Card>
+    )
 }

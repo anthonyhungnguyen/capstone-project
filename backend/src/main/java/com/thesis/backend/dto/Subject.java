@@ -1,21 +1,23 @@
 package com.thesis.backend.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import com.fasterxml.jackson.annotation.*;
+import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 @AllArgsConstructor
 @RequiredArgsConstructor
-@Data
 @Builder
+@Getter
+@Setter
 @Entity
 @Table(name = "subject")
-public class Subject {
+@IdClass(SubjectId.class)
+public class Subject implements Serializable {
 
     @Id
     private String id;
@@ -45,6 +47,7 @@ public class Subject {
     @Column(name = "week_learn")
     private String weekLearn;
 
-    @OneToMany(targetEntity = Enrollment.class, mappedBy = "subject", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Enrollment> enrollmentList;
+    @ManyToMany(mappedBy = "subjects", fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<User> users = new ArrayList<>();
 }

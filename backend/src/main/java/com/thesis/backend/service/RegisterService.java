@@ -13,7 +13,7 @@ public class RegisterService {
         this.subjectRepository = subjectRepository;
     }
 
-    public boolean checkSubjectExist(String subjectId) {
-        return subjectRepository.existsById(subjectId);
-    }
+//    public boolean checkSubjectExist(String subjectId) {
+//        return subjectRepository.existsById(subjectId);
+//    }
 }
