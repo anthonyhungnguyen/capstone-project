@@ -8,6 +8,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @AllArgsConstructor
@@ -19,12 +20,12 @@ import java.util.List;
 @Table(name = "user")
 public class User {
     @Id
-    @NotBlank(message = "Student ID is required")
+    @NotNull(message = "Student ID cannot be null")
     private int id;
     @NotBlank(message = "User Name is required")
     private String name;
 
-    @NotBlank(message = "Gender is required")
+    @NotNull(message = "Gender cannot be null")
     private int gender;
 
     @Column(name = "major_code")

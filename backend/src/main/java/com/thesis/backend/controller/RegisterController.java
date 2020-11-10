@@ -1,13 +1,19 @@
 package com.thesis.backend.controller;
 
+import com.thesis.backend.dto.Subject;
+import com.thesis.backend.dto.SubjectId;
+import com.thesis.backend.dto.User;
 import com.thesis.backend.repository.SubjectRepository;
 import com.thesis.backend.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/register")
@@ -23,29 +29,43 @@ public class RegisterController {
         this.subjectRepository = subjectRepository;
     }
 
-//    @PostMapping("user")
-//    public ResponseEntity<String> addNewUser(@Valid @RequestBody User user) {
-//        Optional<User> userExist = userRepository.findById(user.getId());
-//        if (userExist.isEmpty()) {
-//            userRepository.save(user);
-//            return ResponseEntity.ok().body("Successfully");
-//        } else {
-//            return ResponseEntity.badRequest().body("Error");
-//        }
-//    }
-//
-//
-//    @PostMapping("subject")
-//    public ResponseEntity<String> addNewSubject(@Valid @RequestBody Subject subject) {
-//        Optional<Subject> subjectExist = subjectRepository.findById(subject.getId());
-//        if (subjectExist.isPresent()) {
-//            return ResponseEntity.badRequest().body("Already exists");
-//        } else {
-//            subjectRepository.save(subject);
-//            return ResponseEntity.ok().body("Successfully");
-//        }
-//    }
-//
+    @PostMapping("user")
+    public ResponseEntity<String> addUser(@Valid @RequestBody User user) {
+        if (userRepository.existsById(user.getId())) {
+            return ResponseEntity.badRequest().body("Fail");
+        } else {
+            userRepository.save(user);
+            return ResponseEntity.ok().body("Successfully");
+        }
+    }
+
+    @PostMapping("subject")
+    public ResponseEntity<String> addSubject(@Valid @RequestBody Subject subject) {
+        if (subjectRepository.existsById(new SubjectId(subject.getId(), subject.getGroupCode(), subject.getSemester()))) {
+            return ResponseEntity.badRequest().body("Fail");
+        } else {
+            subjectRepository.save(subject);
+            return ResponseEntity.ok().body("Successfully");
+        }
+    }
+
+    @PostMapping("enrollment/{id}")
+    public ResponseEntity<String> addEnrollment(@PathVariable int id, @Valid @RequestBody Subject subject) {
+        Optional<User> existingUser = userRepository.findById(id);
+        Optional<Subject> existingSubject = subjectRepository.findById(new SubjectId(subject.getId(), subject.getGroupCode(), subject.getSemester()));
+        if (existingUser.isEmpty()) {
+            return ResponseEntity.badRequest().body("User not found");
+        } else if (existingSubject.isEmpty()) {
+            return ResponseEntity.badRequest().body("Subject not found");
+        } else if (existingUser.get().getSubjects().contains(existingSubject.get())) {
+            return ResponseEntity.badRequest().body("Subject is already existed");
+        } else {
+            existingUser.get().getSubjects().add(existingSubject.get());
+            userRepository.save(existingUser.get());
+            return ResponseEntity.ok().body("Successfully");
+        }
+    }
+
 ////    @PostMapping("enrollment")
 ////    public ResponseEntity<String> addNewSubjectTimetable(@Valid @RequestBody Enrollment enrollment) {
 ////        boolean existingUser = userRepository.existsById(enrollment.getUserId());

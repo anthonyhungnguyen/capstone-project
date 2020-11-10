@@ -28,15 +28,12 @@ public class Subject implements Serializable {
 
     @Id
     private int semester;
-    //The string is not null and the trimmed length is greater than zero.
-    @NotBlank(message = "Subject Name is required")
+
     private String name;
 
-    @NotBlank(message = "Week Day is required")
     @Column(name = "week_day")
     private int weekDay;
 
-    @NotBlank(message = "Time Range is required")
     @Column(name = "time_range")
     private String timeRange;
 
