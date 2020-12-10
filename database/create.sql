@@ -1,5 +1,9 @@
 DROP TABLE subject;
 
+CREATE DATABASE capstone;
+
+USE capstone;
+
 CREATE TABLE subject(
 	id VARCHAR(15) NOT NULL,
 	group_code VARCHAR(10) NOT NULL,

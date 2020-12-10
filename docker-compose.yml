@@ -1,47 +1,38 @@
 version: "3.8"
 
-services: 
+services:
     mysql:
         container_name: thesis_mysql
         image: mysql:latest
         command: --default-authentication-plugin=mysql_native_password
-        restart: always
-        environment: 
+        environment:
             MYSQL_ROOT_PASSWORD: admin
             MYSQL_USER: root
             MYSQL_PASS: admin
-        volumes: 
-            - mysql-volume:/var/lib/mysql 
-        ports: 
+        volumes:
+            - mysql-volume:/var/lib/mysql
+        ports:
             - 3306:3306
-
-    adminer:
-        image: adminer
-        restart: always
-        ports: 
-            - 8080:8080
 
     mongo:
         container_name: thesis_mongo
         image: mongo:latest
-        restart: always
-        environment: 
+        environment:
             MONGO_INITDB_ROOT_USERNAME: root
             MONGO_INITDB_ROOT_PASSWORD: admin
-        volumes: 
+        volumes:
             - mongo-volume:/data/db
-        ports: 
+        ports:
             - 27017:27017
-    
+
     mongo-express:
         image: mongo-express
-        restart: always
-        ports: 
+        ports:
             - 8081:8081
-        environment: 
+        environment:
             ME_CONFIG_MONGODB_ADMINUSERNAME: root
             ME_CONFIG_MONGODB_ADMINPASSWORD: admin
 
-volumes: 
-    mysql-volume: 
+volumes:
+    mysql-volume:
     mongo-volume:
