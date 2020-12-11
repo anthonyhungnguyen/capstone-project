@@ -20,7 +20,10 @@ with open('encoded_faces_with_labels.pickle', 'rb') as handle:
 
 del data['code']
 
+identities = list(data.keys())
 
+vector_dist = list(map(lambda x: list(zip([x[0]*len(x[1])], x[1])), data.items()))
+vector_dist = [x for y in vector_dist for x in y ]
 # model = tf.keras.models.load_model('facenet_keras.h5')
 # model.load_weights('facenet_keras_weights.h5')
 
@@ -38,19 +41,10 @@ while True:
         cv2.imshow('face', face_frame)
         face_frame = face_frame[..., ::-1]
         face = model.predict(face_frame.reshape(1, INPUT_SIZE, INPUT_SIZE, 3))
-        for (name, encoded_image_names) in data.items():
-            for encoded_image_name in encoded_image_names:
-                # print(encoded_image_name.shape)
-                dist = np.linalg.norm(np.asarray(face) - np.asarray(encoded_image_name))
-                print(name, dist)
-                if dist < min_dist:
-                    min_dist = dist
-                    identity = name
-        # if min_dist < threshold:
-        #     cv2.putText(frame, identity, (200, 200), cv2.FONT_HERSHEY_COMPLEX, 1, (0, 0, 255), 1)
-        # else:
-        #     cv2.putText(frame, 'Guest', (200, 200), cv2.FONT_HERSHEY_COMPLEX, 1, (0, 0, 255), 1)
-        cv2.putText(frame, identity, (d.left(), d.top()), cv2.FONT_HERSHEY_COMPLEX, 1, (0, 0, 255), 1)
+        dist_list = list(map(lambda x: (x[0], 
+                            np.linalg.norm(np.asarray(face) - np.asarray(x[1]))), vector_dist))
+        dist_list.sort(key=lambda x: x[1])
+        cv2.putText(frame, dist_list[0][0], (d.left(), d.top()), cv2.FONT_HERSHEY_COMPLEX, 1, (0, 0, 255), 1)
 
     cv2.imshow('frame', frame)
     if cv2.waitKey(1) == 27:
