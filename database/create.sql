@@ -19,6 +19,8 @@ CREATE TABLE subject(
 
 DROP TABLE user;
 
+
+USE capstone;
 CREATE TABLE user(
     id INT NOT NULL,
     name VARCHAR(100) NOT NULL,
@@ -30,6 +32,8 @@ CREATE TABLE user(
 
 DROP TABLE enrollment;
 
+
+USE capstone;
 CREATE TABLE enrollment(
     user_id INT NOT NULL,
     subject_id VARCHAR(15) NOT NULL,

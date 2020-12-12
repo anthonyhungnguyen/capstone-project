@@ -7,6 +7,7 @@ import com.thesis.backend.repository.CheckLogRepository;
 import com.thesis.backend.service.CheckAttendanceService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,7 +19,8 @@ public class CheckAttendanceController {
     private final Logger logger = LoggerFactory.getLogger(CheckAttendanceController.class);
     private final CheckAttendanceService checkAttendanceService;
 
-    public CheckAttendanceController(CheckLogRepository checkLogRepository, CheckAttendanceService checkAttendanceService) {
+    @Autowired
+    public CheckAttendanceController(CheckAttendanceService checkAttendanceService) {
         this.checkAttendanceService = checkAttendanceService;
     }
 

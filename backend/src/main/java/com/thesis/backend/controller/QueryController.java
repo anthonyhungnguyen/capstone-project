@@ -6,6 +6,7 @@ import com.thesis.backend.dto.User;
 import com.thesis.backend.repository.CheckLogRepository;
 import com.thesis.backend.repository.SubjectRepository;
 import com.thesis.backend.repository.UserRepository;
+import org.hibernate.annotations.Check;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
@@ -44,14 +46,20 @@ public class QueryController {
         return userRepository.findById(id).map(value -> ResponseEntity.ok().body(value)).orElse(ResponseEntity.badRequest().build());
     }
 
-    @GetMapping("/user/{id}/log")
-    public List<CheckLog> getAttendanceLogs(@PathVariable String id) {
-        return checkLogRepository.findAllByStudentID(id);
-    }
 
     @GetMapping("/subjects/{semester}")
     public ResponseEntity<List<Subject>> getTimetables(@PathVariable int semester) {
         List<Subject> subjectsBySemester = subjectRepository.findSubjectsBySemester(semester);
         return ResponseEntity.ok().body(subjectsBySemester);
+    }
+
+    @GetMapping("/user/{id}/logs")
+    public ResponseEntity<List<CheckLog>> getLogs(@PathVariable int id) {
+        Optional<User> existingUser = userRepository.findById(id);
+        if (existingUser.isPresent()) {
+            return ResponseEntity.ok().body(checkLogRepository.findAllByStudentID(id));
+        } else {
+            return ResponseEntity.badRequest().body(null);
+        }
     }
 }
