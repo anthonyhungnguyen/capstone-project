@@ -8,6 +8,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 @Document(collection = "log")
 @Data
@@ -38,5 +39,5 @@ public class CheckLog {
     private String type;
 
     @Field(value = "timestamp")
-    private LocalDateTime timestamp = LocalDateTime.now().plusHours(7);
+    private LocalDateTime timestamp = LocalDateTime.now(ZoneId.of("Asia/Ho_Chi_Minh"));
 }

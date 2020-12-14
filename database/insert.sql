@@ -38,3 +38,9 @@ INSERT INTO enrollment VALUES(1752041, "CO3068", "CC01", 201);
 INSERT INTO enrollment VALUES(1752041, "CO3065", "CC01", 201);
 INSERT INTO enrollment VALUES(1752041, "CO3021", "CC01", 201);
 INSERT INTO enrollment VALUES(1752041, "CO4027", "CC01", 201);
+
+USE capstone;
+
+/* Test - Check-in success */
+INSERT INTO subject VALUES("CO0001", "CC01", 201, "Test Subject", 3, "00:01 - 23:59", "B2-201", "BK-CS1", "39|40|41|42|43|44|--|46|47|48|49|50|51|52");
+INSERT INTO enrollment VALUES(1752259, "CO0000", "CC01", 201);
