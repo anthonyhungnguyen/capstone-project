@@ -1,9 +1,7 @@
 *.pyc*
 *__pycache__/*
 
-*ailibs_data/detector/*
-*ailibs_data/extractor/*
-*ailibs_data/classifier/*
+
 *storage*
 *fcienv*
 *utils/fci_streaming.log*
