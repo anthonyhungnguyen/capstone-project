@@ -1,0 +1,19 @@
+{
+    "level_list": [
+        {"value": 0, "name": "employee"},
+        {"value": 1, "name": "leader"},
+        {"value": 2, "name": "manager"}
+    ],
+    "streaming_status_list": [
+        {"value": 0, "name": "start"},
+        {"value": 1, "name": "stop"}
+    ],
+    "activate_status_list": [
+        {"value": 0, "name": "inactivate"},
+        {"value": 1, "name": "activate"}
+    ],
+    "gender_list": [
+        {"value": 0, "name": "female"},
+        {"value": 1, "name": "male"}
+    ]
+}

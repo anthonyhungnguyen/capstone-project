@@ -1,0 +1,206 @@
+<script type="text/javascript">
+    /**
+     * Show Alert
+     *
+     * @param {string} message The message need to show
+     * @param {string} title the title of modal
+     * @param {string} method if value 'html' it'll use <b>.html(message)</b> <br>
+     * elseif method ='text' it'll use <b>.text(message)</b> <br>
+     * default <b>use .html(message)</b>
+     * @param {string} type if type ='info' it'll render text <b>color light-blue</b> <br>
+     * elseif  type ='error' it'll render text <b>color red</b>
+     * <br> default <b>use color light-blue</b>
+     * @param {method} okFunction
+     * @returns {showAlert}
+     */
+    function showAlert(message, title, method, type, onHiddenFuncton) {
+        $("#alertDialog").on("hidden.bs.modal", function () {
+            if (onHiddenFuncton != undefined && onHiddenFuncton != null) {
+                onHiddenFuncton();
+            }
+        });
+        clickOkFunction = function () {
+            $("#alertDialog").modal("hide");
+            //fix bootstrap auto padding right 17px
+            $("body").removeAttr("style");
+        };
+        $("#alertDialog #alertContent").attr("class", "");
+        if (type == "error") {
+            $("#alertIcon").attr("class", "glyphicon glyphicon-alert");
+            $("#alertDialog #alertContent").addClass("text-danger");
+            $("#alertDialog #titleModal").addClass("text-danger");
+        } else {
+            $("#alertIcon").attr("class", "glyphicon glyphicon-exclamation-sign");
+            $("#alertDialog #alertContent").addClass("text-info");
+            $("#alertDialog #titleModal").addClass("text-info");
+        }
+        $("#alertDialog .modal-body p").html(message);
+        if (method == "text") {
+            $("#alertDialog .modal-body p").text(message);
+        } else {
+            $("#alertDialog .modal-body p").html(message);
+        }
+
+        $("#alertDialog #titleModal").html(title);
+        $("#alertDialog").modal("show");
+    }
+    /**
+     * Show Comfim
+     * @param {string} message    The message need to show
+     * @param {string} title      The title of modal
+     * @param {method} okFunction The function when user click button OK
+     * @param {JSON}   params     List of params for request
+     *    {boolean} isReason        is show area input reason or not?
+     *    {string}  method          if value 'html' it'll use <b>.html(message)</b> <br>
+     *                              elseif method ='text' it'll use <b>.text(message)</b> <br>
+     *                              default <b>use .html(message)</b>
+     *    {string}  type            if type ='info' it'll render text <b>color light-blue</b> <br>
+     *                              elseif  type ='error' it'll render text <b>color red</b>
+     *                              <br> default <b>use color light-blue</b>
+     *    {method} onHiddenFunction The function when model is hidden
+     * @returns {showComfirm}
+     */
+    function showComfirm(message, title, params, yesFunction, noFunction) {
+        var options = params || {};
+        var type = options.type || 'info';
+        var method = options.method || 'html';
+        var isReason = options.isReason || undefined;
+        var onHiddenFunction = options.onHiddenFunction || false;
+        var ok_cancel_button = options.ok_cancel_button || false;
+        var yes_no_button = options.yes_no_button || false;
+        var close_button = options.close_button || false;
+        //defaul
+        $('#yes_no_button').addClass('none-display');
+
+        if (ok_cancel_button == true) {
+            $('#ok_cancel_button').removeClass('none-display');
+            $('#yes_no_button').addClass('none-display');
+            $('#close_button').addClass('none-display');
+        }
+        if (yes_no_button == true) {
+            $('#ok_cancel_button').addClass('none-display');
+            $('#close_button').addClass('none-display');
+            $('#yes_no_button').removeClass('none-display');
+        }
+        if (close_button == true) {
+            $('#ok_cancel_button').addClass('none-display');
+            $('#yes_no_button').addClass('none-display');
+            $('#close_button').removeClass('none-display');
+        }
+
+        clickNoFunction = function () {
+            $('#alertComfirm').modal('hide');
+            if (noFunction != undefined && noFunction != null) {
+                noFunction();
+            }
+        };
+        clickYesFunction = function () {
+            if (yesFunction != undefined && yesFunction != null) {
+                var comment = $('#alertComfirm #inputReason').val();
+                yesFunction(comment);
+            }
+            $('#alertComfirm').modal('hide');
+        };
+        if (isReason != undefined) {
+            $('#inputReason, #labelReason').show();
+        } else {
+            $('#inputReason, #labelReason').hide();
+        }
+        $('#alertComfirm #confirmContent').attr('class', '');
+        if (type == 'help_icon') {
+            $('#help-modal-dialog').addClass('text-center-dialog');
+            $('#help-modal-content').addClass('inline-block-content');
+            $('#help-modal-body').addClass('max-content');
+            $('#confirmContent').addClass('help-color-info');
+            $('#alertComfirm').addClass('text-info');
+        } else {
+            $('#help-modal-dialog').removeClass('text-center-dialog');
+            $('#help-modal-content').removeClass('inline-block-content');
+            $('#help-modal-body').removeClass('max-content');
+            $('#confirmContent').removeClass('help-color-info');
+        }
+
+        if (type == 'error') {
+            $('#alertComfirm #confirmContent').addClass('text-danger');
+        } else {
+            $('#alertComfirm #confirmContent').addClass('text-info');
+        }
+        $('#alertComfirm .modal-body p').html(message);
+        if (method == 'text') {
+            $('#alertComfirm .modal-body p').text(message);
+        } else {
+            $('#alertComfirm .modal-body p').html(message);
+        }
+
+        $('#alertComfirm #titleModalConfirm').text(title);
+        $('#alertComfirm').modal('show');
+        $('#alertComfirm').on('hidden.bs.modal', function () {
+            if (onHiddenFunction != undefined && onHiddenFunction != false) {
+                onHiddenFunction();
+            }
+            $('#alertComfirm #inputReason').val('');
+        });
+    }
+</script>
+
+<!-- Alert modal-->
+<div id="alertDialog" class="modal-zindex modal" tabindex="-1" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header modal-header-custom">
+                <button type="button" class="close btn-close" data-dismiss="modal" aria-label="Close"></button>
+                <span class="modal-title"><a id="titleModal"></a></span>
+            </div>
+            <div class="modal-body modal-body-custom">
+                <p id="alertContent" class=""></p>
+            </div>
+            <div class="modal-footer modal-footer-custom">
+                <button type="button" class="btn btn-raised btn-primary" data-dismiss="modal" onclick="clickOkFunction();">
+                    OK
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Confirm modal-->
+<div id="alertComfirm" class="modal-zindex modal" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static"
+    data-keyboard="false">
+    <div class="modal-dialog" id="help-modal-dialog">
+        <div class="modal-content" id="help-modal-content">
+            <div class="modal-header modal-header-custom">
+                <button type="button" class="close btn-close" data-dismiss="modal" aria-label="Close">
+                </button>
+                <span class="modal-title" id="titleModalConfirm">Confirm</span>
+            </div>
+            <div class="modal-body modal-body-custom" id="help-modal-body">
+                <p id="confirmContent" class=""></p>
+                <label id='labelReason'></label>
+                <textarea class="form-control" id="inputReason"></textarea>
+            </div>
+            <div class="modal-footer modal-footer-custom">
+                <div id="ok_cancel_button">
+                    <button type="button" class="btn btn-flat btn-primary btn-modal" data-dismiss="modal"
+                        onclick="clickYesFunction();">OK
+                    </button>
+                    <button type="button" class="btn btn-flat btn-primary btn-modal" data-dismiss="modal"
+                        onclick="clickNoFunction();">Cancel
+                    </button>
+                </div>
+                <div id="yes_no_button" class="none-display">
+                    <button type="button" class="btn btn-flat btn-primary btn-modal" data-dismiss="modal"
+                        onclick="clickYesFunction();">Yes
+                    </button>
+                    <button type="button" class="btn btn-flat btn-primary  btn-modal" data-dismiss="modal"
+                        onclick="clickNoFunction();">No
+                    </button>
+                </div>
+                <div id="close_button" class="none-display">
+                    <button type="button" class="btn btn-flat btn-primary  btn-modal" data-dismiss="modal"
+                        onclick="clickNoFunction();">Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
