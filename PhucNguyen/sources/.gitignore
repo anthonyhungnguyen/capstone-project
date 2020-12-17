@@ -1,0 +1,7 @@
+*.pyc*
+*__pycache__/*
+
+
+*storage*
+*fcienv*
+*utils/fci_streaming.log*
