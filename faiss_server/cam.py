@@ -54,17 +54,18 @@ while True:
         distances = np.array(resp_data['distance'])
         neighbors = np.array(resp_data['neighbors'])
         id = y[np.bincount(np.squeeze(neighbors)).argmax()]
-        if (identities[id] in mappingNameToId):
-            att_res = requests.post(f'http://localhost:8090/api/check/{mappingNameToId[identities[id]]}', json={
-                "id": "CO3021",
-                "groupCode": "CC01",
-                "semester": 201
-            })
-            print(att_res.text)
-        else:
-            print("unknown")
-        cv2.putText(frame, identities[id], (d.left(), d.top(
-        )), cv2.FONT_HERSHEY_COMPLEX, 1, (0, 0, 255), 1)
+        print(id)
+        # if (identities[id] in mappingNameToId):
+        #     att_res = requests.post(f'http://localhost:8090/api/check/{mappingNameToId[identities[id]]}', json={
+        #         "id": "CO3021",
+        #         "groupCode": "CC01",
+        #         "semester": 201
+        #     })
+        #     print(att_res.text)
+        # else:
+        #     print("unknown")
+        # cv2.putText(frame, identities[id], (d.left(), d.top(
+        # )), cv2.FONT_HERSHEY_COMPLEX, 1, (0, 0, 255), 1)
 
     cv2.imshow('frame', frame)
     if cv2.waitKey(1) == 27:
