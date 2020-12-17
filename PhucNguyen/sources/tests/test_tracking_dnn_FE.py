@@ -1,26 +1,35 @@
 import argparse
 import os
 from time import time
+import dlib
+import pickle
+import requests
+
 
 import cv2
 import numpy as np
 from __init__ import PYTHON_PATH
 from utils.utils import Logger, mkdir
-from ailibs.detector.dlib.FaceDetector import FaceDetector
+from ailibs.detector.dnn.FaceDetector import FaceDetector
 from ailibs.tracker.Kalman2.FaceTracker import FaceTracker
 from ailibs.extractor.facenet.FaceExtractor import FaceExtractor
 
+url = "http://172.16.0.183:5000/indexing"
 LOG=True
-DETECTOR = FaceDetector(log=LOG)
 
 margin = 15
 detect_interval = 1
 scale_rate = 1
+dnn_path = os.path.join(PYTHON_PATH, "ailibs_data/detector/dnn")
+proto_path = os.path.join(dnn_path, "deploy.prototxt")
+model_path = os.path.join(dnn_path,"res10_300x300_ssd_iter_140000.caffemodel")
 data_path = os.path.join(PYTHON_PATH, "ailibs_data")
 output_path = os.path.join(PYTHON_PATH,"tests/output")
 shape_predictor_path = os.path.join(data_path, "extractor", "facenet", "shape_predictor_68_face_landmarks.dat")
 extract_model_path = os.path.join(data_path, "extractor", "facenet", "facenet_keras.h5")
 extract_model_weight_path = os.path.join(data_path, "extractor", "facenet", "weights.h5")
+extract_labels_path = os.path.join(data_path, "extractor", "facenet", "encoded_faces_with_labels.pickle")
+DETECTOR = FaceDetector(detector_proto=proto_path,detector_model=model_path,log=LOG)
 EXTRACTOR = FaceExtractor(shape_predictor=shape_predictor_path, model=extract_model_path, model_weight=extract_model_weight_path, log=LOG)
 
 logger = Logger()
@@ -52,7 +61,7 @@ def main():
             logger.warning("frame drop")
             break
 
-        frame = cv2.resize(frame, (0, 0), fx=scale_rate, fy=scale_rate)
+        # frame = cv2.resize(frame, (0, 0), fx=scale_rate, fy=scale_rate)
         # r_g_b_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         if c % detect_interval == 0:
             img_size = np.asarray(frame.shape)[0:2]
@@ -69,35 +78,25 @@ def main():
 
         c += 1
 
-        # for d in trackers:
-        #     d = d.astype(np.int32)
-        #     cv2.rectangle(frame, (d[0], d[1]), (d[2], d[3]), colours[d[4] % 32, :] * 255, 3)
-        #     if final_faces != []:
-        #         cv2.putText(frame, 'ID : %d  DETECT' % (d[4]), (d[0] - 10, d[1] - 10),
-        #                     cv2.FONT_HERSHEY_SIMPLEX,
-        #                     0.75,
-        #                     colours[d[4] % 32, :] * 255, 2)
-        #         cv2.putText(frame, 'DETECTOR', (5, 45), cv2.FONT_HERSHEY_SIMPLEX, 0.75,
-        #                     (1, 1, 1), 2)
-        #     else:
-        #         cv2.putText(frame, 'ID : %d' % (d[4]), (d[0] - 10, d[1] - 10), cv2.FONT_HERSHEY_SIMPLEX,
-        #                     0.75,
-        #                     colours[d[4] % 32, :] * 255, 2)
-
         for d in trackers:
-            # shape = predictor(frame, d)
-            # face_frame = dlib.get_face_chip(frame, shape, size=INPUT_SIZE)
-            # face_frame = face_frame.astype('float32')
-            # # standardize pixel values across channels (global)
-            # mean, std = face_frame.mean(), face_frame.std()
-            # face_frame = (face_frame - mean) / std
-            # cv2.imshow('face', face_frame)
-            # face_frame = face_frame[..., ::-1]
-            # face = model.predict(face_frame.reshape(1, INPUT_SIZE, INPUT_SIZE, 3))
-            features = EXTRACTOR.extract(frame,d)
-            print("FEATURES: ", features)
+            d = d.astype(np.int32)
+            cv2.rectangle(frame, (d[0], d[1]), (d[2], d[3]), colours[d[4] % 32, :] * 255, 3)
+            if final_faces != []:
+                cv2.putText(frame, 'ID : %d  DETECT' % (d[4]), (d[0] - 10, d[1] - 10),
+                            cv2.FONT_HERSHEY_SIMPLEX,
+                            0.75,
+                            colours[d[4] % 32, :] * 255, 2)
+                cv2.putText(frame, 'DETECTOR', (5, 45), cv2.FONT_HERSHEY_SIMPLEX, 0.75,
+                            (1, 1, 1), 2)
+            else:
+                cv2.putText(frame, 'ID : %d' % (d[4]), (d[0] - 10, d[1] - 10), cv2.FONT_HERSHEY_SIMPLEX,
+                            0.75,
+                            colours[d[4] % 32, :] * 255, 2)
+            det = dlib.rectangle(int(d[0]), int(d[1]), int(d[2]), int(d[3]))
+            features = EXTRACTOR.extract(frame,det)
+            # print("FEATURES: ", type(features))
             # data = pickle.dumps(features, protocol=pickle.HIGHEST_PROTOCOL)
-            # resp_data = requests.post(url, data=data).json()
+            resp_data = requests.post(url, json=features.tolist()).json()
             # if resp_data['distance']:
             #     distances = np.asarray(resp_data['distance'])
             #     neighbors = np.asarray(resp_data['neighbors'])

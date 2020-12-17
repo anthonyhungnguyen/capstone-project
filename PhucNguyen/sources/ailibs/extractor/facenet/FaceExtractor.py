@@ -54,6 +54,4 @@ class FaceExtractor():
         face_frame = (face_frame - mean) / std
         face_frame = face_frame[..., ::-1]
         features = self.__extractor.predict(face_frame.reshape(1, INPUT_SIZE, INPUT_SIZE, 3))
-        features = numpy.asarray(features)
-        features = pandas.DataFrame(features)
         return features
