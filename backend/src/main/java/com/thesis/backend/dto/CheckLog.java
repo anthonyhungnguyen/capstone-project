@@ -1,9 +1,7 @@
 package com.thesis.backend.dto;
 
-import lombok.AllArgsConstructor;
+import io.swagger.annotations.ApiModel;
 import lombok.Data;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -12,7 +10,6 @@ import java.time.ZoneId;
 
 @Document(collection = "log")
 @Data
-@ToString
 public class CheckLog {
 
     public CheckLog(int studentID, int semester, String groupCode, String subjectID, String type) {

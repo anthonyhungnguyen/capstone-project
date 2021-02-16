@@ -1,24 +1,22 @@
-package com.thesis.backend.dto;
+package com.thesis.backend.model;
 
-import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
+import lombok.experimental.Accessors;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
-@AllArgsConstructor
-@RequiredArgsConstructor
+@Data
+@Accessors(chain = true)
 @Builder
-@Getter
-@Setter
 @Entity
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "subject")
 @IdClass(SubjectId.class)
 public class Subject implements Serializable {
-
     @Id
     private String id;
 
@@ -44,7 +42,9 @@ public class Subject implements Serializable {
     @Column(name = "week_learn")
     private String weekLearn;
 
-    @ManyToMany(mappedBy = "subjects", fetch = FetchType.LAZY)
+    @ManyToMany(targetEntity = User.class,
+            mappedBy = "subjects", fetch = FetchType.LAZY)
+    @ToString.Exclude
     @JsonIgnore
-    private List<User> users = new ArrayList<>();
+    private List<User> users;
 }
