@@ -5,108 +5,104 @@ import com.thesis.backend.dto.model.SubjectDto;
 import com.thesis.backend.dto.model.SubjectIDDto;
 import com.thesis.backend.dto.model.UserDto;
 import com.thesis.backend.exception.CustomException;
-import com.thesis.backend.model.Subject;
-import com.thesis.backend.model.SubjectId;
 import com.thesis.backend.model.User;
-import com.thesis.backend.repository.SubjectRepository;
-import com.thesis.backend.repository.UserRepository;
+import com.thesis.backend.repository.mysql.SubjectRepository;
+import com.thesis.backend.repository.mysql.UserRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static com.thesis.backend.constant.EntityType.*;
-import static com.thesis.backend.constant.ExceptionType.*;
+import static com.thesis.backend.constant.EntityType.ENROLLMENT;
+import static com.thesis.backend.constant.ExceptionType.DUPLICATE_ENTITY;
+import static com.thesis.backend.constant.ExceptionType.ENTITY_NOT_FOUND;
 
 @Service
 public class EnrollmentServiceImpl implements EnrollmentService {
     private final UserRepository userRepository;
     private final SubjectRepository subjectRepository;
     private final ModelMapper modelMapper;
+    private final UserServiceImpl userService;
+    private final SubjectServiceImpl subjectService;
 
     @Autowired
-    public EnrollmentServiceImpl(UserRepository userRepository, SubjectRepository subjectRepository, ModelMapper modelMapper) {
+    public EnrollmentServiceImpl(UserRepository userRepository, SubjectRepository subjectRepository, ModelMapper modelMapper, UserServiceImpl userService, SubjectServiceImpl subjectService) {
         this.userRepository = userRepository;
         this.subjectRepository = subjectRepository;
         this.modelMapper = modelMapper;
+        this.userService = userService;
+        this.subjectService = subjectService;
     }
 
     @Override
     public EnrollmentDto enroll(EnrollmentDto enrollmentDto) {
         Integer userid = enrollmentDto.userId();
         SubjectIDDto subjectIDDto = enrollmentDto.subjectIDDto();
-        SubjectId subjectId = modelMapper.map(subjectIDDto, SubjectId.class);
-        Optional<User> user = userRepository.findById(enrollmentDto.userId());
-        Optional<Subject> subject = subjectRepository.findById(subjectId);
-        if (checkUserAndSubjectExist(user, subject)) {
-            if (checkSubjectAlreadyEnrolled(user.get(), subject.get())) {
-                saveEnrollmentToDatabase(user.get(), subject.get());
-                return EnrollmentDto.builder()
-                        .userId(userid)
-                        .subjectIDDto(subjectIDDto)
-                        .build();
-            }
-            throw CustomException.throwException(ENROLLMENT, DUPLICATE_ENTITY, userid.toString(), subjectIDDto.toString());
+        UserDto user = userService.find(userid);
+        SubjectDto subject = subjectService.find(subjectIDDto);
+        if (!checkDidEnrolled(user, subject)) {
+            saveEnrollmentToDatabase(user, subject);
+            return EnrollmentDto.builder()
+                    .userId(userid)
+                    .subjectIDDto(subjectIDDto)
+                    .build();
         }
-        throw CustomException.throwException(ENROLLMENT, ENTITY_NOT_FOUND, userid.toString(), subjectIDDto.toString());
+        throw CustomException.throwException(ENROLLMENT, DUPLICATE_ENTITY, userid.toString(), subjectIDDto.toString());
     }
+
 
     @Override
     public void unregister(EnrollmentDto enrollmentDto) {
         Integer userid = enrollmentDto.userId();
         SubjectIDDto subjectIDDto = enrollmentDto.subjectIDDto();
-        SubjectId subjectId = modelMapper.map(subjectIDDto, SubjectId.class);
-        Optional<User> user = userRepository.findById(userid);
-        Optional<Subject> subject = subjectRepository.findById(subjectId);
-        if (checkUserAndSubjectExist(user, subject) && checkSubjectAlreadyEnrolled(user.get(), subject.get())) {
-            deleteEnrollmentFromDatabase(user.get(), subject.get());
+        UserDto user = userService.find(userid);
+        SubjectDto subject = subjectService.find(subjectIDDto);
+        if (checkDidEnrolled(user, subject)) {
+            deleteEnrollmentFromDatabase(user, subject);
+            return;
         }
         throw CustomException.throwException(ENROLLMENT, ENTITY_NOT_FOUND, userid.toString(), subjectIDDto.toString());
     }
 
     @Override
-    public List<SubjectDto> findAllSubjectsEnrolledByUser(Integer userid) {
-        Optional<User> user = userRepository.findById(userid);
-        if (user.isPresent()) {
-            return user.get().getSubjects()
-                    .stream()
-                    .map(subject -> modelMapper.map(subject, SubjectDto.class))
-                    .collect(Collectors.toList());
-        }
-        throw CustomException.throwException(USER, ENTITY_EXCEPTION, userid.toString());
+    public List<UserDto> findAllUsersTakeSubject(SubjectIDDto subjectIDDto) {
+
+        SubjectDto subjectDto = subjectService.find(subjectIDDto);
+        return new ArrayList<>(subjectDto.getUserDtos());
     }
 
     @Override
-    public List<UserDto> findAllUsersTakeSubject(SubjectIDDto subjectIDDto) {
-        SubjectId subjectId = modelMapper.map(subjectIDDto, SubjectId.class);
-        Optional<Subject> subject = subjectRepository.findById(subjectId);
-        if (subject.isPresent()) {
-            return subject.get().getUsers()
-                    .stream()
-                    .map(user -> modelMapper.map(user, UserDto.class))
-                    .collect(Collectors.toList());
-        }
-        throw CustomException.throwException(SUBJECT, ENTITY_NOT_FOUND, subjectIDDto.toString());
+    public List<SubjectDto> findAllSubjectsTakenByUser(Integer userid) {
+        UserDto userDto = userService.find(userid);
+        return new ArrayList<>(userDto.getSubjectDtos());
     }
 
-    private boolean checkUserAndSubjectExist(Optional<User> user, Optional<Subject> subject) {
-        return user.isPresent() && subject.isPresent();
+    @Override
+    public List<SubjectIDDto> findAllSubjectIdsTakenByUser(Integer userid) {
+        return findAllSubjectsTakenByUser(userid)
+                .stream()
+                .map(SubjectDto::getSubjectIDDto)
+                .collect(Collectors.toList());
     }
 
-    private boolean checkSubjectAlreadyEnrolled(User user, Subject subject) {
-        return user.getSubjects().contains(subject);
+
+    public boolean checkDidEnrolled(UserDto user, SubjectDto subject) {
+        return findAllSubjectIdsTakenByUser(user.getId())
+                .contains(subject.getSubjectIDDto());
     }
 
-    private void saveEnrollmentToDatabase(User user, Subject subject) {
-        user.getSubjects().add(subject);
-        userRepository.save(user);
+    private void saveEnrollmentToDatabase(UserDto user, SubjectDto subject) {
+        user.getSubjectDtos().add(subject);
+        User userToSave = modelMapper.map(user, User.class);
+        userRepository.save(userToSave);
     }
 
-    private void deleteEnrollmentFromDatabase(User user, Subject subject) {
-        user.getSubjects().remove(subject);
-        userRepository.save(user);
+    private void deleteEnrollmentFromDatabase(UserDto user, SubjectDto subject) {
+        user.getSubjectDtos().remove(subject);
+        User userToSave = modelMapper.map(user, User.class);
+        userRepository.save(userToSave);
     }
 }

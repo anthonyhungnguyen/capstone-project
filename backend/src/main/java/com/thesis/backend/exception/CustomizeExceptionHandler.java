@@ -34,6 +34,16 @@ public class CustomizeExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.CONFLICT);
     }
 
+    @ExceptionHandler(CustomException.TimeNotMatchException.class)
+    public ResponseEntity<ResponseError> handleTimeNotMatchException(Exception ex, WebRequest request) {
+        ResponseError response = ResponseError.builder()
+                .message(ex.getMessage())
+                .timestamp(DateUtil.today())
+                .details(request.getDescription(false))
+                .build();
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ResponseError> handleGlobalException(Exception ex, WebRequest request) {
         ResponseError responseError = ResponseError.builder()

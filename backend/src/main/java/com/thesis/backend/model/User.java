@@ -7,6 +7,7 @@ import lombok.experimental.Accessors;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -23,12 +24,9 @@ public class User implements Serializable {
     @NotBlank
     private String name;
 
-    @NotBlank
-    private int gender;
+    private String password;
 
-    @Column(name = "major_code")
-    @NotBlank
-    private String majorCode;
+    private String role;
 
     @ManyToMany(targetEntity = Subject.class,
             cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -43,5 +41,5 @@ public class User implements Serializable {
             })
     @ToString.Exclude
     @JsonIgnore
-    private List<Subject> subjects;
+    private List<Subject> subjects = new ArrayList<>();
 }

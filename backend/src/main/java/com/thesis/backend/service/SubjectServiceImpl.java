@@ -1,11 +1,12 @@
 package com.thesis.backend.service;
 
+import com.thesis.backend.dto.mapper.SubjectMapper;
 import com.thesis.backend.dto.model.SubjectDto;
 import com.thesis.backend.dto.model.SubjectIDDto;
 import com.thesis.backend.exception.CustomException;
 import com.thesis.backend.model.Subject;
 import com.thesis.backend.model.SubjectId;
-import com.thesis.backend.repository.SubjectRepository;
+import com.thesis.backend.repository.mysql.SubjectRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +20,7 @@ import static com.thesis.backend.constant.ExceptionType.ENTITY_NOT_FOUND;
 
 @Service
 @Slf4j
-public class SubjectServiceImpl implements BaseService<SubjectDto, SubjectIDDto>, SubjectService {
+public class SubjectServiceImpl implements BaseService<SubjectDto, SubjectIDDto> {
     private final SubjectRepository subjectRepository;
     private final ModelMapper modelMapper;
 
@@ -33,7 +34,7 @@ public class SubjectServiceImpl implements BaseService<SubjectDto, SubjectIDDto>
     public SubjectDto find(SubjectIDDto id) {
         Optional<Subject> subject = subjectRepository.findById(modelMapper.map(id, SubjectId.class));
         if (subject.isPresent()) {
-            return modelMapper.map(subject.get(), SubjectDto.class);
+            return SubjectMapper.toSubjectDto(subject.get());
         }
         throw CustomException.throwException(SUBJECT, ENTITY_NOT_FOUND, id.toString());
     }
@@ -63,8 +64,9 @@ public class SubjectServiceImpl implements BaseService<SubjectDto, SubjectIDDto>
         Optional<Subject> subject = subjectRepository.findById(modelMapper.map(o.getSubjectIDDto(), SubjectId.class));
         if (subject.isPresent()) {
             Subject savedSubject = subjectRepository.save(modelMapper.map(o, Subject.class));
-            return modelMapper.map(savedSubject, SubjectDto.class);
+            return SubjectMapper.toSubjectDto(savedSubject);
         }
         throw CustomException.throwException(SUBJECT, ENTITY_NOT_FOUND, o.getSubjectIDDto().toString());
     }
+
 }

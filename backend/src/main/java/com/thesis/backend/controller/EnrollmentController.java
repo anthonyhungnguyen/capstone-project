@@ -37,11 +37,21 @@ public class EnrollmentController {
         this.enrollmentServiceImpl = enrollmentServiceImpl;
     }
 
+    @Operation(description = "Get all subjects enrolled by user based on user id")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "404", description = "Not found")
+    })
     @GetMapping(value = "/user")
     public ResponseEntity<List<SubjectDto>> findAllSubjectsEnrolledByUser(@RequestParam(value = "userid") Integer userid) {
-        return ResponseEntity.ok(enrollmentServiceImpl.findAllSubjectsEnrolledByUser(userid));
+        return ResponseEntity.ok(enrollmentServiceImpl.findAllSubjectsTakenByUser(userid));
     }
 
+    @Operation(description = "Get all users taking subject based on subject id")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "404", description = "Not found")
+    })
     @GetMapping(value = "/subject")
     public ResponseEntity<List<UserDto>> findAllUsersTakeSubject(@Valid SubjectIDDto subjectIDDto) {
         return ResponseEntity.ok(enrollmentServiceImpl.findAllUsersTakeSubject(subjectIDDto));
@@ -49,7 +59,7 @@ public class EnrollmentController {
 
     @Operation(description = "Enroll subject for user based on user id and subject id")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Success"),
+            @ApiResponse(responseCode = "200", description = "Success"),
             @ApiResponse(responseCode = "404", description = "Not found"),
             @ApiResponse(responseCode = "400", description = "Subject already enrolled")
     })
@@ -58,6 +68,11 @@ public class EnrollmentController {
         return ResponseEntity.ok(enrollmentServiceImpl.enroll(enrollmentDto));
     }
 
+    @Operation(description = "Unregister subject for user based on user id and subject id")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "404", description = "Not found")
+    })
     @DeleteMapping
     public ResponseEntity<String> unregister(@RequestBody @Valid EnrollmentDto enrollmentDto) {
         enrollmentServiceImpl.unregister(enrollmentDto);

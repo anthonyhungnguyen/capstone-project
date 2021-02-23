@@ -3,7 +3,8 @@ package com.thesis.backend.constant;
 public enum ExceptionType {
     ENTITY_NOT_FOUND("not.found"),
     DUPLICATE_ENTITY("duplicate"),
-    ENTITY_EXCEPTION("exception");
+    ENTITY_EXCEPTION("exception"),
+    TIME_NOT_MATCH("time.not.match");
 
     String value;
 

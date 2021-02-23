@@ -1,6 +1,5 @@
 package com.thesis.backend.dto.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
@@ -9,7 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
-import java.util.Collection;
+import java.util.List;
 
 @Data
 @Builder
@@ -23,6 +22,15 @@ public class UserDto {
     private String name;
     private int gender;
     private String majorCode;
-    @JsonIgnore
-    private Collection<SubjectDto> subjectDtos;
+    private String role;
+
+    public UserDto(int id, String name, int gender, String majorCode, String role) {
+        this.id = id;
+        this.name = name;
+        this.gender = gender;
+        this.majorCode = majorCode;
+        this.role = role;
+    }
+
+    private List<SubjectDto> subjectDtos;
 }

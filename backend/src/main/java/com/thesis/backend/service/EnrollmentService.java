@@ -12,9 +12,11 @@ public interface EnrollmentService {
 
     void unregister(EnrollmentDto enrollmentDto);
 
-    List<SubjectDto> findAllSubjectsEnrolledByUser(Integer userid);
-
     List<UserDto> findAllUsersTakeSubject(SubjectIDDto subjectIDDto);
 
+    List<SubjectDto> findAllSubjectsTakenByUser(Integer userid);
 
+    List<SubjectIDDto> findAllSubjectIdsTakenByUser(Integer userid);
+
+    boolean checkDidEnrolled(UserDto user, SubjectDto subject);
 }

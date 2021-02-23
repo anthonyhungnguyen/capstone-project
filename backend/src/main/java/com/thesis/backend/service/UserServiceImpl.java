@@ -1,9 +1,11 @@
 package com.thesis.backend.service;
 
+import com.thesis.backend.dto.mapper.UserMapper;
 import com.thesis.backend.dto.model.UserDto;
+import com.thesis.backend.dto.request.SignUpRequest;
 import com.thesis.backend.exception.CustomException;
 import com.thesis.backend.model.User;
-import com.thesis.backend.repository.UserRepository;
+import com.thesis.backend.repository.mysql.UserRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,12 +17,12 @@ import static com.thesis.backend.constant.ExceptionType.DUPLICATE_ENTITY;
 import static com.thesis.backend.constant.ExceptionType.ENTITY_NOT_FOUND;
 
 @Service
-public class UserServiceImpl implements BaseService<UserDto, Integer>, UserService {
+public class UserServiceImpl implements BaseService<UserDto, Integer> {
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, ModelMapper modelMapper) {
+    public UserServiceImpl(UserRepository userRepository, ModelMapper modelMapper, UserMapper userMapper) {
         this.userRepository = userRepository;
         this.modelMapper = modelMapper;
     }
@@ -30,9 +32,19 @@ public class UserServiceImpl implements BaseService<UserDto, Integer>, UserServi
     public UserDto find(Integer id) {
         Optional<User> user = userRepository.findById(id);
         if (user.isPresent()) {
-            return modelMapper.map(user.get(), UserDto.class);
+            return UserMapper.toUserDto(user.get());
         }
         throw CustomException.throwException(USER, ENTITY_NOT_FOUND, id.toString());
+    }
+
+    public boolean register(SignUpRequest signUpRequest) {
+        Optional<User> user = userRepository.findById(signUpRequest.getId());
+        if (user.isEmpty()) {
+            User mapToUser = UserMapper.signUpRequestToUser(signUpRequest);
+            userRepository.save(mapToUser);
+            return true;
+        }
+        throw CustomException.throwException(USER, DUPLICATE_ENTITY, String.valueOf(signUpRequest.getId()));
     }
 
     @Override

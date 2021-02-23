@@ -18,13 +18,13 @@ export default function EditableCell({
         <Form.Item
           name={dataIndex}
           style={{
-            margin: 0,
+            margin: 0
           }}
           rules={[
             {
               required: true,
-              message: `Please Input ${title}!`,
-            },
+              message: `Please Input ${title}!`
+            }
           ]}
         >
           {inputNode}

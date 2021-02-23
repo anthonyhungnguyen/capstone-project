@@ -1,6 +1,6 @@
 package com.thesis.backend.exception;
 
-import com.thesis.backend.config.PropertiesConfig;
+import com.thesis.backend.config.props.ExceptionProperties;
 import com.thesis.backend.constant.EntityType;
 import com.thesis.backend.constant.ExceptionType;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,11 +11,11 @@ import java.util.Optional;
 
 @Component
 public class CustomException {
-    private static PropertiesConfig propertiesConfig;
+    private static ExceptionProperties exceptionProperties;
 
     @Autowired
-    public CustomException(PropertiesConfig propertiesConfig) {
-        CustomException.propertiesConfig = propertiesConfig;
+    public CustomException(ExceptionProperties exceptionProperties) {
+        CustomException.exceptionProperties = exceptionProperties;
     }
 
     public static class EntityNotFoundException extends RuntimeException {
@@ -30,9 +30,15 @@ public class CustomException {
         }
     }
 
+    public static class TimeNotMatchException extends RuntimeException {
+        public TimeNotMatchException(String message) {
+            super(message);
+        }
+    }
+
     private static String format(String template, String... args) {
         // https://stackoverflow.com/questions/2809633/what-is-the-difference-between-messageformat-format-and-string-format-in-jdk-1-5
-        Optional<String> templateContent = Optional.ofNullable(propertiesConfig.getConfigValue(template));
+        Optional<String> templateContent = Optional.ofNullable(exceptionProperties.getConfigValue(template));
         return templateContent.map(s -> MessageFormat.format(s, (Object[]) args)).orElseGet(() -> String.format(template, (Object) args));
     }
 
@@ -45,6 +51,8 @@ public class CustomException {
             return new EntityNotFoundException(format(messageTemplate, args));
         } else if (ExceptionType.DUPLICATE_ENTITY.equals(exceptionType)) {
             return new DuplicateEntityException(format(messageTemplate, args));
+        } else if (ExceptionType.TIME_NOT_MATCH.equals(exceptionType)) {
+            return new TimeNotMatchException(format(messageTemplate, args));
         }
         return new RuntimeException(format(messageTemplate, args));
     }

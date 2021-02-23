@@ -6,6 +6,7 @@ import lombok.experimental.Accessors;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -46,5 +47,5 @@ public class Subject implements Serializable {
             mappedBy = "subjects", fetch = FetchType.LAZY)
     @ToString.Exclude
     @JsonIgnore
-    private List<User> users;
+    private List<User> users = new ArrayList<>();
 }

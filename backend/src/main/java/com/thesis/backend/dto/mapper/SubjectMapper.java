@@ -4,28 +4,35 @@ import com.thesis.backend.dto.model.SubjectDto;
 import com.thesis.backend.dto.model.SubjectIDDto;
 import com.thesis.backend.dto.model.UserDto;
 import com.thesis.backend.model.Subject;
+import com.thesis.backend.model.SubjectId;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.HashSet;
 import java.util.stream.Collectors;
 
 @Component
 public class SubjectMapper {
-    public static SubjectDto toUserDto(Subject subject) {
+    private static ModelMapper modelMapper;
+
+    @Autowired
+    public SubjectMapper(ModelMapper modelMapper) {
+        SubjectMapper.modelMapper = modelMapper;
+    }
+
+    public static SubjectDto toSubjectDto(Subject subject) {
         return SubjectDto.builder()
-                .subjectIDDto(new SubjectIDDto(subject.getId(), subject.getGroupCode(), subject.getSemester()))
-                .name(subject.getName())
+                .subjectIDDto(modelMapper.map(new SubjectId(subject.getId(), subject.getGroupCode(), subject.getSemester()), SubjectIDDto.class))
                 .weekDay(subject.getWeekDay())
-                .timeRange(subject.getTimeRange())
-                .room(subject.getRoom())
-                .base(subject.getBase())
                 .weekLearn(subject.getWeekLearn())
-                .userDtos(new HashSet<UserDto>(subject
-                        .getUsers()
+                .name(subject.getName())
+                .room(subject.getRoom())
+                .timeRange(subject.getTimeRange())
+                .userDtos(subject.getUsers()
                         .stream()
-                        .map(user -> new ModelMapper().map(user, UserDto.class))
-                        .collect(Collectors.toSet())))
+                        .map(user -> modelMapper.
+                                map(user, UserDto.class))
+                        .collect(Collectors.toList()))
                 .build();
     }
 }
