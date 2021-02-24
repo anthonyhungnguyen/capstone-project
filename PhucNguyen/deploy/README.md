@@ -9,4 +9,4 @@ pyuic5 -x uiempty.ui -o ui.py
 python3 run/app.py
 
 <!-- Test app by flask -->
-python3 test/apptests.py
+python3 test/apptest.py
