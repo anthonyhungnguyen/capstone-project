@@ -4,7 +4,7 @@ import React from "react"
 import { useForm } from "react-hook-form"
 import { useDispatch, useSelector } from "react-redux"
 import { useHistory } from "react-router-dom"
-import { signup } from "store/user"
+import { signup } from "slices/user"
 
 function SignUp() {
   const { register, handleSubmit, watch, errors } = useForm()

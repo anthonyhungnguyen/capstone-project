@@ -4,7 +4,7 @@ import "antd/dist/antd.css"
 import App from "App/App"
 import * as serviceWorker from "./serviceWorker"
 import { Provider } from "react-redux"
-import store from "./store"
+import store from "slices"
 import "assets/styles/tailwind.css"
 
 // whole app will access Redux store

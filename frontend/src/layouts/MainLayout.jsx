@@ -8,7 +8,7 @@ export default function MainLayout(props) {
     <div>
       <HeaderBar />
       {children}
-      <FooterBar />
+      {/* <FooterBar /> */}
     </div>
   )
 }

@@ -1,19 +1,19 @@
-import React, { lazy, Suspense } from "react"
-import { Switch, Route } from "react-router-dom"
-import { PATH } from "constants/path"
 import Loading from "components/Loading"
+import { PATH } from "constants/path"
 import AuthenticatedGuard from "guards/AuthenticatedGuard"
-const Home = lazy(() => import("pages/Home"))
+import FaceProfile from "pages/FaceProfile"
+import React, { Suspense } from "react"
+import { Switch } from "react-router-dom"
 
-export default function HomeRoute() {
+export default function FaceProfileRoute() {
   return (
     <Switch>
       <AuthenticatedGuard
         exact
-        path={PATH.HOME}
+        path={PATH.FACE_PROFILE}
         component={() => (
           <Suspense fallback={<Loading />}>
-            <Home />
+            <FaceProfile />
           </Suspense>
         )}
       />

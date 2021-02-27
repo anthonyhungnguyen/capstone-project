@@ -5,7 +5,7 @@ import React from "react"
 import { useForm } from "react-hook-form"
 import { useDispatch, useSelector } from "react-redux"
 import { useHistory } from "react-router-dom"
-import { login } from "store/user"
+import { login } from "slices/user"
 
 function Login() {
   const { register, handleSubmit, errors } = useForm()

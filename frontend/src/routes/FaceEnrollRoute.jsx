@@ -3,17 +3,17 @@ import { Switch, Route } from "react-router-dom"
 import { PATH } from "constants/path"
 import Loading from "components/Loading"
 import AuthenticatedGuard from "guards/AuthenticatedGuard"
-const Home = lazy(() => import("pages/Home"))
+import FaceEnroll from "pages/FaceEnroll"
 
-export default function HomeRoute() {
+export default function FaceEnrollRoute() {
   return (
     <Switch>
       <AuthenticatedGuard
         exact
-        path={PATH.HOME}
+        path={PATH.FACE_ENROLL}
         component={() => (
           <Suspense fallback={<Loading />}>
-            <Home />
+            <FaceEnroll />
           </Suspense>
         )}
       />

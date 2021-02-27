@@ -6,7 +6,7 @@ import { loginApi, signUpApi } from "apis/user"
 const userData = JSON.parse(localStorage.getItem("user"))
 
 const slice = createSlice({
-  name: "login",
+  name: "user",
   initialState: {
     loginLoading: false,
     loginError: false,
