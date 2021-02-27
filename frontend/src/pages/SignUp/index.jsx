@@ -25,46 +25,136 @@ function SignUp() {
     history.push(PATH.LOGIN)
   }
 
-  return (
-    <MainLayout>
-      {signUpLoading && <p>Loading</p>}
-      {signUpError && <p>{signUpErrorMessage}</p>}
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <label>ID</label>
-        <input
-          name="id"
-          type="text"
-          ref={register({ required: "You must specify ID" })}
-        />
-        {errors.id?.message}
-        <label>Username</label>
-        <input
-          name="username"
-          type="text"
-          ref={register({ required: "You must specify username" })}
-        />
-        {errors.username?.message}
-        <label>Password</label>
-        <input
-          name="password"
-          type="password"
-          ref={register({ required: "You must specify password" })}
-        />
-        {errors.password?.message}
-        <label>Repeat password</label>
-        <input
-          name="repeatPassword"
-          type="password"
-          ref={register({
-            validate: value =>
-              value === watch("password") || "Repeat password does not match"
-          })}
-        />
-        {errors.repeatPassword?.message}
+  const onSignIn = () => {
+    history.push(PATH.LOGIN)
+  }
 
-        <input type="submit" />
-      </form>
-    </MainLayout>
+  return (
+    <>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-md w-full space-y-8">
+          {signUpError === true ? (
+            <p className="text-center text-md text-white bg-red-500 border border-gray-200 rounded-md p-2">
+              {signUpErrorMessage}
+            </p>
+          ) : null}
+          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+            Create your account
+          </h2>
+          <p className="mt-2 text-center text-sm text-gray-600">
+            Or{" "}
+            <button
+              onClick={onSignIn}
+              className="font-medium text-indigo-600 hover:text-indigo-500"
+            >
+              sign in here
+            </button>
+          </p>
+          <div className="bg-white p-8 shadow-lg rounded-md border">
+            <form className="space-y-8" onSubmit={handleSubmit(onSubmit)}>
+              <div>
+                <label htmlFor="id" className="sr-only">
+                  ID
+                </label>
+
+                <input
+                  id="id"
+                  name="id"
+                  type="text"
+                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                  placeholder="ID"
+                  ref={register({
+                    required: "You must specify username",
+                    pattern: {
+                      value: /^[0-9]+$/i,
+                      message: "Username must be number"
+                    }
+                  })}
+                />
+                <p className="text-sm font-medium text-red-400  ml-2 mt-2">
+                  {errors.id?.message}
+                </p>
+              </div>
+              <div>
+                <label htmlFor="password" className="sr-only">
+                  Password
+                </label>
+
+                <input
+                  id="password"
+                  name="password"
+                  type="password"
+                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                  placeholder="Password"
+                  ref={register({
+                    required: "You must specify password",
+                    minLength: {
+                      value: 8,
+                      message: "Your password must be at least 8 characters"
+                    }
+                  })}
+                />
+                <p className="text-sm font-medium text-red-400  ml-2 mt-2">
+                  {errors.password?.message}
+                </p>
+              </div>
+              <div>
+                <label htmlFor="repeatPassword" className="sr-only">
+                  Repeat password
+                </label>
+
+                <input
+                  id="repeatPassword"
+                  name="repeatPassword"
+                  type="password"
+                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                  placeholder="Repeat password"
+                  ref={register({
+                    validate: value =>
+                      value === watch("password") ||
+                      "Repeat password does not match"
+                  })}
+                />
+                <p className="text-sm font-medium text-red-400 ml-2 mt-2">
+                  {errors.repeatPassword?.message}
+                </p>
+              </div>
+              <div>
+                <button
+                  type="submit"
+                  className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-sm text-white bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                >
+                  <span className="absolute left-0 inset-y-0 flex items-center pl-3">
+                    {/* <!-- Heroicon name: solid/lock-closed --> */}
+                    {signUpLoading ? (
+                      <svg
+                        class="animate-spin h-5 w-5 mr-3"
+                        viewBox="0 0 24 24"
+                      ></svg>
+                    ) : (
+                      <svg
+                        className="h-5 w-5 text-indigo-500 group-hover:text-indigo-400"
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                        aria-hidden="true"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                    )}
+                  </span>
+                  Sign up
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </>
   )
 }
 

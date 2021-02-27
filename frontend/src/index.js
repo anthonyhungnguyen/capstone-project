@@ -5,6 +5,7 @@ import App from "App/App"
 import * as serviceWorker from "./serviceWorker"
 import { Provider } from "react-redux"
 import store from "./store"
+import "assets/styles/tailwind.css"
 
 // whole app will access Redux store
 
