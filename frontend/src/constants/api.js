@@ -6,5 +6,8 @@ export const API_PATH = {
   LOGOUT: API_ROOT + "/auth/logout",
   SIGNUP: API_ROOT + "/auth/signup",
   CROP_FACE: API_FACE + "/crop",
-  ROOT_FACE: API_ROOT + "/face"
+  ROOT_FACE: API_ROOT + "/face",
+  SUBJECT: API_ROOT + "/subject",
+  USER: API_ROOT + "/user",
+  ENROLL: API_ROOT + "/enroll"
 }

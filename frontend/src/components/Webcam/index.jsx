@@ -1,5 +1,8 @@
+import { Button } from "antd"
 import React, { useRef, useCallback } from "react"
+import { useDispatch } from "react-redux"
 import Webcam from "react-webcam"
+import { rawFaceUpdate } from "slices/faceEnroll"
 
 const videoConstraints = {
   width: 1280,
@@ -7,12 +10,13 @@ const videoConstraints = {
   facingMode: "user"
 }
 
-const WebcamCapture = ({ setPhotoData }) => {
+const WebcamCapture = () => {
   const webcamRef = useRef(null)
+  const dispatch = useDispatch()
 
   const capture = useCallback(() => {
     const imageSrc = webcamRef.current.getScreenshot()
-    setPhotoData(imageSrc)
+    dispatch(rawFaceUpdate(imageSrc))
   }, [webcamRef])
 
   return (
@@ -25,12 +29,9 @@ const WebcamCapture = ({ setPhotoData }) => {
         width={600}
         videoConstraints={videoConstraints}
       />
-      <button
-        onClick={capture}
-        className="w-full border-2 p-2 font-bold shadow-md"
-      >
+      <Button onClick={capture} type="primary">
         Capture
-      </button>
+      </Button>
     </div>
   )
 }

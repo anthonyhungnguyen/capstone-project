@@ -48,7 +48,7 @@ const slice = createSlice({
     logOut: (state, _) => {
       state.isLoggedIn = false
       state.userData = null
-      localStorage.setItem("user", null)
+      localStorage.removeItem("user")
     }
   }
 })

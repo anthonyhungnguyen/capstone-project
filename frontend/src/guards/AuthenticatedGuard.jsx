@@ -10,7 +10,7 @@ export default function AuthenticatedGuard(children) {
     <Route
       {...rest}
       render={props => {
-        if (!isLoggedIn && localStorage.getItem("user") === "null") {
+        if (!isLoggedIn && !localStorage.getItem("user")) {
           return <Redirect to={PATH.LOGIN} />
         }
         return <Component {...props} />

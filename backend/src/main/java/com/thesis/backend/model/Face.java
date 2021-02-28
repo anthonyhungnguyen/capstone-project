@@ -22,6 +22,9 @@ public class Face {
     @Field(value = "photo")
     private Binary photo;
 
+    @Field(value = "status")
+    private String status;
+
     @Field(value = "timestamp")
     private String timestamp;
 }

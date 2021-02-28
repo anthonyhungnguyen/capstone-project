@@ -1,4 +1,4 @@
-import Loading from "components/Loading"
+import Loading from "components/Miscellaneous/Loading"
 import { PATH } from "constants/path"
 import AuthenticatedGuard from "guards/AuthenticatedGuard"
 import FaceProfile from "pages/FaceProfile"

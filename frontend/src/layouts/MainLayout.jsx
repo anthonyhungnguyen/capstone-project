@@ -1,5 +1,5 @@
-import FooterBar from "components/FooterBar"
-import HeaderBar from "components/HeaderBar"
+import FooterBar from "components/Miscellaneous/FooterBar"
+import HeaderBar from "components/Miscellaneous/HeaderBar"
 import React from "react"
 
 export default function MainLayout(props) {
@@ -7,7 +7,7 @@ export default function MainLayout(props) {
   return (
     <div>
       <HeaderBar />
-      {children}
+      <div className="container mx-auto p-10">{children}</div>
       {/* <FooterBar /> */}
     </div>
   )

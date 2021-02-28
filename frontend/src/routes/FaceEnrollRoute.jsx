@@ -1,7 +1,7 @@
 import React, { lazy, Suspense } from "react"
 import { Switch, Route } from "react-router-dom"
 import { PATH } from "constants/path"
-import Loading from "components/Loading"
+import Loading from "components/Miscellaneous/Loading"
 import AuthenticatedGuard from "guards/AuthenticatedGuard"
 import FaceEnroll from "pages/FaceEnroll"
 

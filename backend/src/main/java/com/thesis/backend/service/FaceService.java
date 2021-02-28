@@ -31,6 +31,7 @@ public class FaceService {
                 .userId(userid)
                 .photo(new Binary(BsonBinarySubType.BINARY, multipartFile.getBytes()))
                 .timestamp(DateUtil.today().toString())
+                .status("Not verified")
                 .build();
         faceRepository.save(face);
         return true;
