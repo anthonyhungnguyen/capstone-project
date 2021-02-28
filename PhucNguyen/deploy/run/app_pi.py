@@ -13,10 +13,18 @@ import sys
 import dlib
 import numpy as np
 import imutils
-from time import time, localtime, strftime
+from time import time, localtime, strftime, sleep
+from picamera.array import PiRGBArray
+from picamera import PiCamera
 
 # import utils libs
 from utils.AIlibs import AILIBS
+
+# initialize the camera and grab a reference to the raw camera capture
+camera = PiCamera()
+camera.resolution = (640, 480)
+camera.framerate = 32
+rawCapture = PiRGBArray(camera, size=(640, 480))
 
 mAILIBS = AILIBS
 
@@ -27,9 +35,6 @@ NAME_LIST = {}
 UNKNOWN = "Unknown"
 SCALE_H = 0.1
 SCALE_W = 0.28
-# STREAM_PATH = 0
-# STREAM_PATH = "/home/hoangphuc/Documents/semester202/thesis/deploy/test/video/test0.MOV"
-STREAM_PATH = "/home/hoangphuc/Documents/semester202/thesis/deploy/test/image/dat.jpg"
 
 
 class MainWindow(QMainWindow):
@@ -41,17 +46,22 @@ class MainWindow(QMainWindow):
         # create a timer
         self.timer = QTimer()
         # set camera
-        self.cap = cv2.VideoCapture(STREAM_PATH)
+        self.cap = PiCamera()
+        self.rawCapture = PiRGBArray(self.cap)
         # set timer timeout callback function
         self.timer.timeout.connect(self.viewCam)
         self.timer.start(20)
 
     # view camera
     def viewCam(self):
-        ret, frame = self.cap.read()
+        # ret, frame = self.cap.read()
+        self.cap.capture(self.rawCapture, format="bgr")
+        frame = self.rawCapture.array
         print("W:", frame.shape[0], "H:", frame.shape[1])
-        if not ret:
-            return
+
+        # if not ret:
+        #     return
+
         # crop [t:b, l:r]
         TOP = int(frame.shape[0]*SCALE_H)
         BOTTOM = frame.shape[0] - TOP

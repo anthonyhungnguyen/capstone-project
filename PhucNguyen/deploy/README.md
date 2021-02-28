@@ -10,3 +10,6 @@ python3 run/app.py
 
 <!-- Test app by flask -->
 python3 test/apptest.py
+
+<!-- unofficial userspace V4L2 driver for the Raspberry Pi Camera Module -->
+uv4l --driver raspicam --auto-video_nr
