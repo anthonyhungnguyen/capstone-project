@@ -27,8 +27,8 @@ NAME_LIST = {}
 UNKNOWN = "Unknown"
 SCALE_H = 0.1
 SCALE_W = 0.28
-STREAM_PATH = 0
-# STREAM_PATH = "/home/hoangphuc/Documents/semester202/thesis/deploy/test/video/test0.MOV"
+# STREAM_PATH = 0
+STREAM_PATH = "/home/hoangphuc/Documents/semester202/thesis/deploy/test/video/test0.MOV"
 
 
 class MainWindow(QMainWindow):
@@ -55,8 +55,8 @@ class MainWindow(QMainWindow):
         BOTTOM = frame.shape[0] - TOP
         LEFT = int(frame.shape[1]*SCALE_W)
         RIGHT = frame.shape[1] - LEFT
-        cv2.rectangle(frame, (LEFT, TOP),
-                      (RIGHT, BOTTOM), (200, 150, 150), 2)
+        # cv2.rectangle(frame, (LEFT, TOP),
+        #               (RIGHT, BOTTOM), (200, 150, 150), 2)
         frame = cv2.flip(frame, 1)
 
         check_frame = frame[TOP:BOTTOM, LEFT:RIGHT]
@@ -83,7 +83,7 @@ class MainWindow(QMainWindow):
                 user['latest_time'] = int(time())
                 NAME_LIST[user['name']] = user
         for key, value in list(NAME_LIST.items()):
-            if int(time()) - NAME_LIST[key]["latest_time"] > 5:
+            if int(time()) - NAME_LIST[key]["latest_time"] > 1:
                 mAILIBS.LOGGER.info(
                     "Cleaning...{} ".format(NAME_LIST[key]["name"]))
                 print('Cleaning', int(
@@ -94,13 +94,18 @@ class MainWindow(QMainWindow):
                     "dets:{}- time {}- NAME_LIST: {}".format(len(dets), str(int(time())), str(NAME_LIST)))
                 # print('Frame_count', frame_count, len(
                 #     dets), str(int(time())), NAME_LIST)
-        name_pos = 50
+        # name_pos = 50
+        # for key in NAME_LIST:
+        #     name = NAME_LIST[key]['name']
+        #     if name != UNKNOWN:
+        #         frame = cv2.putText(frame, "Hello, {} {} {}".format(
+        #             name, int(NAME_LIST[key]['score']), strftime('%H:%M:%S', localtime(NAME_LIST[key]['latest_time']))), (10, name_pos), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
+        #         name_pos += 50
         for key in NAME_LIST:
             name = NAME_LIST[key]['name']
             if name != UNKNOWN:
-                frame = cv2.putText(frame, "Hello, {} {} {}".format(
-                    name, int(NAME_LIST[key]['score']), strftime('%H:%M:%S', localtime(NAME_LIST[key]['latest_time']))), (10, name_pos), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
-                name_pos += 50
+                self.ui.info_label.setText("Hello, {} \n {}".format(
+                    name, strftime('%H:%M:%S', localtime(NAME_LIST[key]['latest_time']))))
 
         frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         frame = cv2.resize(frame, SIZE)
@@ -118,8 +123,9 @@ class MainWindow(QMainWindow):
 def main():
     app = QApplication(sys.argv)
     controller = MainWindow()
-    controller.showFullScreen()
+    # controller.showFullScreen()
     # controller.showMaximized()
+    controller.show()
     sys.exit(app.exec_())
 
 
