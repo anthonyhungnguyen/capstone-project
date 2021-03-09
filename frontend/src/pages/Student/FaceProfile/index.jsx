@@ -7,7 +7,7 @@ import { useSelector } from "react-redux"
 
 export default function FaceProfile() {
   const [photos, setPhotos] = useState(null)
-  const { username } = useSelector(state => state.user.userData)
+  const { username } = useSelector(state => state.auth.user)
 
   useEffect(() => {
     const onLoadFacePhotos = async () => {

@@ -5,10 +5,11 @@ import lombok.*;
 import lombok.experimental.Accessors;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Data
 @Accessors(chain = true)
@@ -21,12 +22,7 @@ public class User implements Serializable {
     @Id
     private int id;
 
-    @NotBlank
-    private String name;
-
     private String password;
-
-    private String role;
 
     @ManyToMany(targetEntity = Subject.class,
             cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -42,4 +38,12 @@ public class User implements Serializable {
     @ToString.Exclude
     @JsonIgnore
     private List<Subject> subjects = new ArrayList<>();
+
+    @ManyToMany(targetEntity = Role.class, fetch = FetchType.EAGER)
+    @JoinTable(name = "user_role",
+            joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
+    private Set<Role> roles = new HashSet<>();
+
+
 }

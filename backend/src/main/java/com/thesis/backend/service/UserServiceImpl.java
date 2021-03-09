@@ -1,16 +1,21 @@
 package com.thesis.backend.service;
 
+import com.thesis.backend.constant.ERole;
 import com.thesis.backend.dto.mapper.UserMapper;
 import com.thesis.backend.dto.model.UserDto;
 import com.thesis.backend.dto.request.SignUpRequest;
 import com.thesis.backend.exception.CustomException;
+import com.thesis.backend.model.Role;
 import com.thesis.backend.model.User;
+import com.thesis.backend.repository.mysql.RoleRepository;
 import com.thesis.backend.repository.mysql.UserRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
 import static com.thesis.backend.constant.EntityType.USER;
 import static com.thesis.backend.constant.ExceptionType.DUPLICATE_ENTITY;
@@ -20,11 +25,13 @@ import static com.thesis.backend.constant.ExceptionType.ENTITY_NOT_FOUND;
 public class UserServiceImpl implements BaseService<UserDto, Integer> {
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
+    private final RoleRepository roleRepository;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, ModelMapper modelMapper, UserMapper userMapper) {
+    public UserServiceImpl(UserRepository userRepository, ModelMapper modelMapper, UserMapper userMapper, RoleRepository roleRepository) {
         this.userRepository = userRepository;
         this.modelMapper = modelMapper;
+        this.roleRepository = roleRepository;
     }
 
 
@@ -41,6 +48,13 @@ public class UserServiceImpl implements BaseService<UserDto, Integer> {
         Optional<User> user = userRepository.findById(signUpRequest.getId());
         if (user.isEmpty()) {
             User mapToUser = UserMapper.signUpRequestToUser(signUpRequest);
+
+            Set<Role> roles = new HashSet<>();
+            Role studentRole = roleRepository.findByName(ERole.STUDENT)
+                    .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+            roles.add(studentRole);
+
+            mapToUser.setRoles(roles);
             userRepository.save(mapToUser);
             return true;
         }

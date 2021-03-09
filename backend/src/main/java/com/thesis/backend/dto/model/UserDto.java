@@ -19,18 +19,11 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class UserDto {
     private int id;
-    private String name;
-    private int gender;
-    private String majorCode;
-    private String role;
 
-    public UserDto(int id, String name, int gender, String majorCode, String role) {
+    public UserDto(int id) {
         this.id = id;
-        this.name = name;
-        this.gender = gender;
-        this.majorCode = majorCode;
-        this.role = role;
     }
 
     private List<SubjectDto> subjectDtos;
+    private List<RoleDto> roleDtos;
 }

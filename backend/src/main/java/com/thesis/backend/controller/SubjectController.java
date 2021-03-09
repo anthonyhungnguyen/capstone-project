@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController(value = "Subject controller")
 @RequestMapping(value = "/api/subject",
@@ -22,6 +23,11 @@ import javax.validation.Valid;
 @Tag(name = "Subject")
 public class SubjectController {
     private final SubjectServiceImpl subjectServiceImpl;
+
+    @GetMapping("/all")
+    public ResponseEntity<List<SubjectDto>> findAll() {
+        return ResponseEntity.ok(subjectServiceImpl.findAll());
+    }
 
     @Autowired
     public SubjectController(SubjectServiceImpl subjectServiceImpl) {

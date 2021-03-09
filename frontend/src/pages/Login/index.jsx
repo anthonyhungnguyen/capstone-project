@@ -1,30 +1,35 @@
 import { Button, Card } from "antd"
-import { PATH } from "constants/path"
+import PATH from "constants/path"
 import MainLayout from "layouts/MainLayout"
-import React from "react"
+import React, { useState } from "react"
 import { useForm } from "react-hook-form"
 import { useDispatch, useSelector } from "react-redux"
 import { useHistory } from "react-router-dom"
-import { login } from "slices/user"
+import { login } from "slices/auth"
 
 function Login() {
   const { register, handleSubmit, errors } = useForm()
-
+  const [loading, setLoading] = useState(false)
+  const [fail, setFail] = useState(false)
   const dispatch = useDispatch()
   const history = useHistory()
-  const {
-    isLoggedIn,
-    loginLoading,
-    loginError,
-    loginErrorMessage
-  } = useSelector(state => state.user)
+  const { isLoggedIn } = useSelector(state => state.auth)
+  const { message } = useSelector(state => state.message)
 
   const onSubmit = data => {
     dispatch(login(data))
+      .then(() => {
+        setLoading(false)
+        history.push(PATH.HOME)
+      })
+      .catch(() => {
+        setLoading(false)
+        setFail(true)
+      })
   }
 
   const onSignUp = () => {
-    history.push(PATH.SIGN_UP)
+    history.push(PATH.COMMON.SIGN_UP)
   }
 
   if (isLoggedIn) {
@@ -34,9 +39,9 @@ function Login() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
-        {loginError === true ? (
+        {fail ? (
           <p className="text-center text-md text-white bg-red-500 border border-gray-200 rounded-md p-2">
-            {loginErrorMessage}
+            {message}
           </p>
         ) : null}
         <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
@@ -123,7 +128,7 @@ function Login() {
               >
                 <span className="absolute left-0 inset-y-0 flex items-center pl-3">
                   {/* <!-- Heroicon name: solid/lock-closed --> */}
-                  {loginLoading ? (
+                  {loading ? (
                     <svg
                       class="animate-spin h-5 w-5 mr-3"
                       viewBox="0 0 24 24"

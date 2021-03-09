@@ -9,5 +9,6 @@ export const API_PATH = {
   ROOT_FACE: API_ROOT + "/face",
   SUBJECT: API_ROOT + "/subject",
   USER: API_ROOT + "/user",
-  ENROLL: API_ROOT + "/enroll"
+  ENROLL: API_ROOT + "/enroll",
+  TEACHER: API_ROOT + "/teacher"
 }

@@ -30,19 +30,6 @@ public class Subject implements Serializable {
 
     private String name;
 
-    @Column(name = "week_day")
-    private int weekDay;
-
-    @Column(name = "time_range")
-    private String timeRange;
-
-    private String room;
-
-    private String base;
-
-    @Column(name = "week_learn")
-    private String weekLearn;
-
     @ManyToMany(targetEntity = User.class,
             mappedBy = "subjects", fetch = FetchType.LAZY)
     @ToString.Exclude

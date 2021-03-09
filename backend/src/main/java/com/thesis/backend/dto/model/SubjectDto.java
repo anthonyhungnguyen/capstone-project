@@ -21,11 +21,6 @@ import java.util.List;
 public class SubjectDto {
     private SubjectIDDto subjectIDDto;
     private String name;
-    private int weekDay;
-    private String timeRange;
-    private String room;
-    private String base;
-    private String weekLearn;
     @JsonIgnore
     private List<UserDto> userDtos;
 }

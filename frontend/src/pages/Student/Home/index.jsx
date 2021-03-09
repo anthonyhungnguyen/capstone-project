@@ -10,8 +10,8 @@ import DateRangePicker from "components/Filter/DateRangePicker"
 import { useSelector } from "react-redux"
 
 export default function Home() {
-  const { username } = useSelector(state => state.user.userData)
-
+  const { user } = useSelector(state => state.auth)
+  const { username } = user
   return (
     <MainLayout>
       <div className="flex justify-around">

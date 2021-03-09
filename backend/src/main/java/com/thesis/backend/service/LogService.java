@@ -17,5 +17,5 @@ public interface LogService {
                                         LocalTime start,
                                         LocalTime end);
 
-    LogDto save(EnrollmentDto enrollmentDto, String type);
+    LogDto save(EnrollmentDto enrollmentDto);
 }

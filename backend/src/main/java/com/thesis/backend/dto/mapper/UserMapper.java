@@ -1,12 +1,12 @@
 package com.thesis.backend.dto.mapper;
 
+import com.thesis.backend.dto.model.RoleDto;
 import com.thesis.backend.dto.model.SubjectDto;
 import com.thesis.backend.dto.model.UserDto;
 import com.thesis.backend.dto.request.SignUpRequest;
 import com.thesis.backend.model.User;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -29,12 +29,15 @@ public class UserMapper {
     public static UserDto toUserDto(User user) {
         return UserDto.builder()
                 .id(user.getId())
-                .name(user.getName())
-                .role(user.getRole())
                 .subjectDtos(user
                         .getSubjects()
                         .stream()
                         .map(subject -> modelMapper.map(subject, SubjectDto.class))
+                        .collect(Collectors.toList()))
+                .roleDtos(user
+                        .getRoles()
+                        .stream()
+                        .map(role -> modelMapper.map(role, RoleDto.class))
                         .collect(Collectors.toList()))
                 .build();
     }
@@ -42,8 +45,6 @@ public class UserMapper {
     public static User signUpRequestToUser(SignUpRequest signUpRequest) {
         return User.builder()
                 .id(signUpRequest.getId())
-                .name(signUpRequest.getUsername())
-                .role("normal")
                 .password(passwordEncoder.encode(signUpRequest.getPassword()))
                 .build();
     }

@@ -12,7 +12,9 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.thesis.backend.constant.EntityType.SUBJECT;
 import static com.thesis.backend.constant.ExceptionType.DUPLICATE_ENTITY;
@@ -28,6 +30,11 @@ public class SubjectServiceImpl implements BaseService<SubjectDto, SubjectIDDto>
     public SubjectServiceImpl(SubjectRepository subjectRepository, ModelMapper modelMapper) {
         this.subjectRepository = subjectRepository;
         this.modelMapper = modelMapper;
+    }
+
+    public List<SubjectDto> findAll() {
+        return subjectRepository.findAll().stream().map(SubjectMapper::toSubjectDto).collect(Collectors.toList());
+
     }
 
     @Override

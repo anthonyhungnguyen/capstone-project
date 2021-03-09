@@ -1,41 +1,47 @@
-import { PATH } from "constants/path"
-import MainLayout from "layouts/MainLayout"
-import React from "react"
+import PATH from "constants/path"
+import React, { useState } from "react"
 import { useForm } from "react-hook-form"
 import { useDispatch, useSelector } from "react-redux"
 import { useHistory } from "react-router-dom"
-import { signup } from "slices/user"
+import { signup } from "slices/auth"
 
 function SignUp() {
+  const [loading, setLoading] = useState(false)
+  const [fail, setFail] = useState(false)
   const { register, handleSubmit, watch, errors } = useForm()
   const dispatch = useDispatch()
   const history = useHistory()
-  const {
-    signUpLoading,
-    signUpSuccess,
-    signUpError,
-    signUpErrorMessage
-  } = useSelector(state => state.user)
+  const { isLoggedIn } = useSelector(state => state.auth)
+  const { message } = useSelector(state => state.message)
 
   const onSubmit = data => {
+    setLoading(true)
     dispatch(signup(data))
+      .then(() => {
+        setLoading(false)
+        history.push(PATH.LOGIN)
+      })
+      .catch(() => {
+        setLoading(false)
+        setFail(true)
+      })
   }
 
-  if (signUpSuccess) {
-    history.push(PATH.LOGIN)
+  if (isLoggedIn) {
+    history.push(PATH.HOME)
   }
 
   const onSignIn = () => {
-    history.push(PATH.LOGIN)
+    history.push(PATH.COMMON.LOGIN)
   }
 
   return (
     <>
       <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-md w-full space-y-8">
-          {signUpError === true ? (
+          {fail ? (
             <p className="text-center text-md text-white bg-red-500 border border-gray-200 rounded-md p-2">
-              {signUpErrorMessage}
+              {message}
             </p>
           ) : null}
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
@@ -126,7 +132,7 @@ function SignUp() {
                 >
                   <span className="absolute left-0 inset-y-0 flex items-center pl-3">
                     {/* <!-- Heroicon name: solid/lock-closed --> */}
-                    {signUpLoading ? (
+                    {loading ? (
                       <svg
                         class="animate-spin h-5 w-5 mr-3"
                         viewBox="0 0 24 24"

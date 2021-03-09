@@ -1,18 +1,21 @@
 import { Menu, Layout, Row, Col, Button } from "antd"
-import { PATH } from "constants/path"
+import PATH from "constants/path"
+import ROLE from "constants/role"
 import React, { useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { useLocation, useHistory } from "react-router-dom"
-import { logout } from "slices/user"
+import { logout } from "slices/auth"
 
 const { Header } = Layout
 
 export default function HeaderBar() {
+  const { user } = useSelector(state => state.auth)
   const [isHidden, setIsHidden] = useState(false)
   const history = useHistory()
   const dispatch = useDispatch()
   const location = useLocation()
   const { pathname } = location
+  const { userid, roles } = user
 
   // Check whether username exists in store
   // If yes, render Home navbar
@@ -22,15 +25,33 @@ export default function HeaderBar() {
     dispatch(logout())
   }
   const onFaceEnroll = () => {
-    history.push(PATH.FACE_ENROLL)
+    history.push(PATH.STUDENT.FACE_ENROLL)
   }
 
-  const onHome = () => {
-    history.push(PATH.HOME)
+  const onLanding = () => {
+    history.push(PATH.COMMON.LANDING)
+  }
+
+  const onHome = role => {
+    if (role === ROLE.STUDENT) {
+      history.push(PATH.STUDENT.HOME)
+    } else if (role === ROLE.TEACHER) {
+      history.push(PATH.TEACHER.HOME)
+    } else if (role === ROLE.ADMIN) {
+      history.push(PATH.ADMIN.HOME)
+    }
+  }
+
+  const onTeacherRegister = () => {
+    history.push(PATH.TEACHER.REGISTER)
   }
 
   const onFaceProfile = () => {
-    history.push(PATH.FACE_PROFILE)
+    history.push(PATH.STUDENT.FACE_PROFILE)
+  }
+
+  const onProfile = () => {
+    history.push(PATH.COMMON.PROFILE)
   }
 
   const onToggleIsHidden = () => setIsHidden(old => !old)
@@ -88,23 +109,59 @@ export default function HeaderBar() {
             <div className="hidden sm:block sm:ml-6">
               <div className="flex space-x-4">
                 <button
-                  className="bg-gray-900 text-white px-3 py-2 rounded-md text-sm font-medium"
-                  onClick={onHome}
+                  className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium  "
+                  onClick={onLanding}
                 >
-                  Home
+                  Landing
                 </button>
-                <button
-                  className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
-                  onClick={onFaceProfile}
-                >
-                  Profile
-                </button>
-                <button
-                  className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
-                  onClick={onFaceEnroll}
-                >
-                  Enroll
-                </button>
+                {roles && roles.includes(ROLE.STUDENT) && (
+                  <>
+                    <button
+                      className="bg-gray-900 text-white px-3 py-2 rounded-md text-sm font-medium"
+                      onClick={() => onHome(ROLE.STUDENT)}
+                    >
+                      Dashboard
+                    </button>
+                    <button
+                      className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+                      onClick={onFaceProfile}
+                    >
+                      Profile
+                    </button>
+                    <button
+                      className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+                      onClick={onFaceEnroll}
+                    >
+                      Enroll
+                    </button>
+                  </>
+                )}
+                {roles && roles.includes(ROLE.TEACHER) && (
+                  <>
+                    <button
+                      className="bg-gray-900 text-white px-3 py-2 rounded-md text-sm font-medium"
+                      onClick={() => onHome(ROLE.TEACHER)}
+                    >
+                      Dashboard
+                    </button>
+                    <button
+                      className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+                      onClick={onTeacherRegister}
+                    >
+                      Register
+                    </button>
+                  </>
+                )}
+                {roles && roles.includes(ROLE.ADMIN) && (
+                  <>
+                    <button
+                      className="bg-gray-900 text-white px-3 py-2 rounded-md text-sm font-medium"
+                      onClick={() => onHome(ROLE.ADMIN)}
+                    >
+                      Dashboard
+                    </button>
+                  </>
+                )}
               </div>
             </div>
           </div>
@@ -145,7 +202,7 @@ export default function HeaderBar() {
               </div>
               {isHidden === true ? (
                 <div
-                  className="origin-top-right absolute right-0 mt-2 w-32 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5"
+                  className="origin-top-right absolute right-0 mt-2 w-32 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 z-50"
                   role="menu"
                   aria-orientation="vertical"
                   aria-labelledby="user-menu"
@@ -153,6 +210,7 @@ export default function HeaderBar() {
                   <button
                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                     role="menuitem"
+                    onClick={onProfile}
                   >
                     Your Profile
                   </button>

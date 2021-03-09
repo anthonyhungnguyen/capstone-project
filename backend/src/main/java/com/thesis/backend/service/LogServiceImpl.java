@@ -60,13 +60,12 @@ public class LogServiceImpl implements LogService {
     }
 
     @Override
-    public LogDto save(EnrollmentDto enrollmentDto, String type) {
+    public LogDto save(EnrollmentDto enrollmentDto) {
         Log log = logRepository.save(Log.builder()
                 .userId(enrollmentDto.userId())
                 .subjectID(enrollmentDto.subjectIDDto().getId())
                 .groupCode(enrollmentDto.subjectIDDto().getGroupCode())
                 .semester(enrollmentDto.subjectIDDto().getSemester())
-                .type(type)
                 .timestamp(DateUtil.today().toString())
                 .build());
         return LogMapper.toLogDto(log);

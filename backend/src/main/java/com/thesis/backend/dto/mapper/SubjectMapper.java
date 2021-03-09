@@ -23,11 +23,7 @@ public class SubjectMapper {
     public static SubjectDto toSubjectDto(Subject subject) {
         return SubjectDto.builder()
                 .subjectIDDto(modelMapper.map(new SubjectId(subject.getId(), subject.getGroupCode(), subject.getSemester()), SubjectIDDto.class))
-                .weekDay(subject.getWeekDay())
-                .weekLearn(subject.getWeekLearn())
                 .name(subject.getName())
-                .room(subject.getRoom())
-                .timeRange(subject.getTimeRange())
                 .userDtos(subject.getUsers()
                         .stream()
                         .map(user -> modelMapper.

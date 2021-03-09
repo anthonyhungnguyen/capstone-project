@@ -7,7 +7,8 @@ import { useSelector } from "react-redux"
 export default function UserSubjects() {
   const [data, setData] = useState(null)
   const [error, setError] = useState(null)
-  const { username } = useSelector(state => state.user.userData)
+  const { user } = useSelector(state => state.auth)
+  const { username } = user
   useEffect(() => {
     const preprocessRawEnrollments = data => {
       const { id, groupCode, semester } = data?.subjectIDDto

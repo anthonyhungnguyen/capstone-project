@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
     mysql:
-        container_name: thesis_mysql
+        container_name: capstone_mysql
         image: mysql:latest
         command: --default-authentication-plugin=mysql_native_password
         environment:
@@ -15,7 +15,7 @@ services:
             - 3306:3306
 
     mongo:
-        container_name: thesis_mongo
+        container_name: capstone_mongo
         image: mongo:latest
         environment:
             MONGO_INITDB_ROOT_USERNAME: root
