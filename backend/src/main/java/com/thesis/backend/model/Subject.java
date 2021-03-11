@@ -31,7 +31,7 @@ public class Subject implements Serializable {
     private String name;
 
     @ManyToMany(targetEntity = User.class,
-            mappedBy = "subjects", fetch = FetchType.LAZY)
+            mappedBy = "subjects", fetch = FetchType.EAGER)
     @ToString.Exclude
     @JsonIgnore
     private List<User> users = new ArrayList<>();

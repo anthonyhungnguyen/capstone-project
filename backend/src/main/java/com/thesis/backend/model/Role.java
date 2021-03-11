@@ -24,7 +24,7 @@ public class Role {
     private ERole name;
 
     @ManyToMany(targetEntity = User.class,
-            mappedBy = "roles", fetch = FetchType.LAZY)
+            mappedBy = "roles", fetch = FetchType.EAGER)
     @ToString.Exclude
     @JsonIgnore
     private List<User> users = new ArrayList<>();

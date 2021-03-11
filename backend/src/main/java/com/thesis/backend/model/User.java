@@ -25,7 +25,7 @@ public class User implements Serializable {
     private String password;
 
     @ManyToMany(targetEntity = Subject.class,
-            cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+            cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinTable(name = "enrollment",
             joinColumns = {
                     @JoinColumn(name = "user_id", referencedColumnName = "id")

@@ -4,6 +4,7 @@ import com.thesis.backend.dto.mapper.LogMapper;
 import com.thesis.backend.dto.model.EnrollmentDto;
 import com.thesis.backend.dto.model.LogDto;
 import com.thesis.backend.dto.model.SubjectIDDto;
+import com.thesis.backend.dto.request.AttendanceRequest;
 import com.thesis.backend.model.Log;
 import com.thesis.backend.repository.mongodb.LogRepository;
 import com.thesis.backend.util.DateUtil;
@@ -26,7 +27,7 @@ public class LogServiceImpl implements LogService {
 
     @Override
     public List<LogDto> findAllLogsBasedOnUserId(Integer userid) {
-        return logRepository.findLogsByUserId(userid)
+        return logRepository.findLogsByUserID(userid)
                 .stream().map(LogMapper::toLogDto)
                 .collect(Collectors.toList());
     }
@@ -46,7 +47,7 @@ public class LogServiceImpl implements LogService {
     public List<LogDto> findAllLogsInTimeRange(EnrollmentDto enrollmentDto,
                                                LocalTime start,
                                                LocalTime end) {
-        List<Log> logs = logRepository.findLogsByUserIdAndSubjectIDAndGroupCodeAndSemester(
+        List<Log> logs = logRepository.findLogsByUserIDAndSubjectIDAndGroupCodeAndSemester(
                 enrollmentDto.userId(),
                 enrollmentDto.subjectIDDto().getId(),
                 enrollmentDto.subjectIDDto().getGroupCode(),
@@ -59,15 +60,16 @@ public class LogServiceImpl implements LogService {
 
     }
 
-    @Override
-    public LogDto save(EnrollmentDto enrollmentDto) {
-        Log log = logRepository.save(Log.builder()
-                .userId(enrollmentDto.userId())
-                .subjectID(enrollmentDto.subjectIDDto().getId())
-                .groupCode(enrollmentDto.subjectIDDto().getGroupCode())
-                .semester(enrollmentDto.subjectIDDto().getSemester())
-                .timestamp(DateUtil.today().toString())
+    public Log saveAttendance(AttendanceRequest request) {
+        return logRepository.save(Log.builder()
+                .userID(request.getUserID())
+                .teacherID(request.getTeacherID())
+                .semester(request.getSemester())
+                .subjectID(request.getSubjectID())
+                .timestamp(request.getTimestamp())
+                .deviceID(request.getDeviceID())
+                .imgSrcBase64(request.getImgSrcBase64())
+                .groupCode(request.getGroupCode())
                 .build());
-        return LogMapper.toLogDto(log);
     }
 }

@@ -33,7 +33,7 @@ function Login() {
   }
 
   if (isLoggedIn) {
-    history.push(PATH.HOME)
+    history.push(PATH.COMMON.LANDING)
   }
 
   return (

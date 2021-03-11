@@ -23,7 +23,7 @@ public class LogRepositoryTest {
     @Before
     public void init() {
         Log log = Log.builder()
-                .userId(1752259)
+                .userID(1752259)
                 .subjectID("CO0000")
                 .groupCode("CC01")
                 .semester(201)
@@ -33,7 +33,7 @@ public class LogRepositoryTest {
 
     @Test
     public void testFindLogBasedOnUserid() {
-        assertTrue(logRepository.findLogsByUserId(1752259).size() != 0);
+        assertTrue(logRepository.findLogsByUserID(1752259).size() != 0);
     }
 
     @Test

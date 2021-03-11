@@ -1,8 +1,9 @@
 package com.thesis.backend.service;
 
-import com.thesis.backend.dto.model.EnrollmentDto;
-import com.thesis.backend.dto.model.LogDto;
+import com.thesis.backend.dto.request.AttendanceRequest;
 
 public interface AttendanceService {
-    LogDto checkAttendance(EnrollmentDto enrollmentDto);
+
+    void checkAttendanceUtil(AttendanceRequest request);
+
 }

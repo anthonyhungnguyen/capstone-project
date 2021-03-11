@@ -43,36 +43,36 @@ public class AttendanceServiceTest {
     @Autowired
     private AttendanceServiceImpl attendanceService;
 
-    @Test
-    public void testCheckAttendanceSuccess() {
-        Integer userid = 1752259;
-        SubjectIDDto subjectIDDto = SubjectIDDto.builder()
-                .id("id_test")
-                .groupCode("group_test")
-                .semester(0)
-                .build();
-        EnrollmentDto enrollmentDto = EnrollmentDto.builder()
-                .userId(userid)
-                .subjectIDDto(subjectIDDto)
-                .build();
-        LogDto logDto = attendanceService.checkAttendance(enrollmentDto);
-        assertEquals(logDto.getEnrollmentDto().userId(), userid);
-    }
-
-    @Test
-    public void testCheckAttendanceTimeNotMatchFail() {
-        Integer userid = 1752259;
-        SubjectIDDto subjectIDDto = SubjectIDDto.builder()
-                .id("SP1009")
-                .groupCode("CC03")
-                .semester(201)
-                .build();
-        EnrollmentDto enrollmentDto = EnrollmentDto.builder()
-                .userId(userid)
-                .subjectIDDto(subjectIDDto)
-                .build();
-        assertThrows(CustomException.TimeNotMatchException.class, () -> {
-            attendanceService.checkAttendance(enrollmentDto);
-        });
-    }
+//    @Test
+//    public void testCheckAttendanceSuccess() {
+//        Integer userid = 1752259;
+//        SubjectIDDto subjectIDDto = SubjectIDDto.builder()
+//                .id("id_test")
+//                .groupCode("group_test")
+//                .semester(0)
+//                .build();
+//        EnrollmentDto enrollmentDto = EnrollmentDto.builder()
+//                .userId(userid)
+//                .subjectIDDto(subjectIDDto)
+//                .build();
+//        LogDto logDto = attendanceService.checkAttendance(enrollmentDto);
+//        assertEquals(logDto.getEnrollmentDto().userId(), userid);
+//    }
+//
+//    @Test
+//    public void testCheckAttendanceTimeNotMatchFail() {
+//        Integer userid = 1752259;
+//        SubjectIDDto subjectIDDto = SubjectIDDto.builder()
+//                .id("SP1009")
+//                .groupCode("CC03")
+//                .semester(201)
+//                .build();
+//        EnrollmentDto enrollmentDto = EnrollmentDto.builder()
+//                .userId(userid)
+//                .subjectIDDto(subjectIDDto)
+//                .build();
+//        assertThrows(CustomException.TimeNotMatchException.class, () -> {
+//            attendanceService.checkAttendance(enrollmentDto);
+//        });
+//    }
 }

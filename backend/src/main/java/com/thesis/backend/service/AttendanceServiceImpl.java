@@ -1,16 +1,12 @@
 package com.thesis.backend.service;
 
-import com.thesis.backend.dto.model.EnrollmentDto;
-import com.thesis.backend.dto.model.LogDto;
 import com.thesis.backend.dto.model.SubjectDto;
+import com.thesis.backend.dto.model.SubjectIDDto;
 import com.thesis.backend.dto.model.UserDto;
+import com.thesis.backend.dto.request.AttendanceRequest;
 import com.thesis.backend.exception.CustomException;
-import com.thesis.backend.util.DateUtil;
-import com.thesis.backend.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.time.LocalTime;
 
 import static com.thesis.backend.constant.EntityType.ENROLLMENT;
 import static com.thesis.backend.constant.ExceptionType.ENTITY_NOT_FOUND;
@@ -30,50 +26,19 @@ public class AttendanceServiceImpl implements AttendanceService {
         this.logService = logService;
     }
 
-
     @Override
-    public LogDto checkAttendance(EnrollmentDto enrollmentDto) {
-        UserDto userDto = userService.find(enrollmentDto.userId());
-        SubjectDto subjectDto = subjectService.find(enrollmentDto.subjectIDDto());
+    public void checkAttendanceUtil(AttendanceRequest attendanceRequest) {
+        UserDto userDto = userService.find(attendanceRequest.getUserID());
+        SubjectDto subjectDto = subjectService.find(new SubjectIDDto(attendanceRequest.getSubjectID(),
+                attendanceRequest.getGroupCode(),
+                attendanceRequest.getSemester()));
         if (enrollmentService.checkDidEnrolled(userDto, subjectDto)) {
-            return logService.save(enrollmentDto);
-
+            logService.saveAttendance(attendanceRequest);
+            return;
         }
         throw CustomException.throwException(ENROLLMENT,
                 ENTITY_NOT_FOUND,
                 String.valueOf(userDto.getId()),
                 subjectDto.getSubjectIDDto().toString());
     }
-//
-//    public String generateSuitableAttendanceType(LocalTime start, LocalTime end) {
-//        LocalTime current = DateUtil.localTime();
-//        String attendanceType = "check-in";
-//        long timeDifferenceFromStart = DateUtil.timeDifferenceInMinutes(start, current);
-//        long timeDifferenceToEnd = DateUtil.timeDifferenceInMinutes(current, end);
-//        if (timeDifferenceFromStart > 5) {
-//            attendanceType = "late";
-//        }
-//        if (timeDifferenceToEnd < 5) {
-//            attendanceType = "check-out";
-//        }
-//        return attendanceType;
-//    }
-//
-//    private boolean hasChecked(EnrollmentDto enrollmentDto, LocalTime start, LocalTime end) {
-//        return logService.findAllLogsInTimeRange(enrollmentDto, start, end).size() > 0;
-//    }
-//
-//    private boolean isCurrentTimeInSchedule(LocalTime start, LocalTime end) {
-//        LocalTime current = DateUtil.localTime();
-//        return start.isBefore(current) && end.isAfter(current);
-//    }
-//
-//    private boolean isCurrentWeekInSchedule(String weekString) {
-//        int weekOfYear = DateUtil.weekOfYear();
-//        return StringUtil.convertRawWeekScheduleToList(weekString).contains(weekOfYear);
-//    }
-//
-//    private boolean isCurrentDayInSchedule(int scheduleDay) {
-//        return DateUtil.dayOfWeek() == scheduleDay;
-//    }
 }

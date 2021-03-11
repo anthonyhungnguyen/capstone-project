@@ -8,12 +8,12 @@ import java.util.List;
 
 @Repository
 public interface LogRepository extends MongoRepository<Log, Integer> {
-    List<Log> findLogsByUserIdAndSubjectIDAndGroupCodeAndSemester(Integer userid,
+    List<Log> findLogsByUserIDAndSubjectIDAndGroupCodeAndSemester(Integer userid,
                                                                   String subjectId,
                                                                   String groupCode,
                                                                   int semester);
 
-    List<Log> findLogsByUserId(Integer userid);
+    List<Log> findLogsByUserID(Integer userid);
 
     List<Log> findLogsBySubjectIDAndGroupCodeAndSemester(String subjectId,
                                                          String groupCode,

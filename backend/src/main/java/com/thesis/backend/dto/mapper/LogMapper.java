@@ -21,12 +21,11 @@ public class LogMapper {
         return LogDto.builder()
                 .enrollmentDto(
                         EnrollmentDto.builder()
-                                .userId(log.getUserId())
+                                .userId(log.getUserID())
                                 .subjectIDDto(
                                         new SubjectIDDto(log.getSubjectID(),
                                                 log.getGroupCode(), log.getSemester()))
                                 .build())
-                .type(log.getType())
                 .timestamp(log.getTimestamp())
                 .build();
     }

@@ -1,23 +1,22 @@
 package com.thesis.backend.dto.request;
 
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
+import java.time.LocalDateTime;
+
 @Data
+@Builder
 @Accessors(chain = true)
-@AllArgsConstructor
-@NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class SubjectRegister {
-    private String semester;
-    private String groupCode;
+public class ScheduleRequest {
+    private Integer teacherID;
+    private Integer deviceID;
     private String subjectID;
-    private String teacherID;
+    private String groupCode;
+    private int semester;
     private String startTime;
     private String endTime;
-    private String deviceID;
 }

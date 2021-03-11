@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class StringUtil {
+public final class StringUtil {
     public static List<Integer> convertRawWeekScheduleToList(String weekString) {
         return Arrays.stream(weekString
                 .split("\\|", 0))

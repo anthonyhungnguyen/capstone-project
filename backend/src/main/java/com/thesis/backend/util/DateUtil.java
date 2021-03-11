@@ -1,18 +1,22 @@
 package com.thesis.backend.util;
 
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
+import java.time.*;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.WeekFields;
 import java.util.Date;
 import java.util.Locale;
 
-public class DateUtil {
+public final class DateUtil {
     public static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
     public static final String zoneId = "Asia/Ho_Chi_Minh";
+
+    public static LocalDateTime convertStringToLocalDateTime(String ldt) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        return LocalDateTime.parse(ldt, formatter);
+
+    }
 
     public static ZonedDateTime today() {
         return ZonedDateTime.now(ZoneId.of(zoneId));

@@ -55,14 +55,14 @@ CREATE TABLE enrollment(
 
 
 USE capstone;
-CREATE TABLE teacher_subject(
-    user_id INT NOT NULL,
+CREATE TABLE schedule(
+    id INT AUTO_INCREMENT,
+    teacher_id VARCHAR(10) NOT NULL,
+    device_id VARCHAR(10) NOT NULL,
     subject_id VARCHAR(15) NOT NULL,
     group_code VARCHAR(10) NOT NULL,
     semester INT NOT NULL,
-    start_time VARCHAR(10) NOT NULL,
-    end_time VARCHAR(10) NOT NULL,
-    PRIMARY KEY(user_id, subject_id, group_code, semester),
-    FOREIGN KEY(user_id) REFERENCES user(id) ON UPDATE CASCADE,
-    FOREIGN KEY(subject_id, group_code, semester) REFERENCES subject(id, group_code, semester) ON UPDATE CASCADE
+    start_time TIMESTAMP NOT NULL,
+    end_time TIMESTAMP NOT NULL,
+    PRIMARY KEY(id)
 );

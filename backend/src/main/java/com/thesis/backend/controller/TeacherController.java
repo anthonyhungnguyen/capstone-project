@@ -1,7 +1,7 @@
 package com.thesis.backend.controller;
 
-import com.thesis.backend.dto.request.SubjectRegister;
-import com.thesis.backend.service.TeacherService;
+import com.thesis.backend.dto.request.ScheduleRequest;
+import com.thesis.backend.service.AutomationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,15 +16,15 @@ import java.io.IOException;
 @RequestMapping(value = "/api/teacher")
 public class TeacherController {
 
-    private final TeacherService teacherService;
+    private final AutomationService teacherService;
 
     @Autowired
-    public TeacherController(TeacherService teacherService) {
+    public TeacherController(AutomationService teacherService) {
         this.teacherService = teacherService;
     }
 
     @PostMapping
-    public ResponseEntity<Boolean> register(@Valid @RequestBody SubjectRegister subjectRegister) throws IOException {
-        return ResponseEntity.ok(teacherService.registerIOTDevice(subjectRegister));
+    public ResponseEntity<Boolean> register(@Valid @RequestBody ScheduleRequest scheduleRequest) throws IOException {
+        return ResponseEntity.ok(teacherService.registerSchedule(scheduleRequest));
     }
 }

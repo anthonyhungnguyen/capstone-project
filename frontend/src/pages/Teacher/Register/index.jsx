@@ -1,4 +1,13 @@
-import { Button, Card, Checkbox, Form, Input, Select, TimePicker } from "antd"
+import {
+  Button,
+  Card,
+  Checkbox,
+  DatePicker,
+  Form,
+  Input,
+  Select,
+  TimePicker
+} from "antd"
 import { testPublishTopic } from "apis/register"
 import { findAllSubjects } from "apis/subject"
 import MainLayout from "layouts/MainLayout"
@@ -6,6 +15,7 @@ import React, { useEffect, useState } from "react"
 import { useSelector } from "react-redux"
 
 const { Option } = Select
+const { RangePicker } = DatePicker
 
 export default function TeacherRegister() {
   const [subjects, setSubjects] = useState(null)
@@ -28,8 +38,8 @@ export default function TeacherRegister() {
     const sentData = {
       ...values,
       teacherID: userid,
-      startTime: values.startEndTime[0].format("hh:mm"),
-      endTime: values.startEndTime[1].format("hh:mm")
+      startTime: values.startEndTime[0].format("YYYY-MM-DD HH:mm:ss"),
+      endTime: values.startEndTime[1].format("YYYY-MM-DD HH:mm:ss")
     }
     delete sentData["startEndTime"]
     testPublishTopic(sentData)
@@ -100,7 +110,7 @@ export default function TeacherRegister() {
               { required: true, message: "Please input start - end time!" }
             ]}
           >
-            <TimePicker.RangePicker order />
+            <RangePicker showTime />
           </Form.Item>
 
           <Form.Item
