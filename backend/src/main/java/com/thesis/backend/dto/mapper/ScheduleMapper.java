@@ -18,4 +18,17 @@ public class ScheduleMapper {
                 .endTime(Timestamp.valueOf(DateUtil.convertStringToLocalDateTime(request.getEndTime())))
                 .build();
     }
+
+    public static ScheduleRequest toDto(Schedule schedule) {
+        return ScheduleRequest.builder()
+                .id(schedule.getId())
+                .teacherID(schedule.getTeacherID())
+                .deviceID(schedule.getDeviceID())
+                .subjectID(schedule.getSubjectID())
+                .groupCode(schedule.getGroupCode())
+                .semester(schedule.getSemester())
+                .startTime(schedule.getStartTime().toLocalDateTime().toString())
+                .endTime(schedule.getEndTime().toLocalDateTime().toString())
+                .build();
+    }
 }

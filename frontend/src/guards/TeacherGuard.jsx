@@ -7,15 +7,14 @@ import { Redirect, Route } from "react-router"
 export default function TeacherGuard(children) {
   const { component: Component, ...rest } = children
   const { user } = useSelector(state => state.auth)
-  const { isLoggedIn, roles } = user
   return (
     <Route
       {...rest}
       render={props => {
         if (
-          !isLoggedIn &&
+          !user?.isLoggedIn &&
           !localStorage.getItem("user") &&
-          !roles.includes(ROLE.TEACHER)
+          !user?.roles.includes(ROLE.TEACHER)
         ) {
           return <Redirect to={PATH.COMMON.LANDING} />
         }

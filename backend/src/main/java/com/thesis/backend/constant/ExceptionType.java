@@ -4,7 +4,8 @@ public enum ExceptionType {
     ENTITY_NOT_FOUND("not.found"),
     DUPLICATE_ENTITY("duplicate"),
     ENTITY_EXCEPTION("exception"),
-    TIME_NOT_MATCH("time.not.match");
+    TIME_NOT_MATCH("time.not.match"),
+    OVERLAP("overlap");
 
     String value;
 

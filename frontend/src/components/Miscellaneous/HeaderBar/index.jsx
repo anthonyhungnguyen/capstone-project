@@ -46,6 +46,10 @@ export default function HeaderBar() {
     history.push(PATH.TEACHER.REGISTER)
   }
 
+  const onTeacherManage = () => {
+    history.push(PATH.TEACHER.MANAGE)
+  }
+
   const onFaceProfile = () => {
     history.push(PATH.STUDENT.FACE_PROFILE)
   }
@@ -149,6 +153,13 @@ export default function HeaderBar() {
                       onClick={onTeacherRegister}
                     >
                       Register
+                    </button>
+
+                    <button
+                      className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+                      onClick={onTeacherManage}
+                    >
+                      Manage
                     </button>
                   </>
                 )}

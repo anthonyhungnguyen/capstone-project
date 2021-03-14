@@ -4,5 +4,6 @@ public enum EntityType {
     USER,
     SUBJECT,
     ENROLLMENT,
-    ATTENDANCE
+    ATTENDANCE,
+    SCHEDULE
 }

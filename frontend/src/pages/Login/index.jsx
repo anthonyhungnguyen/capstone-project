@@ -15,12 +15,11 @@ function Login() {
   const history = useHistory()
   const { isLoggedIn } = useSelector(state => state.auth)
   const { message } = useSelector(state => state.message)
-
   const onSubmit = data => {
     dispatch(login(data))
       .then(() => {
         setLoading(false)
-        history.push(PATH.HOME)
+        history.push(PATH.COMMON.LANDING)
       })
       .catch(() => {
         setLoading(false)
@@ -41,7 +40,7 @@ function Login() {
       <div className="max-w-md w-full space-y-8">
         {fail ? (
           <p className="text-center text-md text-white bg-red-500 border border-gray-200 rounded-md p-2">
-            {message}
+            {message?.message}
           </p>
         ) : null}
         <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">

@@ -2,27 +2,14 @@ package com.thesis.backend.service;
 
 
 import com.thesis.backend.BackendApplication;
-import com.thesis.backend.dto.model.EnrollmentDto;
-import com.thesis.backend.dto.model.LogDto;
-import com.thesis.backend.dto.model.SubjectIDDto;
-import com.thesis.backend.exception.CustomException;
-import com.thesis.backend.model.Subject;
-import com.thesis.backend.model.User;
 import com.thesis.backend.repository.mongodb.LogRepository;
 import com.thesis.backend.repository.mysql.SubjectRepository;
-import com.thesis.backend.util.DateUtil;
-import org.junit.Before;
-import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.ArrayList;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = BackendApplication.class)
@@ -41,7 +28,7 @@ public class AttendanceServiceTest {
     private SubjectRepository subjectRepository;
 
     @Autowired
-    private AttendanceServiceImpl attendanceService;
+    private AttendanceService attendanceService;
 
 //    @Test
 //    public void testCheckAttendanceSuccess() {

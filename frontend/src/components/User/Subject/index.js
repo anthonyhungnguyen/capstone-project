@@ -1,6 +1,6 @@
 import { Button, Card, Select, Table } from "antd"
 import React, { useEffect, useState } from "react"
-import Axios from "axios"
+import { findAllSubjectsEnrolledByUser } from "apis/enrollment"
 
 const { Option } = Select
 
@@ -25,42 +25,11 @@ const columns = [
     key: "groupCode",
     width: 100
   },
-
   {
     title: "Semester",
     dataIndex: "semester",
     key: "semester",
     width: 100
-  },
-  {
-    title: "Week Day",
-    dataIndex: "weekDay",
-    key: "week_day",
-    width: 100
-  },
-  {
-    title: "Time Range",
-    dataIndex: "timeRange",
-    key: "timeRange",
-    width: 200
-  },
-  {
-    title: "Room",
-    dataIndex: "room",
-    key: "room",
-    width: 100
-  },
-  {
-    title: "Base",
-    dataIndex: "base",
-    key: "base",
-    width: 100
-  },
-  {
-    title: "Week Learn",
-    dataIndex: "weekLearn",
-    key: "weekLearn",
-    width: 300
   }
 ]
 
@@ -68,9 +37,7 @@ export default function Subject({ id }) {
   const [data, setData] = useState(null)
 
   useEffect(() => {
-    Axios.get(`api/query/user/${id}/${201}/enrollment`)
-      .then(response => setData(response.data))
-      .catch(console.err)
+    findAllSubjectsEnrolledByUser().then(setData)
   }, [id])
   return (
     <Card

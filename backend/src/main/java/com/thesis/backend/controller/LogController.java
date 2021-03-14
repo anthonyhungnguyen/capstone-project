@@ -1,8 +1,8 @@
 package com.thesis.backend.controller;
 
-import com.thesis.backend.dto.model.LogDto;
 import com.thesis.backend.dto.model.SubjectIDDto;
-import com.thesis.backend.service.LogServiceImpl;
+import com.thesis.backend.dto.request.AttendanceRequest;
+import com.thesis.backend.service.LogService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -18,10 +18,10 @@ import java.util.List;
 @RestController
 @RequestMapping(value = "/api/log")
 public class LogController {
-    private final LogServiceImpl logService;
+    private final LogService logService;
 
     @Autowired
-    public LogController(LogServiceImpl logService) {
+    public LogController(LogService logService) {
         this.logService = logService;
     }
 
@@ -32,7 +32,7 @@ public class LogController {
             @ApiResponse(responseCode = "404", description = "Fail")
     })
     @GetMapping("/user")
-    public ResponseEntity<List<LogDto>> queryBasedOnUserid(@RequestParam Integer userid) {
+    public ResponseEntity<List<AttendanceRequest>> queryBasedOnUserid(@RequestParam Integer userid) {
         return ResponseEntity.ok(logService.findAllLogsBasedOnUserId(userid));
     }
 
@@ -42,7 +42,7 @@ public class LogController {
             @ApiResponse(responseCode = "404", description = "Fail")
     })
     @GetMapping("/subject")
-    public ResponseEntity<List<LogDto>> queryBasedOnSubjectid(@RequestParam String subjectId,
+    public ResponseEntity<List<AttendanceRequest>> queryBasedOnSubjectid(@RequestParam String subjectId,
                                                               @RequestParam String groupCode,
                                                               @RequestParam int semester) {
         return ResponseEntity.ok(logService.findAllLogsBasedOnSubjectId(new SubjectIDDto(subjectId, groupCode, semester)));

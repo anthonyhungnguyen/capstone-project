@@ -8,6 +8,10 @@ import lombok.experimental.Accessors;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import java.sql.Time;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+
 @Document(collection = "attendance_log")
 @Data
 @Builder
@@ -19,7 +23,7 @@ public class Log {
     private Integer userID;
 
     @Field(value = "semester")
-    private int semester;
+    private Integer semester;
 
     @Field(value = "groupCode")
     private String groupCode;
@@ -28,13 +32,13 @@ public class Log {
     private String subjectID;
 
     @Field(value = "teacherID")
-    private String teacherID;
+    private Integer teacherID;
 
     @Field(value = "timestamp")
-    private String timestamp;
+    private LocalDateTime timestamp;
 
     @Field(value = "deviceID")
-    private String deviceID;
+    private Integer deviceID;
 
     @Field(value = "imgSrcBase64")
     private String imgSrcBase64;

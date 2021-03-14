@@ -30,7 +30,7 @@ public class Schedule {
     @Column(name = "subject_id")
     private String subjectID;
 
-    private int semester;
+    private Integer semester;
 
     @Column(name = "group_code")
     private String groupCode;

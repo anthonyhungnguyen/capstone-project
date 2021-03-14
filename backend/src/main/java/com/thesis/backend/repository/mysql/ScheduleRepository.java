@@ -12,4 +12,8 @@ import java.util.List;
 @Transactional
 public interface ScheduleRepository extends JpaRepository<Schedule, Integer> {
     List<Schedule> findByDeviceIDAndEndTimeAfterOrderByEndTime(Integer deviceID, Timestamp startTimeInsert);
+
+    List<Schedule> findByTeacherID(Integer teacherID);
+
+    Schedule findByDeviceIDAndStartTimeBeforeAndEndTimeAfter(Integer device, Timestamp timestamp, Timestamp timestamp1);
 }

@@ -10,5 +10,6 @@ export const API_PATH = {
   SUBJECT: API_ROOT + "/subject",
   USER: API_ROOT + "/user",
   ENROLL: API_ROOT + "/enroll",
-  TEACHER: API_ROOT + "/teacher"
+  TEACHER: API_ROOT + "/teacher",
+  TEACHER_SUBJECTS: API_ROOT + "/teacher/schedules"
 }

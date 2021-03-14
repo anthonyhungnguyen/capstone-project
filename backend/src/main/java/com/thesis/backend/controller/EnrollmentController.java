@@ -25,7 +25,7 @@ import java.util.List;
 @RequestMapping(value = "/api/enroll", produces = MediaType.APPLICATION_JSON_VALUE)
 @Tag(name = "Enrollment controller")
 @Slf4j
-public class EnrollmentController {
+public class    EnrollmentController {
     private final SubjectServiceImpl subjectServiceImpl;
     private final UserServiceImpl userServiceImpl;
     private final EnrollmentServiceImpl enrollmentServiceImpl;

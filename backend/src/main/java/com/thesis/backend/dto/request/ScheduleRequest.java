@@ -5,13 +5,12 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
-import java.time.LocalDateTime;
-
 @Data
 @Builder
 @Accessors(chain = true)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ScheduleRequest {
+    private Integer id;
     private Integer teacherID;
     private Integer deviceID;
     private String subjectID;

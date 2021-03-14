@@ -6,18 +6,19 @@ const COMMON = {
 }
 
 const STUDENT = {
-  HOME: "/home",
+  HOME: "/student/home",
   FACE_ENROLL: "/student/face_enroll",
   FACE_PROFILE: "/student/face_profile"
 }
 
 const TEACHER = {
-  HOME: "/home",
-  REGISTER: "/teacher/register"
+  HOME: "/teacher/home",
+  REGISTER: "/teacher/register",
+  MANAGE: "/teacher/manage"
 }
 
 const ADMIN = {
-  HOME: "/home"
+  HOME: "/admin/home"
 }
 
 const PATH = {
