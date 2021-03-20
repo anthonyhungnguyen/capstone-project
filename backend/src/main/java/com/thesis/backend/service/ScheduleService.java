@@ -45,12 +45,12 @@ public class ScheduleService {
     public Boolean registerSchedule(ScheduleRequest scheduleRequest) throws IOException {
         LocalDateTime startDateTimeLdt = DateUtil.convertStringToLocalDateTime(scheduleRequest.getStartTime());
         LocalDateTime endDateTimeLdt = DateUtil.convertStringToLocalDateTime(scheduleRequest.getEndTime());
-        if (!checkOverlap(scheduleRequest.getDeviceID(), startDateTimeLdt, endDateTimeLdt)) {
+        // if (!checkOverlap(scheduleRequest.getDeviceID(), startDateTimeLdt, endDateTimeLdt)) {
             Schedule schedule = ScheduleMapper.toModel(scheduleRequest);
             scheduleRepository.save(schedule);
             kafkaTemplate.send(SCHEDULE_TOPIC, schedule);
-        }
-        throw CustomException.throwException(EntityType.SCHEDULE, ExceptionType.OVERLAP);
+        //throw CustomException.throwException(EntityType.SCHEDULE, ExceptionType.OVERLAP);
+        return null;
     }
 
     public ScheduleRequest updateSchedule(ScheduleRequest request) {
