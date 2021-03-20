@@ -88,7 +88,6 @@ class MainWindow(QMainWindow):
             trackers = mAILIBS.TRACKER.update(final_faces, img_size)
             if len(trackers) > 0:
                 trackID = trackers[0][4]
-            print(CHECKED_LIST)
             if len(trackers) > 0:
                 if trackID not in CHECKED_LIST.keys():
                     extract_flag = True 
@@ -119,7 +118,9 @@ class MainWindow(QMainWindow):
                     print('Cleaning', int(
                         time()) - NAME_LIST[key]["latest_time"], len(dets))
                     del NAME_LIST[key]
-                    del CHECKED_LIST[trackID]
+                    CHECKED_LIST.clear()
+                    # for key in CHECKED_LIST.keys():
+                    #     del CHECKED_LIST[key]
                 else:
                     mAILIBS.LOGGER.info(
                         "dets:{}- time {}- NAME_LIST: {}".format(len(dets), str(int(time())), str(NAME_LIST)))
@@ -138,9 +139,10 @@ class MainWindow(QMainWindow):
 
             if flag:
                 self.ui.info_label.setText("")
+            print(CHECKED_LIST)
         else:
             self.ui.info_label.setText("")
-
+        
         frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         frame = cv2.resize(frame, SIZE)
 
