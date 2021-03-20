@@ -13,3 +13,17 @@ python3 test/apptest.py
 
 <!-- unofficial userspace V4L2 driver for the Raspberry Pi Camera Module -->
 uv4l --driver raspicam --auto-video_nr
+
+<!-- Fast API -->
+uvicorn main:app --reload
+
+https://realpython.com/python-sockets/
+
+
+<!-- Kafka -->
+systemctl daemon-reload
+sudo systemctl start zookeeper
+sudo systemctl start kafka
+sudo systemctl status kafka
+
+34.87.138.205
