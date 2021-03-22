@@ -10,6 +10,7 @@ import TeacherHomeRoute from "./Teacher/TeacherHomeRoute"
 import TeacherRegisterRoute from "./Teacher/TeacherHomeRegister"
 import TeacherManageRoute from "./Teacher/TeacherManageRoute"
 import StudentHomeRoute from "./Student/StudentHomeRoute"
+import StudentLogsRoute from "./Student/StudentLogsRoute"
 
 export default function Routes() {
   return (
@@ -19,6 +20,7 @@ export default function Routes() {
       <LandingRoute />
       <FaceEnrollRoute />
       <FaceProfileRoute />
+      <StudentLogsRoute />
       <ProfileRoute />
       <StudentHomeRoute />
       <TeacherHomeRoute />

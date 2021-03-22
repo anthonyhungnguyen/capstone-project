@@ -58,6 +58,10 @@ export default function HeaderBar() {
     history.push(PATH.COMMON.PROFILE)
   }
 
+  const onLogs = () => {
+    history.push(PATH.STUDENT.LOGS)
+  }
+
   const onToggleIsHidden = () => setIsHidden(old => !old)
 
   return (
@@ -137,6 +141,12 @@ export default function HeaderBar() {
                       onClick={onFaceEnroll}
                     >
                       Enroll
+                    </button>
+                    <button
+                      className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+                      onClick={onLogs}
+                    >
+                      Logs
                     </button>
                   </>
                 )}

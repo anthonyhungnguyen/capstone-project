@@ -12,8 +12,6 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
-import java.sql.Timestamp;
-import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -38,8 +36,9 @@ public class AttendanceService {
         this.kafkaTemplate = kafkaTemplate;
     }
 
-    @KafkaListener(topics = ATTENDANCE_TOPIC, groupId = GROUP_ID)
+    @KafkaListener(topics = ATTENDANCE_TOPIC, groupId = "None")
     public void receiveAttendance(String message) throws JsonProcessingException {
+        System.out.println(message);
         ObjectMapper objectMapper = new ObjectMapper();
         AttendanceRequest attendanceRequest = objectMapper.readValue(message, AttendanceRequest.class);
         String result = checkAttendanceUtil(attendanceRequest);
@@ -54,17 +53,15 @@ public class AttendanceService {
                 attendanceRequest.getGroupCode(),
                 attendanceRequest.getSemester()));
         Optional<Schedule> schedule = scheduleService.existScheduleRightNow(attendanceRequest.getDeviceID());
-        if (schedule.isPresent()) {
-            if (enrollmentService.checkDidEnrolled(userDto, subjectDto)) {
-                if (!hasChecked(attendanceRequest, schedule.get())) {
-                    logService.saveAttendance(attendanceRequest);
-                    return "Successfully";
-                }
-                return "You have checked attendance";
+
+        if (enrollmentService.checkDidEnrolled(userDto, subjectDto)) {
+            if (!hasChecked(attendanceRequest, schedule.get())) {
+                logService.saveAttendance(attendanceRequest);
+                return "Successfully";
             }
-            return "You are not belong to this class";
+            return "You have\n checked attendance";
         }
-        return "No class happens right now";
+        return "Unknown";
     }
 
     public boolean hasChecked(AttendanceRequest request, Schedule schedule) {

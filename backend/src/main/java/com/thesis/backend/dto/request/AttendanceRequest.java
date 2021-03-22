@@ -42,4 +42,7 @@ public class AttendanceRequest {
 
     @JsonProperty("teacherID")
     private Integer teacherID;
+
+    @JsonProperty("isMatched")
+    private Boolean isMatched;
 }

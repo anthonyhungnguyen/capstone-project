@@ -46,9 +46,9 @@ public class ScheduleService {
         LocalDateTime startDateTimeLdt = DateUtil.convertStringToLocalDateTime(scheduleRequest.getStartTime());
         LocalDateTime endDateTimeLdt = DateUtil.convertStringToLocalDateTime(scheduleRequest.getEndTime());
         // if (!checkOverlap(scheduleRequest.getDeviceID(), startDateTimeLdt, endDateTimeLdt)) {
-            Schedule schedule = ScheduleMapper.toModel(scheduleRequest);
-            scheduleRepository.save(schedule);
-            kafkaTemplate.send(SCHEDULE_TOPIC, schedule);
+        Schedule schedule = ScheduleMapper.toModel(scheduleRequest);
+        scheduleRepository.save(schedule);
+        kafkaTemplate.send(SCHEDULE_TOPIC, schedule);
         //throw CustomException.throwException(EntityType.SCHEDULE, ExceptionType.OVERLAP);
         return null;
     }
@@ -64,7 +64,6 @@ public class ScheduleService {
         }
         throw CustomException.throwException(EntityType.SCHEDULE, ExceptionType.ENTITY_EXCEPTION, String.valueOf(request.getId()));
     }
-
 
 
     public void deleteSchedule(ScheduleRequest request) {
@@ -85,6 +84,7 @@ public class ScheduleService {
 
     public Optional<Schedule> existScheduleRightNow(Integer deviceID) {
         Timestamp now = Timestamp.from(Instant.now());
+        System.out.println(now);
         Optional<Schedule> schedule = Optional.ofNullable(scheduleRepository.findByDeviceIDAndStartTimeBeforeAndEndTimeAfter(deviceID, now, now));
         return schedule;
     }

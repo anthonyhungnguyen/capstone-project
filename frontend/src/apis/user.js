@@ -11,7 +11,7 @@ export const loginApi = ({ username, password }) =>
         resolve(response.data)
       })
       .catch(error => {
-        reject(error.response.data)
+        reject(error)
       })
   })
 
@@ -23,7 +23,7 @@ export const logoutApi = () =>
         resolve(response.data)
       })
       .catch(error => {
-        reject(error.response.data)
+        reject(error)
       })
   })
 
@@ -35,6 +35,6 @@ export const signUpApi = ({ id, username, password }) =>
         resolve(response.data)
       })
       .catch(error => {
-        reject(error.response.data)
+        reject(error)
       })
   })

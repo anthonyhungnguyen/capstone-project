@@ -1,5 +1,5 @@
-const API_ROOT = "http://localhost:8080/api"
-const API_FACE = "http://localhost:5000/api"
+const API_ROOT = "/api"
+const API_FACE = "/api"
 
 export const API_PATH = {
   LOGIN: API_ROOT + "/auth/login",
@@ -11,5 +11,6 @@ export const API_PATH = {
   USER: API_ROOT + "/user",
   ENROLL: API_ROOT + "/enroll",
   TEACHER: API_ROOT + "/teacher",
-  TEACHER_SUBJECTS: API_ROOT + "/teacher/schedules"
+  TEACHER_SUBJECTS: API_ROOT + "/teacher/schedules",
+  LOGS: API_ROOT + "/log/user"
 }
