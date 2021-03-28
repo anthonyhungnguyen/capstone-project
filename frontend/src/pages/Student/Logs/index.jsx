@@ -1,15 +1,7 @@
-import PieChart from "components/Chart/PieChart"
-import BarChart from "components/Chart/BarChart"
-import Logs from "components/Logs"
 import MainLayout from "layouts/MainLayout"
 import React, { useEffect, useState } from "react"
-import { Divider } from "antd"
-import SemesterSelect from "components/Filter/SemesterSelect"
-import DateRangePicker from "components/Filter/DateRangePicker"
 import { useSelector } from "react-redux"
-import Subject from "components/User/Subject"
 import { fetchLogs } from "apis/attendance"
-import { PushpinOutlined } from "@ant-design/icons"
 
 export default function StudentLogs() {
   const [data, setData] = useState(null)

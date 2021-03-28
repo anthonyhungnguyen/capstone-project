@@ -42,7 +42,7 @@ public class AttendanceService {
         ObjectMapper objectMapper = new ObjectMapper();
         AttendanceRequest attendanceRequest = objectMapper.readValue(message, AttendanceRequest.class);
         String result = checkAttendanceUtil(attendanceRequest);
-        String ATTENDANCE_RESULT_TOPIC = "attendance_result";
+        String ATTENDANCE_RESULT_TOPIC = "result";
         kafkaTemplate.send(ATTENDANCE_RESULT_TOPIC, result);
     }
 
@@ -59,7 +59,7 @@ public class AttendanceService {
                 logService.saveAttendance(attendanceRequest);
                 return "Successfully";
             }
-            return "You have\n checked attendance";
+            return "Exists ";
         }
         return "Unknown";
     }

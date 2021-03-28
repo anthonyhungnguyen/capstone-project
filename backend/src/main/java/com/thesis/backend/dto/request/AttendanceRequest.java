@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 import java.sql.Timestamp;
+import java.util.Hashtable;
 
 @Data
 @Accessors(chain = true)
@@ -45,4 +46,5 @@ public class AttendanceRequest {
 
     @JsonProperty("isMatched")
     private Boolean isMatched;
+
 }
