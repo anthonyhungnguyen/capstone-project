@@ -1,10 +1,10 @@
 import axios from "axios"
 import { API_PATH } from "../constants/api"
-export const loginApi = ({ username, password }) =>
+export const loginApi = ({ userid, password }) =>
   new Promise((resolve, reject) => {
     axios
       .post(API_PATH.LOGIN, {
-        username,
+        userid,
         password
       })
       .then(response => {
@@ -27,10 +27,10 @@ export const logoutApi = () =>
       })
   })
 
-export const signUpApi = ({ id, username, password }) =>
+export const signUpApi = ({ id, userid, password }) =>
   new Promise((resolve, reject) => {
     axios
-      .post(API_PATH.SIGNUP, { id, username, password })
+      .post(API_PATH.SIGNUP, { id, userid, password })
       .then(response => {
         resolve(response.data)
       })

@@ -26,12 +26,12 @@ public class FaceController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Face>> getFaces(@RequestParam("username") Integer username) {
-        return ResponseEntity.ok(faceService.findAllFacesByUserId(username));
+    public ResponseEntity<List<Face>> getFaces(@RequestParam("userid") Integer userid) {
+        return ResponseEntity.ok(faceService.findAllFacesByUserId(userid));
     }
 
     @PostMapping
-    public ResponseEntity<Boolean> saveCroppedPhoto(@RequestParam("username") Integer userid,
+    public ResponseEntity<Boolean> saveCroppedPhoto(@RequestParam("userid") Integer userid,
                                                     @RequestParam("image") MultipartFile multipartFile) throws IOException {
         return ResponseEntity.ok(faceService.saveFace(userid, multipartFile));
     }

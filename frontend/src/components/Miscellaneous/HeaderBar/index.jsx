@@ -17,7 +17,7 @@ export default function HeaderBar() {
   const { pathname } = location
   const { userid, roles } = user
 
-  // Check whether username exists in store
+  // Check whether userid exists in store
   // If yes, render Home navbar
   // If no, render Login/SignUp navbar
 

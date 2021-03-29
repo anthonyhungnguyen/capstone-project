@@ -11,11 +11,11 @@ import Subject from "components/User/Subject"
 
 export default function Home() {
   const { user } = useSelector(state => state.auth)
-  const { username } = user
+  const { userid } = user
   return (
     <MainLayout>
       <div className="flex justify-around">
-        <div className="w-1/2 font-semibold text-lg">Hi, {username}</div>
+        <div className="w-1/2 font-semibold text-lg">Hi, {userid}</div>
         <div className="w-1/2 space-x-10">
           <SemesterSelect />
           <DateRangePicker />

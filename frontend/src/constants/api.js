@@ -1,5 +1,5 @@
 const API_ROOT = "/api"
-const API_FACE = "/api"
+const API_FACE = "/face"
 
 export const API_PATH = {
   LOGIN: API_ROOT + "/auth/login",

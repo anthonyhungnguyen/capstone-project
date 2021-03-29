@@ -58,26 +58,26 @@ function Login() {
         <div className="bg-white p-8 shadow-lg rounded-md border">
           <form className="space-y-8" onSubmit={handleSubmit(onSubmit)}>
             <div>
-              <label htmlFor="username" className="sr-only">
+              <label htmlFor="userid" className="sr-only">
                 ID
               </label>
 
               <input
-                id="username"
-                name="username"
+                id="userid"
+                name="userid"
                 type="text"
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                placeholder="Username"
+                placeholder="userid"
                 ref={register({
-                  required: "You must specify username",
+                  required: "You must specify userid",
                   pattern: {
                     value: /^[0-9]+$/i,
-                    message: "Username must be number"
+                    message: "userid must be number"
                   }
                 })}
               />
               <p className="text-sm font-medium text-red-400  ml-2 mt-2">
-                {errors.username?.message}
+                {errors.userid?.message}
               </p>
             </div>
             <div>

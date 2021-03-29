@@ -6,13 +6,13 @@ import { useDispatch, useSelector } from "react-redux"
 import { clean } from "slices/faceEnroll"
 
 export default function Save({ setCurrent }) {
-  const { username } = useSelector(state => state.auth.user)
+  const { userid } = useSelector(state => state.auth.user)
   const { croppedFace } = useSelector(state => state.faceEnroll)
   const dispatch = useDispatch()
 
   const onSave = () => {
     imgSrcToBlob(croppedFace).then(blob => {
-      saveFace({ username, blob }).then(response => {
+      saveFace({ userid, blob }).then(response => {
         dispatch(clean())
         setCurrent(0)
       })

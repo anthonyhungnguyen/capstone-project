@@ -8,14 +8,14 @@ export default function UserSubjects() {
   const [data, setData] = useState(null)
   const [error, setError] = useState(null)
   const { user } = useSelector(state => state.auth)
-  const { username } = user
+  const { userid } = user
   useEffect(() => {
     const preprocessRawEnrollments = data => {
       const { id, groupCode, semester } = data?.subjectIDDto
       delete data["subjectIDDto"]
       return { ...data, id, groupCode, semester }
     }
-    findAllSubjectsEnrolledByUser(username)
+    findAllSubjectsEnrolledByUser(userid)
       .then(data => {
         setData(data.map(d => preprocessRawEnrollments(d)))
       })

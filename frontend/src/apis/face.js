@@ -16,7 +16,7 @@ export const cropFaceApi = photo => {
   })
 }
 
-export const saveFace = ({ username, blob }) => {
+export const saveFace = ({ userid, blob }) => {
   return new Promise((resolve, reject) => {
     const formData = new FormData()
     formData.append("image", blob)
@@ -26,7 +26,7 @@ export const saveFace = ({ username, blob }) => {
           "content-type": "multipart/form-data",
           ...authHeader()
         },
-        params: { username }
+        params: { userid }
       })
       .then(response => {
         resolve(response.data)
@@ -37,7 +37,7 @@ export const saveFace = ({ username, blob }) => {
   })
 }
 
-export const getFaces = username => {
+export const getFaces = userid => {
   return new Promise((resolve, reject) => {
     axios
       .get(API_PATH.ROOT_FACE, {
@@ -45,7 +45,7 @@ export const getFaces = username => {
           ...authHeader()
         },
         params: {
-          username
+          userid
         }
       })
       .then(response => {
