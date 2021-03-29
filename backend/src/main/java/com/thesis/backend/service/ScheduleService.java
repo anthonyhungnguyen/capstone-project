@@ -48,7 +48,8 @@ public class ScheduleService {
         // if (!checkOverlap(scheduleRequest.getDeviceID(), startDateTimeLdt, endDateTimeLdt)) {
         Schedule schedule = ScheduleMapper.toModel(scheduleRequest);
         scheduleRepository.save(schedule);
-        kafkaTemplate.send(SCHEDULE_TOPIC, schedule);
+        scheduleRequest.setId(schedule.getId());
+        kafkaTemplate.send(SCHEDULE_TOPIC, scheduleRequest);
         //throw CustomException.throwException(EntityType.SCHEDULE, ExceptionType.OVERLAP);
         return null;
     }
