@@ -13,7 +13,7 @@ public final class DateUtil {
     public static final String zoneId = "Asia/Ho_Chi_Minh";
 
     public static LocalDateTime convertStringToLocalDateTime(String ldt) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(ZoneId.of(zoneId));
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         return LocalDateTime.parse(ldt, formatter);
 
     }
