@@ -16,6 +16,9 @@ import org.springframework.data.mongodb.core.mapping.Field;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Face {
+    @Field(value = "_id")
+    private String id;
+
     @Field(value = "userId")
     private Integer userId;
 
@@ -27,4 +30,10 @@ public class Face {
 
     @Field(value = "timestamp")
     private String timestamp;
+
+    @Field(value = "isAugmented")
+    private Boolean isAugmented;
+
+    @Field(value = "augmentSource")
+    private String source;
 }
