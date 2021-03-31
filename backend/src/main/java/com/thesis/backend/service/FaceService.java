@@ -8,8 +8,8 @@ import com.thesis.backend.repository.mongodb.FaceRepository;
 import com.thesis.backend.util.DateUtil;
 import lombok.Data;
 import okhttp3.*;
-import org.bson.BsonBinarySubType;
-import org.bson.types.Binary;
+import org.apache.tomcat.util.codec.binary.Base64;
+import org.apache.tomcat.util.codec.binary.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -19,7 +19,7 @@ import java.util.List;
 
 @Service
 public class FaceService {
-    private final String faceAPI = "http://localhost:5000";
+    private final String faceAPI = "http://localhost:5000/face/augment";
     private final FaceRepository faceRepository;
 
     @Data
@@ -46,10 +46,17 @@ public class FaceService {
         return faceRepository.findAllByUserId(username);
     }
 
+    public String multipartFileToBase64(byte[] imageByteArray) {
+        StringBuilder sb = new StringBuilder();
+//        sb.append("data:image/png;base64,");
+        sb.append(StringUtils.newStringUtf8(Base64.encodeBase64(imageByteArray, false)));
+        return sb.toString();
+    }
+
     public Boolean saveFace(Integer userid, MultipartFile multipartFile) throws IOException {
         Face face = Face.builder()
                 .userId(userid)
-                .photo(new Binary(BsonBinarySubType.BINARY, multipartFile.getBytes()))
+                .photo(multipartFileToBase64(multipartFile.getBytes()))
                 .timestamp(DateUtil.today().toString())
                 .status("Not verified")
                 .build();
@@ -57,24 +64,31 @@ public class FaceService {
 
         List<String> augmentFaceArray = augmentFace(savedFace);
         augmentFaceArray.forEach(l -> {
-            System.out.println(l);
+            Face augmentFace = Face.builder()
+                    .userId(face.getUserId())
+                    .timestamp(DateUtil.today().toString())
+                    .status("Not verified")
+                    .isAugmented(true)
+                    .photo(l)
+                    .source(face.getPhoto())
+                    .build();
+            Face augmentFaceSaved = faceRepository.save(augmentFace);
+            System.out.println("saved");
+//            System.out.println(l);
         });
         return true;
     }
 
     private List<String> augmentFace(Face savedFace) throws IOException {
-        RequestBody requestBody = new FormBody.Builder()
-                .add("faceImage", savedFace.getPhoto().toString())
-                .build();
+        String json = String.format("{\"faceImage\":\"%s\"}", savedFace.getPhoto());
+        RequestBody body = RequestBody.create(MediaType.parse("application/json"), json);
         Request request = new Request.Builder()
                 .url(faceAPI)
-                .post(requestBody)
+                .post(body)
                 .build();
-
-        Response response = client.newCall(request).execute();
-
-        AugmentFaceResponse response1 = gson.fromJson(response.body().toString(), AugmentFaceResponse.class);
-
-        return response1.getAugmentFaceArray();
+        try (Response response = client.newCall(request).execute()) {
+            AugmentFaceResponse response1 = gson.fromJson(response.body().string(), AugmentFaceResponse.class);
+            return response1.getAugmentFaceArray();
+        }
     }
 }
