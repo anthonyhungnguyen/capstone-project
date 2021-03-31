@@ -23,7 +23,7 @@ public class Face {
     private Integer userId;
 
     @Field(value = "photo")
-    private Binary photo;
+    private String photo;
 
     @Field(value = "status")
     private String status;
