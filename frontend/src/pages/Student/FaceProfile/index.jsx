@@ -19,7 +19,7 @@ export default function FaceProfile() {
     }
     const processResponse = data => {
       return data.map(d => ({
-        base64: `data:image/jpeg;base64,${d.photo.data}`,
+        base64: `data:image/jpeg;base64,${d.photo}`,
         timestamp: splitTimestamp(d.timestamp),
         status: d.status
       }))
