@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -84,8 +85,7 @@ public class ScheduleService {
     }
 
     public Optional<Schedule> existScheduleRightNow(Integer deviceID) {
-        Timestamp now = Timestamp.from(Instant.now());
-        System.out.println(now);
+        Timestamp now = Timestamp.from(Instant.now().plus(7, ChronoUnit.HOURS));
         Optional<Schedule> schedule = Optional.ofNullable(scheduleRepository.findByDeviceIDAndStartTimeBeforeAndEndTimeAfter(deviceID, now, now));
         return schedule;
     }
