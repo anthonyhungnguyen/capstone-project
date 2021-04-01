@@ -11,6 +11,7 @@ import okhttp3.*;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.apache.tomcat.util.codec.binary.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -21,12 +22,16 @@ import java.util.List;
 public class FaceService {
     private final String faceAPI = "http://localhost:5000/face/augment";
     private final FaceRepository faceRepository;
+    private final String REGISTER_TOPIC = "register";
 
     @Data
     public class AugmentFaceResponse {
         @JsonProperty("augmentFaceArray")
         private List<String> augmentFaceArray;
     }
+
+    @Autowired
+    private KafkaTemplate<String, Object> kafkaTemplate;
 
     @Autowired
     private OkHttpClient client;
@@ -61,6 +66,7 @@ public class FaceService {
                 .status("Not verified")
                 .build();
         Face savedFace = faceRepository.save(face);
+        kafkaTemplate.send(REGISTER_TOPIC, savedFace);
 
         List<String> augmentFaceArray = augmentFace(savedFace);
         augmentFaceArray.forEach(l -> {
@@ -73,7 +79,8 @@ public class FaceService {
                     .source(face.getPhoto())
                     .build();
             Face augmentFaceSaved = faceRepository.save(augmentFace);
-            System.out.println("saved");
+            kafkaTemplate.send(REGISTER_TOPIC, augmentFaceSaved);
+//            System.out.println("saved");
 //            System.out.println(l);
         });
         return true;
