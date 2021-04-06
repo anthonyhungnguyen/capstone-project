@@ -38,7 +38,6 @@ public class AttendanceService {
 
     @KafkaListener(topics = ATTENDANCE_TOPIC, groupId = "None")
     public void receiveAttendance(String message) throws JsonProcessingException {
-        System.out.println(message);
         ObjectMapper objectMapper = new ObjectMapper();
         AttendanceRequest attendanceRequest = objectMapper.readValue(message, AttendanceRequest.class);
         String result = checkAttendanceUtil(attendanceRequest);

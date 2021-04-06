@@ -1,7 +1,7 @@
 {
   "name": "frontend",
   "version": "0.1.0",
-  "proxy": "http://34.87.104.34",
+  "proxy": "http://localhost",
   "private": true,
   "dependencies": {
     "@ant-design/icons": "^4.5.0",
