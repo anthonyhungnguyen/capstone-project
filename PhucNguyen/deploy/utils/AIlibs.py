@@ -3,7 +3,6 @@ import cv2
 
 from __init__ import PYTHON_PATH
 from ailibs.detector.dlib.FaceDetector import FaceDetector
-from ailibs.tracker.Kalman.FaceTracker import FaceTracker
 from ailibs.extractor.facenet.FaceExtractor import FaceExtractor
 from ailibs.classifier.siamese.FaceClassifier import FaceClassifier
 from utils.LogFCI import setup_logger
@@ -29,7 +28,6 @@ LOG_TIME = True
 
 class AILIBS:
     DETECTOR = FaceDetector(log=LOG_TIME)
-    TRACKER = FaceTracker(max_age=50, log=LOG_TIME)
     EXTRACTOR = FaceExtractor(shape_predictor=shape_predictor_path,
                               model=model_path, model_weight=weight_path, log=LOG_TIME)
     CLASSIFIER = FaceClassifier(feature=feature_path, log=LOG_TIME)
