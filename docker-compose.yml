@@ -95,6 +95,16 @@ services:
         volumes:
             - ./crop-face-server:/crop-face-server
 
+    faiss-server:
+        container_name: capstone_faiss
+        build: ./faiss_server
+        expose:
+            - 6000
+        ports:
+            - 6000:6000
+        volumes:
+            - ./faiss_server:/faiss-server
+
     nginx:
         image: nginx:latest
         container_name: capstone_nginx
