@@ -33,30 +33,30 @@
 #             full_msg = b""
 
 
-import socket
-#!/usr/bin/env python3
-
-
-HOST = '172.16.0.105'  # The server's hostname or IP address
-PORT = 65432        # The port used by the server
-
-with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-    s.connect((HOST, PORT))
-    s.sendall(b'Hello, world')
-    data = s.recv(1024)
-
-print('Received', repr(data))
-
 #!/usr/bin/env python3
 
 # import socket
 
-# HOST = '172.16.0.105'  # The server's hostname or IP address
+# HOST = '192.168.1.6'  # The server's hostname or IP address
 # PORT = 65432        # The port used by the server
 
 # with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
 #     s.connect((HOST, PORT))
-#     while True:
-#         data = s.recv(1024)
-#         if data:
-#             print('Received', repr(data))
+#     s.sendall(b'Hello, world')
+#     data = s.recv(1024)
+
+# print('Received', repr(data))
+
+#!/usr/bin/env python3
+
+import socket
+
+HOST = '192.168.1.6'  # The server's hostname or IP address
+PORT = 65432        # The port used by the server
+
+with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+    s.connect((HOST, PORT))
+    while True:
+        data = s.recv(1024)
+        if data:
+            print('Received', repr(data))

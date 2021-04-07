@@ -1,5 +1,4 @@
 import __init__
-
 # PyQt5 libs
 from PyQt5.QtWidgets import QApplication, QWidget, QMainWindow, QFileDialog, QMessageBox
 from PyQt5.QtGui import QImage, QPixmap
@@ -8,18 +7,16 @@ from PyQt5.QtCore import QTimer, Qt, QUrl
 # GUI of register app
 from UI.ui import *
 
-
 # import libs
-from time import time, localtime, strftime
-import imutils
-import numpy as np
-import dlib
-import sys
 import cv2
+import sys
+import dlib
+import numpy as np
+import imutils
+from time import time, localtime, strftime
 
 # import utils libs
 from utils.AIlibs import AILIBS
-
 
 mAILIBS = AILIBS
 
