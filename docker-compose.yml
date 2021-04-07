@@ -62,6 +62,7 @@ services:
 
     frontend:
         container_name: capstone_frontend
+        command: yarn start
         build: ./frontend
         expose:
             - 3000
@@ -93,6 +94,16 @@ services:
             - 5000:5000
         volumes:
             - ./crop-face-server:/crop-face-server
+
+    faiss-server:
+        container_name: capstone_faiss
+        build: ./faiss_server
+        expose:
+            - 6000
+        ports:
+            - 6000:6000
+        volumes:
+            - ./faiss_server:/faiss-server
 
     nginx:
         image: nginx:latest
