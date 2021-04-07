@@ -11,6 +11,7 @@ import lombok.experimental.Accessors;
 
 import java.sql.Timestamp;
 import java.util.Hashtable;
+import java.util.List;
 
 @Data
 @Accessors(chain = true)
@@ -34,6 +35,9 @@ public class AttendanceRequest {
 
     @JsonProperty("timestamp")
     private String timestamp;
+
+    @JsonProperty("feature")
+    private List<List<Float>> feature;
 
     @JsonProperty("deviceID")
     private Integer deviceID;

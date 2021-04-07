@@ -12,7 +12,9 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -42,7 +44,13 @@ public class AttendanceService {
         AttendanceRequest attendanceRequest = objectMapper.readValue(message, AttendanceRequest.class);
         String result = checkAttendanceUtil(attendanceRequest);
         String ATTENDANCE_RESULT_TOPIC = "result";
+        String FAISS_TOPIC = "checkin";
         kafkaTemplate.send(ATTENDANCE_RESULT_TOPIC, result);
+
+        Map<String, Object> checkinResult = new HashMap<>();
+        checkinResult.put("name", attendanceRequest.getUserID());
+        checkinResult.put("feature", attendanceRequest.getFeature());
+        kafkaTemplate.send(FAISS_TOPIC, checkinResult);
     }
 
 
