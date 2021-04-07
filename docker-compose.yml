@@ -50,40 +50,40 @@ services:
         depends_on:
             - zookeeper
 
-    # zookeeper:
-    #     container_name: capstone_zookeeper
-    #     image: bitnami/zookeeper:latest
-    #     volumes:
-    #         - zookeeper-volume:/bitnami/zookeeper
-    #     ports:
-    #         - "2181:2181"
-    #     environment:
-    #         - ALLOW_ANONYMOUS_LOGIN=yes
+    zookeeper:
+        container_name: capstone_zookeeper
+        image: bitnami/zookeeper:latest
+        volumes:
+            - zookeeper-volume:/bitnami/zookeeper
+        ports:
+            - "2181:2181"
+        environment:
+            - ALLOW_ANONYMOUS_LOGIN=yes
 
-    # frontend:
-    #     container_name: capstone_frontend
-    #     command: yarn start
-    #     build: ./frontend
-    #     expose:
-    #         - 3000
-    #     ports:
-    #         - 3000:3000
-    #     volumes:
-    #         - ./frontend:/frontend
+    frontend:
+        container_name: capstone_frontend
+        command: yarn start
+        build: ./frontend
+        expose:
+            - 3000
+        ports:
+            - 3000:3000
+        volumes:
+            - ./frontend:/frontend
 
-    # backend:
-    #     container_name: capstone_backend
-    #     build: ./backend
-    #     expose:
-    #         - 8080
-    #     ports:
-    #         - 8080:8080
-    #     volumes:
-    #         - ./backend:/backend
-    #     depends_on:
-    #         - mongo
-    #         - mysql
-    #         - kafka
+    backend:
+        container_name: capstone_backend
+        build: ./backend
+        expose:
+            - 8080
+        ports:
+            - 8080:8080
+        volumes:
+            - ./backend:/backend
+        depends_on:
+            - mongo
+            - mysql
+            - kafka
 
     crop-face-server:
         container_name: capstone_crop
@@ -105,20 +105,20 @@ services:
         volumes:
             - ./faiss_server:/faiss-server
 
-    # nginx:
-    #     image: nginx:latest
-    #     container_name: capstone_nginx
-    #     restart: unless-stopped
-    #     tty: true
-    #     ports:
-    #         - "80:80"
-    #         - "443:443"
-    #     volumes:
-    #         - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
-    #     depends_on:
-    #         - frontend
-    #         - crop-face-server
-    #         - backend
+    nginx:
+        image: nginx:latest
+        container_name: capstone_nginx
+        restart: unless-stopped
+        tty: true
+        ports:
+            - "80:80"
+            - "443:443"
+        volumes:
+            - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+        depends_on:
+            - frontend
+            - crop-face-server
+            - backend
 
 volumes:
     mysql-volume:

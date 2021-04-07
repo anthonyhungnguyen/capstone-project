@@ -20,7 +20,9 @@ import java.util.Optional;
 @Service
 public class AttendanceService {
     private final String ATTENDANCE_TOPIC = "attendance";
-    private final String GROUP_ID = "group-id";
+    private final String ATTENDANCE_RESULT_TOPIC = "result";
+    private final String ONLINE_LEARNING = "checkin";
+    private final String GROUP_ID = "None";
     private final EnrollmentServiceImpl enrollmentService;
     private final UserServiceImpl userService;
     private final SubjectServiceImpl subjectService;
@@ -38,19 +40,18 @@ public class AttendanceService {
         this.kafkaTemplate = kafkaTemplate;
     }
 
-    @KafkaListener(topics = ATTENDANCE_TOPIC, groupId = "None")
+    @KafkaListener(topics = ATTENDANCE_TOPIC, groupId = GROUP_ID)
     public void receiveAttendance(String message) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
         AttendanceRequest attendanceRequest = objectMapper.readValue(message, AttendanceRequest.class);
         String result = checkAttendanceUtil(attendanceRequest);
-        String ATTENDANCE_RESULT_TOPIC = "result";
-        String FAISS_TOPIC = "checkin";
         kafkaTemplate.send(ATTENDANCE_RESULT_TOPIC, result);
-
-        Map<String, Object> checkinResult = new HashMap<>();
-        checkinResult.put("name", attendanceRequest.getUserID());
-        checkinResult.put("feature", attendanceRequest.getFeature());
-        kafkaTemplate.send(FAISS_TOPIC, checkinResult);
+        if (result.equals("Successfully")) {
+            Map<String, Object> checkinResult = new HashMap<>();
+            checkinResult.put("name", attendanceRequest.getUserID());
+            checkinResult.put("feature", attendanceRequest.getFeature());
+            kafkaTemplate.send(ONLINE_LEARNING, checkinResult);
+        }
     }
 
 

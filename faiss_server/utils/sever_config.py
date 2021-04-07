@@ -15,7 +15,7 @@ import pytz
 from time import time
 import numpy as np
 
-BOOTSTRAP_SERVER = "34.87.108.34:9092"
+BOOTSTRAP_SERVER = "34.87.104.34:9092"
 GROUP = "None"
 TOPIC_REGISTER = ["register"]
 TOPIC_CHECKIN = ["checkin"]
@@ -26,29 +26,32 @@ VECTOR = "vector"
 INDEX = "index"
 THRESHOLD = "threshold"
 conf_consumer = {'bootstrap.servers': BOOTSTRAP_SERVER, 'group.id': GROUP, 'session.timeout.ms': 6000,
-                'auto.offset.reset': 'smallest'}
+                 'auto.offset.reset': 'smallest'}
 conf_producer = {'bootstrap.servers': BOOTSTRAP_SERVER}
 
 
 def stats_cb(stats_json_str):
-        stats_json = json.loads(stats_json_str)
-        print('\nKAFKA Stats: {}\n'.format(pformat(stats_json)))
+    stats_json = json.loads(stats_json_str)
+    print('\nKAFKA Stats: {}\n'.format(pformat(stats_json)))
+
 
 def get_time():
     return int(time()*1000)
+
 
 def delivery_callback(err, msg):
     if err:
         sys.stderr.write('%% Message failed delivery: %s\n' % err)
     else:
         sys.stderr.write('%% Message delivered to %s [%d] @ %d\n' %
-                            (msg.topic(), msg.partition(), msg.offset()))
+                         (msg.topic(), msg.partition(), msg.offset()))
+
 
 class config():
-    consumer_register = None 
+    consumer_register = None
     consumer_checkin = None
     producer_data = None
-    
+
     def __init__(self, **kwargs):
         """
         Constructor.
@@ -73,8 +76,10 @@ class config():
             print('Assignment:', partitions)
 
         # Subscribe to topics
-        config.consumer_register.subscribe(TOPIC_REGISTER, on_assign=print_assignment)
-        config.consumer_checkin.subscribe(TOPIC_CHECKIN, on_assign=print_assignment)
+        config.consumer_register.subscribe(
+            TOPIC_REGISTER, on_assign=print_assignment)
+        config.consumer_checkin.subscribe(
+            TOPIC_CHECKIN, on_assign=print_assignment)
 
     def register(self):
         # Read messages from Kafka, print to stdout
@@ -86,8 +91,8 @@ class config():
         else:
             # Proper message
             sys.stderr.write('%% %s [%d] at offset %d with key %s:\n' %
-                            (msg.topic(), msg.partition(), msg.offset(),
-                            str(msg.key())))
+                             (msg.topic(), msg.partition(), msg.offset(),
+                              str(msg.key())))
             print("*** GET IMAGE SUCCESS ***")
             my_json = msg.value().decode('utf8').replace("'", '"')
             data = json.loads(my_json)
@@ -103,8 +108,8 @@ class config():
         else:
             # Proper message
             sys.stderr.write('%% %s [%d] at offset %d with key %s:\n' %
-                            (msg.topic(), msg.partition(), msg.offset(),
-                            str(msg.key())))
+                             (msg.topic(), msg.partition(), msg.offset(),
+                              str(msg.key())))
             print("*** GET VECTOR SUCCESS ***")
             my_json = msg.value().decode('utf8').replace("'", '"')
             data = json.loads(my_json)
@@ -125,10 +130,13 @@ class config():
             for i_, x_ in enumerate(vector):
                 x_ = np.array(x_).astype(np.float32)
                 if (y[i] != y[i_]):
-                    min_thresh = max(min_thresh, np.linalg.norm(x.reshape(1, 128)-x_.reshape(1, 128))**2)
+                    min_thresh = max(min_thresh, np.linalg.norm(
+                        x.reshape(1, 128)-x_.reshape(1, 128))**2)
                 else:
-                    max_thresh_same_label = max(max_thresh_same_label, np.linalg.norm(x.reshape(1, 128) - x_.reshape(1, 128)) ** 2)
-            harmonic = 2*(min_thresh+max_thresh_same_label)/(min_thresh+max_thresh_same_label)
+                    max_thresh_same_label = max(max_thresh_same_label, np.linalg.norm(
+                        x.reshape(1, 128) - x_.reshape(1, 128)) ** 2)
+            harmonic = 2*(min_thresh+max_thresh_same_label) / \
+                (min_thresh+max_thresh_same_label)
             if harmonic < 30:
                 threshold.append((min_thresh+max_thresh_same_label)/4)
             else:
@@ -136,7 +144,9 @@ class config():
         print(threshold)
         log = {VECTOR: vector, INDEX: y, THRESHOLD: threshold}
         msg = json.dumps(log)
-        config.producer_data.produce(TOPIC_DATA, msg, callback=delivery_callback)
+        config.producer_data.produce(
+            TOPIC_DATA, msg, callback=delivery_callback)
         config.producer_data.poll(0)
-        sys.stderr.write('%% Waiting for %d deliveries\n' % len(config.producer_data))
+        sys.stderr.write('%% Waiting for %d deliveries\n' %
+                         len(config.producer_data))
         config.producer_data.flush()
