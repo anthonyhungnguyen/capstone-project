@@ -1,11 +1,10 @@
-FROM python:3.7
+FROM capstone-project_crop-face-server:latest
 
 WORKDIR /faiss-server
 
-RUN apt-get update && apt-get install -y python3-opencv
+RUN apt-get update && apt-get install -y libomp-dev
 
-RUN pip install opencv-python numpy faiss pickle-mixin numpy
+RUN pip install faiss-cpu pickle-mixin confluent-kafka pandas tensorflow
 
-EXPOSE 6000
 
-CMD ["python", "run/server-python.py"]
+CMD ["python", "run/server_python.py"]

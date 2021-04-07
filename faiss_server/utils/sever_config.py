@@ -15,7 +15,7 @@ import pytz
 from time import time
 import numpy as np
 
-BOOTSTRAP_SERVER = "localhost:9092"
+BOOTSTRAP_SERVER = "34.87.108.34:9092"
 GROUP = "None"
 TOPIC_REGISTER = ["register"]
 TOPIC_CHECKIN = ["checkin"]
