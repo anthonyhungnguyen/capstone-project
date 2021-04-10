@@ -14,8 +14,24 @@ class FireBase:
         self.firebase = pyrebase.initialize_app(self.config)
         self.storage = self.firebase.storage()
 
-    def put_image(self, path_on_cloud, path_local):
-        self.storage.child(path_on_cloud).put(path_local)
+    def put_image(self, path_on_cloud, path_local, token):
+        self.storage.child(path_on_cloud).put(path_local, token)
 
     def download_image(self, path_on_cloud, path_local):
         self.storage.child(path_on_cloud).download(path_local)
+
+    def get_url(self, path_on_cloud):
+        return self.storage.child(path_on_cloud).get_url(None)
+
+    def get_all_urls(self):
+        all_files = self.storage.list_files()
+        return [{'path': file_.name, 'url': self.get_url(file_.name)} for file_ in all_files]
+
+    def filter_crop_photos(self, urls_data):
+        result = []
+        for item in urls_data:
+            photo_type = item['path'].split('/')[1]
+            photo_name = item['path'].split('/')[2]
+            if photo_type == 'augment' and photo_name == '0.jpg':
+                result.append(item)
+        return result
