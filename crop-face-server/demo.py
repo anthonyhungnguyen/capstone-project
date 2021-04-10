@@ -4,6 +4,7 @@ import numpy as np
 from flask import Flask, request, jsonify
 from flask_cors import CORS, cross_origin
 from imageio import imread
+import jsonpickle
 import json
 from PIL import Image
 import base64
@@ -25,28 +26,17 @@ min_dist = float('inf')
 @app.route("/face/crop", methods=["POST"])
 @cross_origin()
 def crop_face():
-    def convertBase64ToNumpyArray(request):
-        jsonData = request.data
-        photo = json.loads(jsonData)['data']
-        imgstr = re.search(r'base64,(.*)', photo).group(1)
-        image_bytes = io.BytesIO(base64.b64decode(imgstr))
-        im = Image.open(image_bytes)
-        return np.array(im, dtype=np.uint8)
+    # decoded = base64.b64decode(request.data)
+    np_data = np.fromstring(request.data, np.uint8)
+    img = cv2.imdecode(np_data, cv2.IMREAD_UNCHANGED)
+    print(img)
+    # dets = detector(img)
+    # for d in dets:
+    #     shape = predictor(img, d)
+    #     face_frame = dlib.get_face_chip(img, shape, size=INPUT_SIZE)
+    #     return base64.b64encode(face_frame)
+    return "hello"
 
-    def convertNumpyToBase64(img):
-        pil_img = Image.fromarray(img)
-        buff = io.BytesIO()
-        pil_img.save(buff, format="JPEG")
-        new_image_string = base64.b64encode(buff.getvalue()).decode("utf-8")
-        return new_image_string
-    frame = convertBase64ToNumpyArray(request)
-    dets = detector(frame)
-    for d in dets:
-        shape = predictor(frame, d)
-        face_frame = dlib.get_face_chip(frame, shape, size=INPUT_SIZE)
-        base64Img = convertNumpyToBase64(face_frame)
-        return f"data:image/jpeg;base64,{base64Img}"
-    return None
 
 @app.route("/face/augment", methods=["POST"])
 @cross_origin()
@@ -60,6 +50,7 @@ def augment_face():
 
     def flipFace(image):
         return cv2.flip(image, 1)
+
     def increaseBrightness(img, value):
         hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
         h, s, v = cv2.split(hsv)
@@ -82,7 +73,6 @@ def augment_face():
     return json.dumps({
         "augmentFaceArray": [convertNumpyToBase64(origin30Image), convertNumpyToBase64(flipImage), convertNumpyToBase64(flip30Image), convertNumpyToBase64(flip50Image)]
     })
-
 
 
 app.run(host='0.0.0.0', port='5000', debug=True)

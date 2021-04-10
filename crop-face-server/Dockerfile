@@ -8,6 +8,8 @@ RUN pip install cmake
 
 RUN pip install dlib flask flask_cors imageio Pillow opencv-python
 
+RUN pip install jsonpickle
+
 EXPOSE 5000
 
 CMD ["python", "demo.py"]
