@@ -1,1 +1,0 @@
-{"HostName": "172.16.1.4", "PortAPI": "8000", "PortCamera": "8001", "NumberEmployee": 10}
