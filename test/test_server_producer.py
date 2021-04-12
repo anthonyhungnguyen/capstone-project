@@ -80,30 +80,7 @@ from datetime import datetime
 from __init__ import PYTHON_PATH
 
 
-CHECKED_PATH = os.path.join(PYTHON_PATH, "ailibs_data/log/image/phuc.jpg")
-
-
-def increase_brightness(img, value):
-    hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
-    h, s, v = cv2.split(hsv)
-
-    lim = 255 - value
-    v[v > lim] = 255
-    v[v <= lim] += value
-
-    final_hsv = cv2.merge((h, s, v))
-    img = cv2.cvtColor(final_hsv, cv2.COLOR_HSV2BGR)
-    return img
-
-def augment(image):
-    image_list = [image]
-    image_list.append(increase_brightness(image, 30))
-    image_flip = cv2.flip(image,1)
-    image_list.append(image_flip)
-    image_list.append(increase_brightness(image_flip, 30))
-    image_list.append(increase_brightness(image_flip, 50))
-    return image_list
-
+CHECKED_PATH = os.path.join(PYTHON_PATH, "ailibs_data/log/image/chau.jpg")
 
 if __name__ == '__main__':
     if len(sys.argv) != 3:
@@ -146,24 +123,13 @@ if __name__ == '__main__':
     #     "endTime": "2021-02-28T15:54:55.967",
     #     "deviceID": "1"
     # }
-    # with open(CHECKED_PATH, "rb") as image_file:
-    #     image = image_file.read()
-    #     print(image)
-    image = cv2.imread(CHECKED_PATH)
-    scale_percent = 10 # percent of original size
-    width = int(image.shape[1] * scale_percent / 100)
-    height = int(image.shape[0] * scale_percent / 100)
-    dim = (width, height)
-    print(dim)
-    # resize image
-    image = cv2.resize(image, dim, interpolation = cv2.INTER_AREA)
+    with open(CHECKED_PATH, "rb") as image_file:
+        image = image_file.read()
     image_list = augment(image)  
-    for id, img in enumerate(image_list):
-        cv2.imwrite(f'test{id}.jpg', img)
-        retval, buffer = cv2.imencode('.jpg', img)
-        encoded_string = base64.b64encode(buffer).decode('utf-8')
+    for img in image_list:
+        encoded_string = base64.b64encode(img).decode('utf-8')
         log = {
-            "userId": "1752041",
+            "userId": "chau",
             "photo": encoded_string
         }
         msg = json.dumps(log)
@@ -185,3 +151,23 @@ if __name__ == '__main__':
     sys.stderr.write('%% Waiting for %d deliveries\n' % len(p))
     p.flush()
 
+    def increase_brightness(self, img, value):
+        hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+        h, s, v = cv2.split(hsv)
+
+        lim = 255 - value
+        v[v > lim] = 255
+        v[v <= lim] += value
+
+        final_hsv = cv2.merge((h, s, v))
+        img = cv2.cvtColor(final_hsv, cv2.COLOR_HSV2BGR)
+        return img
+
+    def augment(self, image):
+        image_list = [image]
+        image_list.append(self.increase_brightness(image, 30))
+        image_flip = cv2.flip(image,1)
+        image_list.append(image_flip)
+        image_list.append(self.increase_brightness(image_flip, 30))
+        image_list.append(self.increase_brightness(image_flip, 50))
+        return image_list
