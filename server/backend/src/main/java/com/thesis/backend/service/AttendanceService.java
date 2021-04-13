@@ -7,12 +7,13 @@ import com.thesis.backend.dto.model.SubjectIDDto;
 import com.thesis.backend.dto.model.UserDto;
 import com.thesis.backend.dto.request.AttendanceRequest;
 import com.thesis.backend.model.Schedule;
-import com.thesis.backend.util.ImageUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -29,7 +30,7 @@ public class AttendanceService {
     private final KafkaTemplate<String, Object> kafkaTemplate;
 
     @Autowired
-    public AttendanceService(LogService logService, EnrollmentServiceImpl enrollmentService, UserServiceImpl userService, SubjectServiceImpl subjectService, ScheduleService scheduleService,  KafkaTemplate<String, Object> kafkaTemplate) {
+    public AttendanceService(LogService logService, EnrollmentServiceImpl enrollmentService, UserServiceImpl userService, SubjectServiceImpl subjectService, ScheduleService scheduleService, KafkaTemplate<String, Object> kafkaTemplate) {
         this.logService = logService;
         this.enrollmentService = enrollmentService;
         this.userService = userService;
@@ -42,14 +43,14 @@ public class AttendanceService {
     public void receiveAttendance(String message) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
         AttendanceRequest attendanceRequest = objectMapper.readValue(message, AttendanceRequest.class);
-//        String result = checkAttendanceUtil(attendanceRequest);
-//        kafkaTemplate.send(ATTENDANCE_RESULT_TOPIC, result);
-//        if (result.equals("Successfully")) {
-//            Map<String, Object> checkinResult = new HashMap<>();
-//            checkinResult.put("name", attendanceRequest.getUserID());
-//            checkinResult.put("feature", attendanceRequest.getFeature());
-//            kafkaTemplate.send(ONLINE_LEARNING, checkinResult);
-//        }
+        String result = checkAttendanceUtil(attendanceRequest);
+        kafkaTemplate.send(ATTENDANCE_RESULT_TOPIC, result);
+        if (result.equals("Successfully")) {
+            Map<String, Object> checkinResult = new HashMap<>();
+            checkinResult.put("name", attendanceRequest.getUserID());
+            checkinResult.put("feature", attendanceRequest.getFeature());
+            kafkaTemplate.send(ONLINE_LEARNING, checkinResult);
+        }
     }
 
 

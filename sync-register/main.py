@@ -5,7 +5,9 @@ import uuid
 from tqdm import tqdm
 import face_request
 import os
-
+import datetime
+import json
+import pandas as pd
 
 FACE_SERVER = "http://localhost:5000"
 
@@ -49,7 +51,6 @@ def save_crop_and_augment_photos():
 
 def save_features():
     all_files = firebase_instance.get_all_augment_urls()
-    print(all_files)
     for file_ in tqdm(all_files):
         path_list = file_.split('/')
         full_path = '/'.join(path_list[:3])
@@ -60,4 +61,28 @@ def save_features():
             f"{full_path}/features/{file_name}.npy", './index.npy')
 
 
-save_features()
+def init_class():
+    current_date = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    firebase_instance.put_txt(
+        f'/subject/201_CO0000_CC01/{current_date}/metadata.json', 'subject.json')
+    all_features = firebase_instance.get_all_augment_features()
+    json.dump({
+        "student_path_list": [],
+        "created_at": current_date
+    }, open("subject.json", "w"))
+
+
+def intt_students():
+    all_students = firebase_instance.get_all_student_ids()
+    json_students = [{'id': student, 'password': ''}
+                     for student in all_students]
+    json_subjects = [{'user_id': student, 'subject_id': 'CO0000',
+                      'group_code': 'CC01', 'semester': 201} for student in all_students]
+    df = pd.DataFrame.from_records(json_students)
+    df.to_csv('students_mysql.csv', index=False)
+
+    df = pd.DataFrame.from_records(json_subjects)
+    df.to_csv('subjects_mysql.csv', index=False)
+
+
+init_class()

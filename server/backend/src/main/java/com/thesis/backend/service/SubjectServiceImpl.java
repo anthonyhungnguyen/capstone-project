@@ -6,6 +6,7 @@ import com.thesis.backend.dto.model.SubjectIDDto;
 import com.thesis.backend.exception.CustomException;
 import com.thesis.backend.model.Subject;
 import com.thesis.backend.model.SubjectId;
+import com.thesis.backend.model.User;
 import com.thesis.backend.repository.SubjectRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -74,6 +75,14 @@ public class SubjectServiceImpl implements BaseService<SubjectDto, SubjectIDDto>
             return SubjectMapper.toSubjectDto(savedSubject);
         }
         throw CustomException.throwException(SUBJECT, ENTITY_NOT_FOUND, o.getSubjectIDDto().toString());
+    }
+
+    public List<User> findAllUsersTakeSubject(SubjectIDDto o) {
+        Optional<Subject> subject = subjectRepository.findById(modelMapper.map(o, SubjectId.class));
+        if (subject.isPresent()) {
+            return subject.get().getUsers();
+        }
+        throw CustomException.throwException(SUBJECT, ENTITY_NOT_FOUND, o.toString());
     }
 
 }

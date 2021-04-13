@@ -3,12 +3,10 @@ package com.thesis.backend.security.jwt;
 import com.thesis.backend.security.services.UserDetailsServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
-import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -20,10 +18,10 @@ import java.io.IOException;
 
 
 // What we do inside doFilterInternal():
-    // get JWT from the Authorization header (by removing Bearer prefix)
-    // if the request has JWT, validate it, parse username from it
-    // from username, get UserDetails to create an Authentication object
-    // set the current UserDetails in SecurityContext using setAuthentication(authentication) method.
+// get JWT from the Authorization header (by removing Bearer prefix)
+// if the request has JWT, validate it, parse username from it
+// from username, get UserDetails to create an Authentication object
+// set the current UserDetails in SecurityContext using setAuthentication(authentication) method.
 
 // After this, everytime you want to get UserDetails, just use SecurityContext like this:
 // UserDetails userDetails =
@@ -45,7 +43,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
             if (jwt != null && jwtUtils.validateJwtToken(jwt)) {
                 String username = jwtUtils.getUserNameFromJwtToken(jwt);
 
-                    UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities()
                 );
@@ -53,8 +51,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             log.error("Cannot set user authentication", ex);
         }
         filterChain.doFilter(request, response);
