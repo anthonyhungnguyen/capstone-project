@@ -39,12 +39,13 @@ INDEX_PATH = os.path.join(PYTHON_PATH,"ailibs_data", "data", INDEX_FILE)
 THRESHOLD_PATH = os.path.join(PYTHON_PATH,"ailibs_data", "data", THRESHOLD_FILE)
 METADATA_PATH = os.path.join(PYTHON_PATH,"ailibs_data", "data", METADATA_FILE)
 DATA_TIME = os.path.join(PYTHON_PATH,"ailibs_data", "data", "datatime.txt")
-FIREBASE_PATH = "faiss"
+SUBJECT = "subject"
 
 conf_consumer = {'bootstrap.servers': BOOTSTRAP_SERVER, 'group.id': GROUP, 'session.timeout.ms': 6000,
                 'auto.offset.reset': 'smallest', 'fetch.message.max.bytes': 15728640,
                 'message.max.bytes': 15728640}
-conf_producer = {'bootstrap.servers': BOOTSTRAP_SERVER}
+conf_producer = {'bootstrap.servers': BOOTSTRAP_SERVER,
+                 'message.max.bytes': 15728640}
 
 
 def stats_cb(stats_json_str):
@@ -109,25 +110,25 @@ class config():
             f.write(str(int(time())-300))
             f.close()
 
-    def register(self):
-        # Read messages from Kafka, print to stdout
-        msg = config.consumer_register.poll(timeout=0.01)
-        if msg is None:
-            return None, False
-        if msg.error():
-            raise KafkaException(msg.error())
-        else:
-            # Proper message
-            sys.stderr.write('%% %s [%d] at offset %d with key %s:\n' %
-                            (msg.topic(), msg.partition(), msg.offset(),
-                            str(msg.key())))
-            print("*** GET IMAGE SUCCESS ***")
-            my_json = msg.value().decode('utf8').replace("'", '"')
-            data = json.loads(my_json)
-            f = open(METADATA_PATH, "w")
-            f.write(str(msg.offset()))
-            f.close()
-            return data, True
+    # def register(self):
+    #     # Read messages from Kafka, print to stdout
+    #     msg = config.consumer_register.poll(timeout=0.01)
+    #     if msg is None:
+    #         return None, False
+    #     if msg.error():
+    #         raise KafkaException(msg.error())
+    #     else:
+    #         # Proper message
+    #         sys.stderr.write('%% %s [%d] at offset %d with key %s:\n' %
+    #                         (msg.topic(), msg.partition(), msg.offset(),
+    #                         str(msg.key())))
+    #         print("*** GET IMAGE SUCCESS ***")
+    #         my_json = msg.value().decode('utf8').replace("'", '"')
+    #         data = json.loads(my_json)
+    #         f = open(METADATA_PATH, "w")
+    #         f.write(str(msg.offset()))
+    #         f.close()
+    #         return data, True
 
     def checkin(self):
         # Read messages from Kafka, print to stdout
@@ -144,9 +145,6 @@ class config():
             print("*** GET VECTOR SUCCESS ***")
             my_json = msg.value().decode('utf8').replace("'", '"')
             data = json.loads(my_json)
-            f = open(METADATA_PATH, "w")
-            f.write(str(msg.offset()))
-            f.close()
             return data, True
 
     def decode(self, photo):
@@ -156,27 +154,30 @@ class config():
         return img
 
     def check_faiss(self, path_on_cloud):
-        list_files = self.storage.child(path_on_cloud).list_files()
-        list_name = []
+        list_files = self.storage.child("./").list_files()
+        list_faiss = []
         flag = False
+        SUBJECT_CODE = path_on_cloud.split("/")[1]
+        TIMESTAMP = path_on_cloud.split("/")[2]
         for file in list_files:
-            if file.name.split("/")[0]=="faiss" and len(file.name.split("/"))>1:
-                list_name.append(file.name)
-        for name in list_name:
-            if name.split("/")[1]=="faiss":
-                self.download_file(name.split("/",1)[1], METADATA_PATH)
-        for name in list_name:
-            if name.split("/")[1]!="faiss":
-                if name.split("/")[3]==VECTOR_FILE:
-                    self.download_file(name, VECTOR_PATH)
-                if name.split("/")[3]==INDEX_FILE:
-                    self.download_file(name, INDEX_PATH)
-                if name.split("/")[3]==THRESHOLD_FILE:
-                    self.download_file(name, THRESHOLD_PATH)
-                if name.split("/")[3]==FEATURE_FILE:
-                    self.download_file(name, FEATURE_PATH)
-                flag = True 
-                self.data_time = name.split("/")[2]
+            if file.name.split("/")[0] == SUBJECT and file.name.split("/")[1] == SUBJECT_CODE and file.name.split("/")[2] == TIMESTAMP:
+                list_faiss.append(file.name)
+        print(list_faiss)
+        # for name in list_name:
+        #     if name.split("/")[1]=="faiss":
+        #         self.download_file(name.split("/",1)[1], METADATA_PATH)
+        # for name in list_name:
+        #     if name.split("/")[1]!="faiss":
+        #         if name.split("/")[3]==VECTOR_FILE:
+        #             self.download_file(name, VECTOR_PATH)
+        #         if name.split("/")[3]==INDEX_FILE:
+        #             self.download_file(name, INDEX_PATH)
+        #         if name.split("/")[3]==THRESHOLD_FILE:
+        #             self.download_file(name, THRESHOLD_PATH)
+        #         if name.split("/")[3]==FEATURE_FILE:
+        #             self.download_file(name, FEATURE_PATH)
+        #         flag = True
+        #         self.data_time = name.split("/")[2]
         return flag
     
     def calculate_threshold(self, vector, y):
