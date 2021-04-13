@@ -4,12 +4,12 @@ from pydrive.drive import GoogleDrive
 
 class Drive:
     def __init__(self):
-        self.ROOT_ID = "1NaHxdOIK-KDfR0nWDOyDmezpyZOKUdmI"
+        self.ROOT_ID = "1TliG2wgvW93GP-05yNS_LrhKe87DxapP"
 
     def generate_credentials(self, credentials_filename):
         gauth = GoogleAuth()
         # Try to load saved client credentials
-        gauth.LoadCredentialsFile(credentials_name)
+        gauth.LoadCredentialsFile(credentials_filename)
         if gauth.credentials is None:
             # Authenticate if they're not there
             gauth.LocalWebserverAuth()
@@ -36,7 +36,7 @@ class Drive:
     def save_image_by_id(self, drive, id, file_name):
         file1 = drive.CreateFile({"id": id})
         file1.GetContentFile(file_name)
-    
+
     def upload_folder(self, folder_name):
         file_metadata = {
             'name': folder_name,
@@ -44,4 +44,3 @@ class Drive:
         }
         file = drive_service.files().create(body=file_metadata,
                                             fields='id').execute()
-

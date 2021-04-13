@@ -10,8 +10,9 @@ FACE_SCORE = 1.0
 class FaceDetector():
     """
     This is implementation for dlib face detector, support detect face.
-    
+
     """
+
     def __init__(self, **kwargs):
         """
         Constructor.

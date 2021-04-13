@@ -59,3 +59,15 @@ class FaceExtractor():
         features = self.__extractor.predict(
             face_frame.reshape(1, INPUT_SIZE, INPUT_SIZE, 3))
         return features
+
+    def extract_without_det(self, face_frame):
+        face_frame = face_frame.astype('float32')
+        # standardize pixel values across channels (global)
+        mean, std = face_frame.mean(), face_frame.std()
+        face_frame = (face_frame - mean) / std
+        face_frame = face_frame[..., ::-1]
+        return self.__extractor.predict(face_frame.reshape(1, INPUT_SIZE, INPUT_SIZE, 3))
+
+    @staticmethod
+    def get_face_chip(frame, shape, size=160):
+        return dlib.get_face_chip(frame, shape, size)

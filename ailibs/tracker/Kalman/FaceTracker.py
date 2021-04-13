@@ -9,6 +9,8 @@ import utils.utils as utils
 from utils.utils import *
 
 logger = Logger()
+
+
 class FaceTracker:
 
     def __init__(self, **kwargs):
@@ -44,7 +46,8 @@ class FaceTracker:
         for t in reversed(to_del):
             self.trackers.pop(t)
         if dets != []:
-            matched, unmatched_dets, unmatched_trks = associate_detections_to_trackers(dets, trks)
+            matched, unmatched_dets, unmatched_trks = associate_detections_to_trackers(
+                dets, trks)
 
             # update matched trackers with assigned detections
             for t, trk in enumerate(self.trackers):
@@ -64,7 +67,8 @@ class FaceTracker:
                 trk.update([])
             d = trk.get_state()
             if (trk.time_since_update < 1) and (trk.hit_streak >= self.min_hits or self.frame_count <= self.min_hits):
-                ret.append(np.concatenate((d, [trk.id + 1])).reshape(1, -1))  # +1 as MOT benchmark requires positive
+                # +1 as MOT benchmark requires positive
+                ret.append(np.concatenate((d, [trk.id + 1])).reshape(1, -1))
             i -= 1
             # remove dead tracklet
             if trk.time_since_update >= self.max_age or trk.predict_num >= predict_num:
