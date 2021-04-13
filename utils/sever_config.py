@@ -32,14 +32,13 @@ VECTOR_FILE = "vector.index"
 FEATURE_FILE = "features.pickle"
 INDEX_FILE = "index.pickle"
 THRESHOLD_FILE = "threshold.pickle"
-METADATA_FILE = "meta.txt"
+METADATA_FILE = "metadata.json"
 VECTOR_PATH = os.path.join(PYTHON_PATH, "ailibs_data", "data", VECTOR_FILE)
 FEATURE_PATH = os.path.join(PYTHON_PATH, "ailibs_data", "data", FEATURE_FILE)
 INDEX_PATH = os.path.join(PYTHON_PATH, "ailibs_data", "data", INDEX_FILE)
 THRESHOLD_PATH = os.path.join(
     PYTHON_PATH, "ailibs_data", "data", THRESHOLD_FILE)
 METADATA_PATH = os.path.join(PYTHON_PATH, "ailibs_data", "data", METADATA_FILE)
-DATA_TIME = os.path.join(PYTHON_PATH, "ailibs_data", "data", "datatime.txt")
 SUBJECT = "subject"
 
 conf_consumer = {'bootstrap.servers': BOOTSTRAP_SERVER, 'group.id': GROUP, 'session.timeout.ms': 6000,
@@ -164,21 +163,19 @@ class config():
             if file.name.split("/")[0] == SUBJECT and file.name.split("/")[1] == SUBJECT_CODE and file.name.split("/")[2] == TIMESTAMP:
                 list_faiss.append(file.name)
         print(list_faiss)
-        # for name in list_name:
-        #     if name.split("/")[1]=="faiss":
-        #         self.download_file(name.split("/",1)[1], METADATA_PATH)
-        # for name in list_name:
-        #     if name.split("/")[1]!="faiss":
-        #         if name.split("/")[3]==VECTOR_FILE:
-        #             self.download_file(name, VECTOR_PATH)
-        #         if name.split("/")[3]==INDEX_FILE:
-        #             self.download_file(name, INDEX_PATH)
-        #         if name.split("/")[3]==THRESHOLD_FILE:
-        #             self.download_file(name, THRESHOLD_PATH)
-        #         if name.split("/")[3]==FEATURE_FILE:
-        #             self.download_file(name, FEATURE_PATH)
-        #         flag = True
-        #         self.data_time = name.split("/")[2]
+        for name in list_faiss:
+            print(name)
+            if name.split("/")[3] == VECTOR_FILE:
+                self.download_file(name, VECTOR_PATH)
+                flag = True
+            if name.split("/")[3] == INDEX_FILE:
+                self.download_file(name, INDEX_PATH)
+            if name.split("/")[3] == THRESHOLD_FILE:
+                self.download_file(name, THRESHOLD_PATH)
+            if name.split("/")[3] == FEATURE_FILE:
+                self.download_file(name, FEATURE_PATH)   
+            if name.split("/")[3] == METADATA_FILE:
+                self.download_file(name, METADATA_PATH)
         return flag
 
     def calculate_threshold(self, vector, y):
@@ -203,19 +200,18 @@ class config():
                 threshold.append(harmonic)
         return threshold
 
-    def send_data(self):
-        thedate = str(date.today())
-        thetime = str(datetime.now().time())
+    def send_data(self,timestamp, path_on_cloud):
+        SUBJECT_CODE = path_on_cloud.split("/")[1]
         BASE_METADATA_PATH = os.path.join(
-            FIREBASE_PATH, thedate, thetime, METADATA_FILE)
+            SUBJECT, SUBJECT_CODE, timestamp, METADATA_FILE)
         BASE_VECTOR_PATH = os.path.join(
-            FIREBASE_PATH, thedate, thetime, VECTOR_FILE)
+            SUBJECT, SUBJECT_CODE, timestamp, VECTOR_FILE)
         BASE_INDEX_PATH = os.path.join(
-            FIREBASE_PATH, thedate, thetime, INDEX_FILE)
+            SUBJECT, SUBJECT_CODE, timestamp, INDEX_FILE)
         BASE_THRESHOLD_PATH = os.path.join(
-            FIREBASE_PATH, thedate, thetime, THRESHOLD_FILE)
+            SUBJECT, SUBJECT_CODE, timestamp, THRESHOLD_FILE)
         BASE_FEATURE_PATH = os.path.join(
-            FIREBASE_PATH, thedate, thetime, FEATURE_FILE)
+            SUBJECT, SUBJECT_CODE, timestamp, FEATURE_FILE)
 
         self.put_file(BASE_METADATA_PATH, METADATA_PATH)
         self.put_file(BASE_VECTOR_PATH, VECTOR_PATH)
@@ -228,28 +224,10 @@ class config():
         os.remove(THRESHOLD_PATH)
         os.remove(METADATA_PATH)
 
-        f = open(DATA_TIME, "r")
-        datatime = f.read()
-        datatime = int(datatime)
-        f.close()
-        if int(time()) - datatime >= 300:
-            print("***JETSON update***")
-            log = {VECTOR: BASE_VECTOR_PATH, INDEX: BASE_INDEX_PATH,
-                   THRESHOLD: BASE_THRESHOLD_PATH}
-            msg = json.dumps(log)
-            config.producer_data.produce(
-                TOPIC_DATA, msg, callback=delivery_callback)
-            config.producer_data.poll(0)
-            sys.stderr.write('%% Waiting for %d deliveries\n' %
-                             len(config.producer_data))
-            config.producer_data.flush()
-
-            f = open(DATA_TIME, "w")
-            f.write(str(int(time())))
-            f.close()
-
     def put_file(self, path_on_cloud, path_local):
         self.storage.child(path_on_cloud).put(path_local)
 
     def download_file(self, path_on_cloud, path_local):
+        print(path_on_cloud)
+        print(path_local)
         self.storage.child(path_on_cloud).download(path_local)
