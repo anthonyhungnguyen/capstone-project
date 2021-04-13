@@ -30,6 +30,9 @@ class FireBase:
         all_files = self.storage.list_files()
         return [{'path': file_.name, 'url': self.get_url(file_.name)} for file_ in all_files]
 
+    def get_all_student_ids(self):
+        return list(set([path.name.split('/')[1] for path in self.storage.list_files()]))
+
     def get_all_register_urls(self):
         all_files = self.storage.list_files()
         return [path.name for path in all_files if 'register/photos' in path.name]
@@ -37,6 +40,10 @@ class FireBase:
     def get_all_augment_urls(self):
         all_files = self.storage.list_files()
         return [path.name for path in all_files if 'augment/photos' in path.name]
+
+    def get_all_augment_features(self):
+        all_files = self.storage.list_files()
+        return [path.name for path in all_files if 'augment/features' in path.name]
 
     def filter_crop_photos(self, urls_data):
         result = []

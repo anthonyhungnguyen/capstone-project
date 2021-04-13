@@ -1,11 +1,14 @@
 package com.thesis.backend.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thesis.backend.constant.EntityType;
 import com.thesis.backend.constant.ExceptionType;
 import com.thesis.backend.dto.mapper.ScheduleMapper;
+import com.thesis.backend.dto.model.SubjectIDDto;
 import com.thesis.backend.dto.request.ScheduleRequest;
 import com.thesis.backend.exception.CustomException;
 import com.thesis.backend.model.Schedule;
+import com.thesis.backend.model.User;
 import com.thesis.backend.repository.ScheduleRepository;
 import com.thesis.backend.util.DateUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -13,14 +16,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -32,27 +35,56 @@ public class ScheduleService {
     private final static String MODIFY_TOPIC = "update";
     private final static String DELETE_TOPIC = "delete";
     private final static String DATA_TOPIC = "data";
+    private final static String CHECKIN_TOPIC = "checkin";
+    private final SubjectServiceImpl subjectService;
     private final UserServiceImpl userService;
     private final ScheduleRepository scheduleRepository;
     private final KafkaTemplate<String, Object> kafkaTemplate;
+    private final FirebaseService firebaseService;
 
     @Autowired
-    public ScheduleService(UserServiceImpl userService, ScheduleRepository scheduleRepository, KafkaTemplate<String, Object> kafkaTemplate) {
+    public ScheduleService(SubjectServiceImpl subjectService, UserServiceImpl userService, ScheduleRepository scheduleRepository, KafkaTemplate<String, Object> kafkaTemplate, FirebaseService firebaseService) {
+        this.subjectService = subjectService;
         this.userService = userService;
         this.scheduleRepository = scheduleRepository;
         this.kafkaTemplate = kafkaTemplate;
+        this.firebaseService = firebaseService;
     }
 
     public Boolean registerSchedule(ScheduleRequest scheduleRequest) throws IOException {
-        LocalDateTime startDateTimeLdt = DateUtil.convertStringToLocalDateTime(scheduleRequest.getStartTime());
-        LocalDateTime endDateTimeLdt = DateUtil.convertStringToLocalDateTime(scheduleRequest.getEndTime());
-        // if (!checkOverlap(scheduleRequest.getDeviceID(), startDateTimeLdt, endDateTimeLdt)) {
-        Schedule schedule = ScheduleMapper.toModel(scheduleRequest);
-        scheduleRepository.save(schedule);
-        scheduleRequest.setId(schedule.getId());
-        kafkaTemplate.send(SCHEDULE_TOPIC, scheduleRequest);
+        String classCode = scheduleRequest.getSemester() + "_" + scheduleRequest.getSubjectID() + "_" + scheduleRequest.getGroupCode();
+        String lastMetaData = firebaseService.downloadMetadata(classCode);
+        List<String> allPathList = firebaseService.listFiles("student");
+        List<User> users = subjectService.findAllUsersTakeSubject(new SubjectIDDto(scheduleRequest.getSubjectID(),
+                scheduleRequest.getGroupCode(),
+                scheduleRequest.getSemester()));
+        List<String> studentList = new ArrayList<>();
+        for (User u : users) {
+            studentList.add(String.valueOf(u.getId()));
+        }
+        List<String> pathList = firebaseService.filterPathWithStudentList(allPathList, studentList);
+        List<String> studentInMetaData = loadMetadata();
+        pathList.removeAll(studentInMetaData);
+        Map<String, Object> message = new HashMap<>();
+        message.put("student", pathList);
+        message.put("lastMetaDataPath", lastMetaData);
+        kafkaTemplate.send(CHECKIN_TOPIC, message);
+        return true;
+//        LocalDateTime startDateTimeLdt = DateUtil.convertStringToLocalDateTime(scheduleRequest.getStartTime());
+//        LocalDateTime endDateTimeLdt = DateUtil.convertStringToLocalDateTime(scheduleRequest.getEndTime());
+//        // if (!checkOverlap(scheduleRequest.getDeviceID(), startDateTimeLdt, endDateTimeLdt)) {
+//        Schedule schedule = ScheduleMapper.toModel(scheduleRequest);
+//
+//        scheduleRepository.save(schedule);
+//        scheduleRequest.setId(schedule.getId());
+//        kafkaTemplate.send(SCHEDULE_TOPIC, scheduleRequest);
         //throw CustomException.throwException(EntityType.SCHEDULE, ExceptionType.OVERLAP);
-        return null;
+    }
+
+    private List<String> loadMetadata() throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        Map<String, Object> temp = mapper.readValue(new File("/home/phuchung/temp.json"), Map.class);
+        return (List<String>) temp.get("student_path_list");
     }
 
     public ScheduleRequest updateSchedule(ScheduleRequest request) {
