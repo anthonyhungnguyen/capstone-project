@@ -114,7 +114,7 @@ if __name__ == '__main__':
                 sys.stderr.write('%% %s [%d] at offset %d with key %s:\n' %
                                  (msg.topic(), msg.partition(), msg.offset(),
                                   str(msg.key())))
-                print(msg.value())
+                # print(msg.value())
                 my_json = msg.value().decode('utf8').replace("'", '"')
                 data = json.loads(my_json)
                 print(data)
@@ -126,9 +126,9 @@ if __name__ == '__main__':
                 # print(data['startTime'])
                 # print(type(data['endTime']))
                 # print(time.time())
-                data['startTime'] = datetime.strptime(data['startTime'], "%Y-%m-%d %H:%M:%S").timestamp()
-                data['endTime'] = datetime.strptime(data['endTime'], "%Y-%m-%d %H:%M:%S").timestamp()
-                print(data)
+                # data['startTime'] = datetime.strptime(data['startTime'], "%Y-%m-%d %H:%M:%S").timestamp()
+                # data['endTime'] = datetime.strptime(data['endTime'], "%Y-%m-%d %H:%M:%S").timestamp()
+                # print(data)
                 # tz1 = pytz.timezone('GMT')
                 # now = pytz.UTC.localize(utc_time)
                 # now_tz = now.astimezone(tz1)
