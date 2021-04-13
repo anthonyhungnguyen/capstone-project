@@ -26,17 +26,15 @@ public class AttendanceService {
     private final UserServiceImpl userService;
     private final SubjectServiceImpl subjectService;
     private final ScheduleService scheduleService;
-    private final FirebaseImageService firebaseImageService;
     private final KafkaTemplate<String, Object> kafkaTemplate;
 
     @Autowired
-    public AttendanceService(LogService logService, EnrollmentServiceImpl enrollmentService, UserServiceImpl userService, SubjectServiceImpl subjectService, ScheduleService scheduleService, FirebaseImageService firebaseImageService, KafkaTemplate<String, Object> kafkaTemplate) {
+    public AttendanceService(LogService logService, EnrollmentServiceImpl enrollmentService, UserServiceImpl userService, SubjectServiceImpl subjectService, ScheduleService scheduleService,  KafkaTemplate<String, Object> kafkaTemplate) {
         this.logService = logService;
         this.enrollmentService = enrollmentService;
         this.userService = userService;
         this.subjectService = subjectService;
         this.scheduleService = scheduleService;
-        this.firebaseImageService = firebaseImageService;
         this.kafkaTemplate = kafkaTemplate;
     }
 
@@ -44,11 +42,6 @@ public class AttendanceService {
     public void receiveAttendance(String message) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
         AttendanceRequest attendanceRequest = objectMapper.readValue(message, AttendanceRequest.class);
-        byte[] imgBytes = ImageUtil.base64ToBytesArray(attendanceRequest.getImgSrcBase64());
-        String path_on_cloud = "student/1710779/attendance";
-        String filename = "0";
-        String filetype = "image/jpeg";
-        firebaseImageService.saveBase64Bytes(path_on_cloud, filename, filetype, imgBytes);
 //        String result = checkAttendanceUtil(attendanceRequest);
 //        kafkaTemplate.send(ATTENDANCE_RESULT_TOPIC, result);
 //        if (result.equals("Successfully")) {
