@@ -1,4 +1,3 @@
-from utils.AIlibs import AILIBS
 import os
 import cv2
 import faiss
@@ -7,6 +6,7 @@ import numpy as np
 import faiss
 
 from __init__ import PYTHON_PATH
+from utils.AIlibs import AILIBS
 # Configuration networks, kafka
 from utils.sever_config import config
 mCONFIG = config()
