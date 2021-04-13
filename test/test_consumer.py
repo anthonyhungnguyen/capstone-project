@@ -114,7 +114,7 @@ if __name__ == '__main__':
                 sys.stderr.write('%% %s [%d] at offset %d with key %s:\n' %
                                  (msg.topic(), msg.partition(), msg.offset(),
                                   str(msg.key())))
-                print(msg.value())
+                # print(msg.value())
                 my_json = msg.value().decode('utf8').replace("'", '"')
                 data = json.loads(my_json)
                 print(data)
