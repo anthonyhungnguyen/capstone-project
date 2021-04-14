@@ -110,29 +110,9 @@ class config():
         self.firebase = pyrebase.initialize_app(self.config)
         self.storage = self.firebase.storage()
 
-    # def register(self):
-    #     # Read messages from Kafka, print to stdout
-    #     msg = config.consumer_register.poll(timeout=0.01)
-    #     if msg is None:
-    #         return None, False
-    #     if msg.error():
-    #         raise KafkaException(msg.error())
-    #     else:
-    #         # Proper message
-    #         sys.stderr.write('%% %s [%d] at offset %d with key %s:\n' %
-    #                         (msg.topic(), msg.partition(), msg.offset(),
-    #                         str(msg.key())))
-    #         print("*** GET IMAGE SUCCESS ***")
-    #         my_json = msg.value().decode('utf8').replace("'", '"')
-    #         data = json.loads(my_json)
-    #         f = open(METADATA_PATH, "w")
-    #         f.write(str(msg.offset()))
-    #         f.close()
-    #         return data, True
-
     def checkin(self):
         # Read messages from Kafka, print to stdout
-        msg = config.consumer_checkin.poll(timeout=0.01)
+        msg = config.consumer_checkin.poll(timeout=0.1)
         if msg is None:
             return None, False
         if msg.error():
@@ -147,14 +127,8 @@ class config():
             data = json.loads(my_json)
             return data, True
 
-    def decode(self, photo):
-        img_data = base64.b64decode(photo)
-        img_array = np.fromstring(img_data, np.uint8)
-        img = cv2.imdecode(img_array, cv2.IMREAD_COLOR)
-        return img
-
     def check_faiss(self, path_on_cloud):
-        list_files = self.storage.child("./").list_files()
+        list_files = self.storage.child("").list_files()
         list_faiss = []
         flag = False
         SUBJECT_CODE = path_on_cloud.split("/")[1]
@@ -228,6 +202,4 @@ class config():
         self.storage.child(path_on_cloud).put(path_local)
 
     def download_file(self, path_on_cloud, path_local):
-        print(path_on_cloud)
-        print(path_local)
         self.storage.child(path_on_cloud).download(path_local)
