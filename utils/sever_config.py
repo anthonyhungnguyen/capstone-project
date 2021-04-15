@@ -229,6 +229,7 @@ class config():
         log[INDEX] = BASE_INDEX_PATH
         log[THRESHOLD] = BASE_THRESHOLD_PATH
         msg = json.dumps(log)
+        print(msg)
         config.producer_data.produce(TOPIC_DATA, msg, callback=delivery_callback)
         config.producer_data.poll(0)
         sys.stderr.write('%% Waiting for %d deliveries\n' % len(config.producer_data))

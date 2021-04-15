@@ -24,6 +24,7 @@ STUDENT = "student"
 FEATURE = "feature"
 TIMESTAMP = "timestamp"
 NPY_PATH = "npy_path"
+REQUEST = "request"
 MIN_DIST = 60.15
 
 VECTOR_FILE = "vector.index"
@@ -96,13 +97,13 @@ class Main():
                 with open(THRESHOLD_PATH, "wb") as handle:
                     pickle.dump(threshold, handle,
                                 protocol=pickle.HIGHEST_PROTOCOL)
-                mCONFIG.send_data(timestamp, data[META],data)
+                mCONFIG.send_data(timestamp, data[META],data[REQUEST])
 
             data, flag = mCONFIG.checkin()
             if flag:
                 feature_vector = np.array(data[FEATURE]).astype(np.float32)
                 np.save(CHECKIN_NPY_PATH, feature_vector)
-                mCONFIG.commit_checkin(data[TIMESTAMP], data[NPY_PATH],data)
+                mCONFIG.commit_checkin(data[TIMESTAMP], data[NPY_PATH])
 
 
 
