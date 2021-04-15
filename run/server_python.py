@@ -77,7 +77,7 @@ class Main():
                 with open(METADATA_PATH) as json_file:
                     meta = json.load(json_file)
                 timestamp = str(datetime.now(gettz("Asia/Ho_Chi_Minh")).strftime("%Y-%m-%d %H:%M:%S"))
-                meta[STUDENT_PATH_LIST].append(data[STUDENT])
+                meta[STUDENT_PATH_LIST] += data[STUDENT]
                 meta[CREATED_AT] = timestamp
                 with open(METADATA_PATH, 'w') as outfile:
                     json.dump(meta, outfile)
