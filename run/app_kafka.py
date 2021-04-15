@@ -74,7 +74,6 @@ class MainWindow(QMainWindow):
     def viewCam(self):
         mCONFIG.schedule()
         mCONFIG.update()
-        mCONFIG.update_data()
         RESULT = mCONFIG.attendance_result()
         ret, frame = self.cap.read()
         frame = cv2.flip(frame, 1)

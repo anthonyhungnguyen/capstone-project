@@ -103,7 +103,8 @@ class config():
         """
         if not os.path.exists(SCHEDULE_PATH):
             COLUMN_NAMES = [SEMESTER, GROUPCODE, SUBJECTID,
-                            TEACHERID, STARTTIME, ENDTIME, DEVICEID, ID]
+                            TEACHERID, STARTTIME, ENDTIME, DEVICEID, 
+                            ID, VECTOR, INDEX, THRESHOLD]
             df = pd.DataFrame(columns=COLUMN_NAMES)
             df.to_csv(SCHEDULE_PATH, index=False)
         # Create logger for consumer (logs will be emitted when poll() is called)
@@ -118,7 +119,7 @@ class config():
         # Hint: try debug='fetch' to generate some log messages
         config.consumer_schedule = Consumer(conf_consumer, logger=logger)
         config.consumer_update = Consumer(conf_consumer, logger=logger)
-        config.consumer_data = Consumer(conf_consumer, logger=logger)
+        # config.consumer_data = Consumer(conf_consumer, logger=logger)
         # config.consumer_delete = Consumer(conf_consumer, logger=logger)
         config.consumer_result = Consumer(conf_consumer, logger=logger)
         config.producer_attendance = Producer(**conf_producer)
@@ -128,10 +129,10 @@ class config():
             print('Assignment:', partitions)
 
         # Subscribe to topics
-        config.consumer_schedule.subscribe(TOPIC_SCHEDULE, on_assign=print_assignment)
+        config.consumer_schedule.subscribe(TOPIC_DATA, on_assign=print_assignment)
         config.consumer_update.subscribe(TOPIC_UPDATE, on_assign=print_assignment)
         # config.consumer_delete.subscribe(TOPIC_DELETE, on_assign=print_assignment)
-        config.consumer_data.subscribe(TOPIC_DATA, on_assign=print_assignment)
+        # config.consumer_data.subscribe(TOPIC_DATA, on_assign=print_assignment)
         config.consumer_result.subscribe(TOPIC_RESULT, on_assign=print_assignment)  
 
         self.config = {"apiKey": "AIzaSyDvyKgZQdDzn49T_QX-vox-RwawATduCo0",
@@ -142,23 +143,15 @@ class config():
                        "databaseURL": "https://capstone-bk-default-rtdb.firebaseio.com",
                        "appId": "1:616596048413:web:b409fa85dca7cbe5d854f4",
                        "serviceAccount": "./serviceAccount.json"}
-        
-        # self.config = {"apiKey": "AIzaSyCjBIdU00hA1lPVz2VSJAq6SlSSwt0Xzb8",
-        #                "authDomain": "attendance-system-202.firebaseapp.com",
-        #                "projectId": "attendance-system-202",
-        #                "storageBucket": "attendance-system-202.appspot.com",
-        #                "messagingSenderId": "158714846973",
-        #                "databaseURL": "https://capstone-bk-default-rtdb.firebaseio.com",
-        #                "appId": "1:158714846973:web:69f2321172bb4a325c6894  ",
-        #                "serviceAccount": "./serviceAccount.json"}
 
         self.firebase = pyrebase.initialize_app(self.config)
         self.storage = self.firebase.storage()
-     
+
+        self.data_flag = True
 
     def schedule(self):
         # Read messages from Kafka, print to stdout
-        msg = config.consumer_schedule.poll(timeout=0.01)
+        msg = config.consumer_schedule.poll(0)
         if msg is None:
             return
         if msg.error():
@@ -187,16 +180,32 @@ class config():
             return FREE
         df.sort_values(STARTTIME)
         if  get_time() >= df[STARTTIME][0] and  get_time() <= df[ENDTIME][0] and \
-            os.path.exists(VECTOR_PATH) and os.path.exists(INDEX_PATH) and os.path.exists(THRESHOLD_PATH):
-            mAILIBS.CLASSIFIER.update(VECTOR_PATH, INDEX_PATH, THRESHOLD_PATH)
+            os.path.exists(VECTOR_PATH) and os.path.exists(INDEX_PATH) and os.path.exists(THRESHOLD_PATH):    
             return CHECKIN
         else:
             while get_time() > int(df[ENDTIME][0]):
                 df = df.drop(df.index[0])
                 df = df.reset_index()
                 print(df)
+                self.data_flag = True
+                if os.path.exists(VECTOR_PATH):
+                    os.remove(VECTOR_PATH)
+                if os.path.exists(INDEX_PATH):
+                    os.remove(INDEX_PATH)
+                if os.path.exists(THRESHOLD_PATH):
+                    os.remove(THRESHOLD_PATH)
                 if df.empty:
                     break
+            if not df.empty:
+                if not os.path.exists(VECTOR_PATH):
+                    self.download_file(df[VECTOR][0], VECTOR_PATH)      
+                if not os.path.exists(INDEX_PATH):
+                    self.download_file(df[INDEX][0], INDEX_PATH)
+                if not os.path.exists(THRESHOLD_PATH):
+                    self.download_file(df[THRESHOLD][0], THRESHOLD_PATH)
+                if os.path.exists(VECTOR_PATH) and os.path.exists(INDEX_PATH) and os.path.exists(THRESHOLD_PATH) and self.data_flag:
+                    mAILIBS.CLASSIFIER.update(VECTOR_PATH, INDEX_PATH, THRESHOLD_PATH)
+                    self.data_flag = False          
             df.to_csv(SCHEDULE_PATH, index=False)
         return FREE 
 
@@ -213,7 +222,7 @@ class config():
             return FREE
         df.sort_values(STARTTIME)
         log = {USERID: user[NAME], FEATURE: user[FEATURE], SEMESTER: str(df[SEMESTER][0]), GROUPCODE: df[GROUPCODE][0], 
-               SUBJECTID: df[SUBJECTID][0], TIMESTAMP: str(get_time()), DEVICEID: str(df[DEVICEID][0]), 
+               SUBJECTID: df[SUBJECTID][0], TIMESTAMP: str(datetime.now(gettz("Asia/Ho_Chi_Minh")).strftime("%Y-%m-%d %H:%M:%S")), DEVICEID: str(df[DEVICEID][0]), 
                BASE64: encoded_string, TEACHERID: str(df[TEACHERID][0]), ISMATCHED: flag}
         msg = json.dumps(log)
         config.producer_attendance.produce(TOPIC_ATTENDANCE, msg, callback=delivery_callback)
@@ -232,7 +241,7 @@ class config():
 
     def attendance_result(self):
         # Read messages from Kafka, print to stdout
-        msg = config.consumer_result.poll(timeout=0.01)
+        msg = config.consumer_result.poll(0)
         if msg is None:
             return ""
         if msg.error():
@@ -247,7 +256,7 @@ class config():
     
     def update(self):
         # Read messages from Kafka, print to stdout
-        msg = config.consumer_update.poll(timeout=0.01)
+        msg = config.consumer_update.poll(0)
         # time.sleep(10)
         if msg is None:
             return
@@ -286,39 +295,39 @@ class config():
     #         df = df.drop(df.index[df.index[df[ID] == data[ID]].tolist()[0]])
     #         df.to_csv(SCHEDULE_PATH, index=False)
 
-    def update_data(self):
-        # Read messages from Kafka, print to stdout
-        msg = config.consumer_data.poll(timeout=0.01)
-        # time.sleep(10)
-        if msg is None:
-            return
-        if msg.error():
-            raise KafkaException(msg.error())
-        else:
-            # Proper message
-            sys.stderr.write('%% %s [%d] at offset %d with key %s:\n' %
-                            (msg.topic(), msg.partition(), msg.offset(),
-                            str(msg.key())))
-            print("****** UPDATE DATA SUCCESS *******")
-            my_json = msg.value().decode('utf8')
-            data = json.loads(my_json)
-            list_files = self.storage.child("faiss").list_files()
-            list_name = []
-            for file in list_files:
-                if file.name.split("/")[0]=="faiss" and len(file.name.split("/"))>1:
-                    list_name.append(file.name)
-            for name in list_name:
-                if name.split("/")[1]=="faiss":
-                    self.download_file(name.split("/",1)[1], METADATA_PATH)
-            for name in list_name:
-                if name.split("/")[1]!="faiss":
-                    if name.split("/")[3]==VECTOR_FILE:
-                        self.download_file(name, VECTOR_PATH)
-                    if name.split("/")[3]==INDEX_FILE:
-                        self.download_file(name, INDEX_PATH)
-                    if name.split("/")[3]==THRESHOLD_FILE:
-                        self.download_file(name, THRESHOLD_PATH)
-            mAILIBS.CLASSIFIER.update(VECTOR_PATH, INDEX_PATH, THRESHOLD_PATH)
+    # def update_data(self):
+    #     # Read messages from Kafka, print to stdout
+    #     msg = config.consumer_data.poll(timeout=0.01)
+    #     # time.sleep(10)
+    #     if msg is None:
+    #         return
+    #     if msg.error():
+    #         raise KafkaException(msg.error())
+    #     else:
+    #         # Proper message
+    #         sys.stderr.write('%% %s [%d] at offset %d with key %s:\n' %
+    #                         (msg.topic(), msg.partition(), msg.offset(),
+    #                         str(msg.key())))
+    #         print("****** UPDATE DATA SUCCESS *******")
+    #         my_json = msg.value().decode('utf8')
+    #         data = json.loads(my_json)
+    #         list_files = self.storage.child("faiss").list_files()
+    #         list_name = []
+    #         for file in list_files:
+    #             if file.name.split("/")[0]=="faiss" and len(file.name.split("/"))>1:
+    #                 list_name.append(file.name)
+    #         for name in list_name:
+    #             if name.split("/")[1]=="faiss":
+    #                 self.download_file(name.split("/",1)[1], METADATA_PATH)
+    #         for name in list_name:
+    #             if name.split("/")[1]!="faiss":
+    #                 if name.split("/")[3]==VECTOR_FILE:
+    #                     self.download_file(name, VECTOR_PATH)
+    #                 if name.split("/")[3]==INDEX_FILE:
+    #                     self.download_file(name, INDEX_PATH)
+    #                 if name.split("/")[3]==THRESHOLD_FILE:
+    #                     self.download_file(name, THRESHOLD_PATH)
+    #         mAILIBS.CLASSIFIER.update(VECTOR_PATH, INDEX_PATH, THRESHOLD_PATH)
     
     def download_file(self, path_on_cloud, path_local):
         self.storage.child(path_on_cloud).download(path_local)
