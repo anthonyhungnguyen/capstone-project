@@ -142,15 +142,6 @@ class config():
                        "databaseURL": "https://capstone-bk-default-rtdb.firebaseio.com",
                        "appId": "1:616596048413:web:b409fa85dca7cbe5d854f4",
                        "serviceAccount": "./serviceAccount.json"}
-        
-        # self.config = {"apiKey": "AIzaSyCjBIdU00hA1lPVz2VSJAq6SlSSwt0Xzb8",
-        #                "authDomain": "attendance-system-202.firebaseapp.com",
-        #                "projectId": "attendance-system-202",
-        #                "storageBucket": "attendance-system-202.appspot.com",
-        #                "messagingSenderId": "158714846973",
-        #                "databaseURL": "https://capstone-bk-default-rtdb.firebaseio.com",
-        #                "appId": "1:158714846973:web:69f2321172bb4a325c6894  ",
-        #                "serviceAccount": "./serviceAccount.json"}
 
         self.firebase = pyrebase.initialize_app(self.config)
         self.storage = self.firebase.storage()

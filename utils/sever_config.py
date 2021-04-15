@@ -22,24 +22,30 @@ BOOTSTRAP_SERVER = "localhost:9092"
 GROUP = "None"
 TOPIC_REGISTER = ["register"]
 TOPIC_SCHEDULE = ["schedule"]
+TOPIC_CHECKIN = ["checkin"]
 TOPIC_DATA = "data"
 USERID = "userId"
 PHOTO = "photo"
 VECTOR = "vector"
 INDEX = "index"
 THRESHOLD = "threshold"
+SUBJECT = "subject"
+
 VECTOR_FILE = "vector.index"
 FEATURE_FILE = "features.pickle"
 INDEX_FILE = "index.pickle"
 THRESHOLD_FILE = "threshold.pickle"
 METADATA_FILE = "metadata.json"
+CHECKIN_NPY_FILE = "checkin.npy"
+
 VECTOR_PATH = os.path.join(PYTHON_PATH, "ailibs_data", "data", VECTOR_FILE)
 FEATURE_PATH = os.path.join(PYTHON_PATH, "ailibs_data", "data", FEATURE_FILE)
 INDEX_PATH = os.path.join(PYTHON_PATH, "ailibs_data", "data", INDEX_FILE)
 THRESHOLD_PATH = os.path.join(
     PYTHON_PATH, "ailibs_data", "data", THRESHOLD_FILE)
 METADATA_PATH = os.path.join(PYTHON_PATH, "ailibs_data", "data", METADATA_FILE)
-SUBJECT = "subject"
+CHECKIN_NPY_PATH = os.path.join(PYTHON_PATH, "ailibs_data", "data", CHECKIN_NPY_FILE)
+
 
 conf_consumer = {'bootstrap.servers': BOOTSTRAP_SERVER, 'group.id': GROUP, 'session.timeout.ms': 6000,
                  'auto.offset.reset': 'smallest', 'fetch.message.max.bytes': 15728640,
@@ -67,6 +73,7 @@ def delivery_callback(err, msg):
 
 class config():
     consumer_register = None
+    consumer_schedule = None
     consumer_checkin = None
     producer_data = None
 
@@ -87,6 +94,7 @@ class config():
         # Create Consumer instance
         # Hint: try debug='fetch' to generate some log messages
         config.consumer_register = Consumer(conf_consumer, logger=logger)
+        config.consumer_schedule = Consumer(conf_consumer, logger=logger)
         config.consumer_checkin = Consumer(conf_consumer, logger=logger)
         config.producer_data = Producer(**conf_producer)
 
@@ -96,6 +104,8 @@ class config():
         # Subscribe to topics
         config.consumer_register.subscribe(
             TOPIC_REGISTER, on_assign=print_assignment)
+        config.consumer_schedule.subscribe(
+            TOPIC_SCHEDULE, on_assign=print_assignment)
         config.consumer_checkin.subscribe(
             TOPIC_SCHEDULE, on_assign=print_assignment)
 
@@ -110,6 +120,23 @@ class config():
         self.firebase = pyrebase.initialize_app(self.config)
         self.storage = self.firebase.storage()
 
+    def schedule(self):
+        # Read messages from Kafka, print to stdout
+        msg = config.consumer_schedule.poll(0)
+        if msg is None:
+            return None, False
+        if msg.error():
+            raise KafkaException(msg.error())
+        else:
+            # Proper message
+            sys.stderr.write('%% %s [%d] at offset %d with key %s:\n' %
+                             (msg.topic(), msg.partition(), msg.offset(),
+                              str(msg.key())))
+            print("*** GET VECTOR SUCCESS ***")
+            my_json = msg.value().decode('utf8').replace("'", '"')
+            data = json.loads(my_json)
+            return data, True
+
     def checkin(self):
         # Read messages from Kafka, print to stdout
         msg = config.consumer_checkin.poll(0)
@@ -122,7 +149,7 @@ class config():
             sys.stderr.write('%% %s [%d] at offset %d with key %s:\n' %
                              (msg.topic(), msg.partition(), msg.offset(),
                               str(msg.key())))
-            print("*** GET VECTOR SUCCESS ***")
+            print("*** GET CHECKIN SUCCESS ***")
             my_json = msg.value().decode('utf8').replace("'", '"')
             data = json.loads(my_json)
             return data, True
@@ -206,6 +233,12 @@ class config():
         config.producer_data.poll(0)
         sys.stderr.write('%% Waiting for %d deliveries\n' % len(config.producer_data))
         config.producer_data.flush()
+
+    def commit_checkin(self, name, path_on_cloud):
+        BASE_CHECKIN_PATH = os.path.join(path_on_cloud, f"{name}.npy")
+
+        self.put_file(BASE_CHECKIN_PATH, CHECKIN_NPY_PATH)
+        os.remove(CHECKIN_NPY_PATH)
 
     def put_file(self, path_on_cloud, path_local):
         self.storage.child(path_on_cloud).put(path_local)

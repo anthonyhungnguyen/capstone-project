@@ -21,6 +21,9 @@ mAILIBS = AILIBS
 
 META = "lastMetaDataPath"
 STUDENT = "student"
+FEATURE = "feature"
+TIMESTAMP = "timestamp"
+NPY_PATH = "npy_path"
 MIN_DIST = 60.15
 
 VECTOR_FILE = "vector.index"
@@ -28,6 +31,7 @@ FEATURE_FILE = "features.pickle"
 INDEX_FILE = "index.pickle"
 THRESHOLD_FILE = "threshold.pickle"
 FEATURE_NPY_FILE = "feature.npy"
+CHECKIN_NPY_FILE = "checkin.npy"
 METADATA_FILE = "metadata.json"
 STUDENT_PATH_LIST = "student_path_list"
 CREATED_AT = "created_at"
@@ -38,6 +42,7 @@ FEATURE_NPY_PATH = os.path.join(PYTHON_PATH, "ailibs_data", "data", FEATURE_NPY_
 THRESHOLD_PATH = os.path.join(
     PYTHON_PATH, "ailibs_data", "data", THRESHOLD_FILE)
 METADATA_PATH = os.path.join(PYTHON_PATH, "ailibs_data", "data", METADATA_FILE)
+CHECKIN_NPY_PATH = os.path.join(PYTHON_PATH, "ailibs_data", "data", CHECKIN_NPY_FILE)
 
 
 
@@ -47,7 +52,7 @@ class Main():
 
     def run(self):
         while True:
-            data, flag = mCONFIG.checkin()
+            data, flag = mCONFIG.schedule()
             if flag:
                 faiss_flag = mCONFIG.check_faiss(data[META])
                 if faiss_flag:
@@ -92,6 +97,13 @@ class Main():
                     pickle.dump(threshold, handle,
                                 protocol=pickle.HIGHEST_PROTOCOL)
                 mCONFIG.send_data(timestamp, data[META])
+
+            data, flag = mCONFIG.checkin()
+            if flag:
+                feature_vector = np.array(data[FEATURE]).astype(np.float32)
+                np.save(CHECKIN_NPY_PATH, feature_vector)
+                mCONFIG.commit_checkin(data[TIMESTAMP], data[NPY_PATH])
+
 
 
 if __name__ == '__main__':
