@@ -107,7 +107,7 @@ class config():
         config.consumer_schedule.subscribe(
             TOPIC_SCHEDULE, on_assign=print_assignment)
         config.consumer_checkin.subscribe(
-            TOPIC_SCHEDULE, on_assign=print_assignment)
+            TOPIC_CHECKIN, on_assign=print_assignment)
 
         self.config = {"apiKey": "AIzaSyDvyKgZQdDzn49T_QX-vox-RwawATduCo0",
                        "authDomain": "capstone-bk.firebaseapp.com",

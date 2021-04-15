@@ -96,13 +96,13 @@ class Main():
                 with open(THRESHOLD_PATH, "wb") as handle:
                     pickle.dump(threshold, handle,
                                 protocol=pickle.HIGHEST_PROTOCOL)
-                mCONFIG.send_data(timestamp, data[META])
+                mCONFIG.send_data(timestamp, data[META],data)
 
             data, flag = mCONFIG.checkin()
             if flag:
                 feature_vector = np.array(data[FEATURE]).astype(np.float32)
                 np.save(CHECKIN_NPY_PATH, feature_vector)
-                mCONFIG.commit_checkin(data[TIMESTAMP], data[NPY_PATH])
+                mCONFIG.commit_checkin(data[TIMESTAMP], data[NPY_PATH],data)
 
 
 
