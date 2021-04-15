@@ -21,7 +21,7 @@ import faiss
 BOOTSTRAP_SERVER = "localhost:9092"
 GROUP = "None"
 TOPIC_REGISTER = ["register"]
-TOPIC_CHECKIN = ["schedule"]
+TOPIC_SCHEDULE = ["schedule"]
 TOPIC_DATA = "data"
 USERID = "userId"
 PHOTO = "photo"
@@ -97,7 +97,7 @@ class config():
         config.consumer_register.subscribe(
             TOPIC_REGISTER, on_assign=print_assignment)
         config.consumer_checkin.subscribe(
-            TOPIC_CHECKIN, on_assign=print_assignment)
+            TOPIC_SCHEDULE, on_assign=print_assignment)
 
         self.config = {"apiKey": "AIzaSyDvyKgZQdDzn49T_QX-vox-RwawATduCo0",
                        "authDomain": "capstone-bk.firebaseapp.com",
@@ -174,7 +174,7 @@ class config():
                 threshold.append(harmonic)
         return threshold
 
-    def send_data(self,timestamp, path_on_cloud):
+    def send_data(self,timestamp, path_on_cloud, log):
         SUBJECT_CODE = path_on_cloud.split("/")[1]
         BASE_METADATA_PATH = os.path.join(
             SUBJECT, SUBJECT_CODE, timestamp, METADATA_FILE)
@@ -197,6 +197,15 @@ class config():
         os.remove(INDEX_PATH)
         os.remove(THRESHOLD_PATH)
         os.remove(METADATA_PATH)
+
+        log[VECTOR] = BASE_VECTOR_PATH
+        log[INDEX] = BASE_INDEX_PATH
+        log[THRESHOLD] = BASE_THRESHOLD_PATH
+        msg = json.dumps(log)
+        config.producer_data.produce(TOPIC_DATA, msg, callback=delivery_callback)
+        config.producer_data.poll(0)
+        sys.stderr.write('%% Waiting for %d deliveries\n' % len(config.producer_data))
+        config.producer_data.flush()
 
     def put_file(self, path_on_cloud, path_local):
         self.storage.child(path_on_cloud).put(path_local)
