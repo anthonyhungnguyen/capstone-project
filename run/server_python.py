@@ -6,6 +6,7 @@ import numpy as np
 import faiss
 from tqdm import tqdm
 import json
+from dateutil.tz import gettz
 
 from __init__ import PYTHON_PATH
 from utils.AIlibs import AILIBS
@@ -70,7 +71,7 @@ class Main():
                     y.append(userid)
                 with open(METADATA_PATH) as json_file:
                     meta = json.load(json_file)
-                timestamp = str(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+                timestamp = str(datetime.now(gettz("Asia/Ho_Chi_Minh")).strftime("%Y-%m-%d %H:%M:%S"))
                 meta[STUDENT_PATH_LIST].append(data[STUDENT])
                 meta[CREATED_AT] = timestamp
                 with open(METADATA_PATH, 'w') as outfile:

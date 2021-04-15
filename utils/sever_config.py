@@ -21,7 +21,7 @@ import faiss
 BOOTSTRAP_SERVER = "localhost:9092"
 GROUP = "None"
 TOPIC_REGISTER = ["register"]
-TOPIC_CHECKIN = ["checkin"]
+TOPIC_CHECKIN = ["schedule"]
 TOPIC_DATA = "data"
 USERID = "userId"
 PHOTO = "photo"
@@ -112,7 +112,7 @@ class config():
 
     def checkin(self):
         # Read messages from Kafka, print to stdout
-        msg = config.consumer_checkin.poll(timeout=0.1)
+        msg = config.consumer_checkin.poll(0)
         if msg is None:
             return None, False
         if msg.error():
