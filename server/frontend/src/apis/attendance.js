@@ -1,5 +1,6 @@
 import axios from "axios"
 import authHeader from "helpers/auth-header"
+import { firebase_storage } from "apis/firebase"
 import { API_PATH } from "../constants/api"
 
 export const fetchLogs = userid => {

@@ -10,4 +10,5 @@ import org.springframework.context.annotation.Configuration;
 public class FirebaseProperties {
     private String bucketName;
     private String imageUrl;
+    private String serviceAccountPath;
 }

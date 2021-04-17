@@ -23,7 +23,6 @@ public class UserMapper {
     public UserMapper(ModelMapper modelMapper, PasswordEncoder passwordEncoder) {
         UserMapper.modelMapper = modelMapper;
         UserMapper.passwordEncoder = passwordEncoder;
-
     }
 
     public static UserDto toUserDto(User user) {

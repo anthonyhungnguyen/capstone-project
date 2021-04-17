@@ -1,6 +1,8 @@
+import { TimePicker } from "antd"
 import axios from "axios"
 import authHeader from "helpers/auth-header"
 import { API_PATH } from "../constants/api"
+import { firebase_storage } from "./firebase"
 
 export const cropFaceApi = photo => {
   return new Promise((resolve, reject) => {
@@ -52,5 +54,29 @@ export const getFaces = userid => {
         resolve(response.data)
       })
       .catch(reject)
+  })
+}
+
+export const fetchFaces = (userid, folder) => {
+  return new Promise((resolve, reject) => {
+    firebase_storage
+      .ref(`/student/${userid}/${folder}/photos`)
+      .list()
+      .then(blob => {
+        return blob.items.map(i => i.getDownloadURL())
+      })
+      .then(urlArray => Promise.all(urlArray).then(resolve))
+  })
+}
+
+export const fetchFacesMetadata = (userid, folder) => {
+  return new Promise((resolve, reject) => {
+    firebase_storage
+      .ref(`/student/${userid}/${folder}/photos`)
+      .list()
+      .then(blob => {
+        return blob.items.map(i => i.getMetadata())
+      })
+      .then(urlArray => Promise.all(urlArray).then(resolve))
   })
 }

@@ -18,6 +18,11 @@ public class LogService {
         this.logRepository = logRepository;
     }
 
+    public List<Log> findLogsBasedOnUserID(Integer userid) {
+        return logRepository.findByUserID(userid);
+    }
+
+
     public boolean checkAttendanceExist(AttendanceRequest request, Schedule schedule) {
         List<Log> logs =
                 logRepository.findByUserIDAndSemesterAndGroupCodeAndSubjectIDAndAttendanceTimeBetween(request.getUserID(),
@@ -25,7 +30,7 @@ public class LogService {
         return logs.size() > 0;
     }
 
-    public Log save(AttendanceRequest attendanceRequest, String imageID) {
+    public Log save(AttendanceRequest attendanceRequest) {
         Log log = Log.builder()
                 .userID(attendanceRequest.getUserID())
                 .semester(attendanceRequest.getSemester())
@@ -34,7 +39,6 @@ public class LogService {
                 .teacherID(attendanceRequest.getTeacherID())
                 .deviceID(attendanceRequest.getDeviceID())
                 .attendanceTime(DateUtil.convertStringToTimestamp(attendanceRequest.getTimestamp()))
-                .imageID(imageID)
                 .build();
         return logRepository.save(log);
     }

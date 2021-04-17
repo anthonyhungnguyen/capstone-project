@@ -2,7 +2,8 @@ package com.thesis.backend.service;
 
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.storage.*;
-import com.thesis.backend.util.DateUtil;
+import com.thesis.backend.config.props.FirebaseProperties;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.io.ClassPathResource;
@@ -18,14 +19,20 @@ import java.util.stream.Collectors;
 @Service
 public class FirebaseService {
     private Storage storage;
+    private final FirebaseProperties firebaseProperties;
+
+    @Autowired
+    public FirebaseService(FirebaseProperties firebaseProperties) {
+        this.firebaseProperties = firebaseProperties;
+    }
 
     @EventListener
     public void init(ApplicationReadyEvent event) {
         try {
-            ClassPathResource serviceAccount = new ClassPathResource("serviceAccount.json");
-            storage = StorageOptions.newBuilder().
-                    setCredentials(GoogleCredentials.fromStream(serviceAccount.getInputStream())).
-                    setProjectId("YOUR_PROJECT_ID").build().getService();
+            ClassPathResource serviceAccount = new ClassPathResource(firebaseProperties.getServiceAccountPath());
+            storage = StorageOptions.newBuilder()
+                    .setCredentials(GoogleCredentials.fromStream(serviceAccount.getInputStream()))
+                    .build().getService();
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -34,14 +41,14 @@ public class FirebaseService {
     public String downloadMetadata(String classCode) {
         List<String> metadataList = listFiles("subject/" + classCode).stream().filter(l -> l.contains("json")).collect(Collectors.toList());
         String lastMeta = metadataList.get(metadataList.size() - 1);
-        Blob blob = storage.get(BlobId.of("capstone-bk.appspot.com", lastMeta));
+        Blob blob = storage.get(BlobId.of(firebaseProperties.getBucketName(), lastMeta));
         blob.downloadTo(Paths.get("/home/phuchung/temp.json"));
         return lastMeta;
     }
 
     public List<String> listFiles(String prefix) {
         List<String> path = new ArrayList<>();
-        Iterable<Blob> blobIterator = storage.list("capstone-bk.appspot.com", Storage.BlobListOption.prefix(prefix)).iterateAll();
+        Iterable<Blob> blobIterator = storage.list(firebaseProperties.getBucketName(), Storage.BlobListOption.prefix(prefix)).iterateAll();
         blobIterator.forEach(blob -> {
             path.add(blob.getName());
         });
@@ -67,20 +74,23 @@ public class FirebaseService {
 
     public String saveImg(String base64, String studentID, String timestamp) throws IOException {
         Map<String, String> newMap = new HashMap<>();
-        String imageName = UUID.randomUUID().toString();
-        newMap.put("firebaseStorageDownloadTokens", imageName);
-        BlobId blobId = BlobId.of("capstone-bk.appspot.com", String.format("students/%s/attendance/photos/%s.jpg", studentID, timestamp));
+        newMap.put("firebaseStorageDownloadTokens", UUID.randomUUID().toString());
+        String path = String.format("students/%s/attendance/photos/%s.jpg", studentID, timestamp);
+        BlobId blobId = BlobId.of(firebaseProperties.getBucketName(), path);
         BlobInfo blobInfo = BlobInfo.newBuilder(blobId)
                 .setMetadata(newMap)
                 .setContentType("image/jpeg")
                 .build();
-        storage.create(blobInfo, base64.getBytes(StandardCharsets.UTF_8));
-        return imageName;
+        Blob blob = storage.create(blobInfo, base64.getBytes(StandardCharsets.UTF_8));
+        return path;
     }
 
-    private String generateFileName(String originalFileName) {
-        return UUID.randomUUID().toString() + "." + getExtension(originalFileName);
+    public String getDownloadUrlOnPath(String path) {
+        BlobId blobId = BlobId.of(firebaseProperties.getBucketName(), path);
+        System.out.println(blobId.toString());
+        return blobId.getName();
     }
+
 
     private String getExtension(String originalFileName) {
         return StringUtils.getFilenameExtension(originalFileName);

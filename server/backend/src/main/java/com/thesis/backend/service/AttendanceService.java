@@ -5,7 +5,6 @@ import com.thesis.backend.dto.model.SubjectDto;
 import com.thesis.backend.dto.model.SubjectIDDto;
 import com.thesis.backend.dto.model.UserDto;
 import com.thesis.backend.dto.request.AttendanceRequest;
-import com.thesis.backend.model.Schedule;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -14,7 +13,6 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 @Service
 public class AttendanceService {
@@ -48,7 +46,9 @@ public class AttendanceService {
         String result = checkAttendanceUtil(attendanceRequest);
         kafkaTemplate.send(ATTENDANCE_RESULT_TOPIC, result);
         if (result.equals("Successfully")) {
-            firebaseService.saveImg(attendanceRequest.getImgSrcBase64(), attendanceRequest.getUserID().toString(), attendanceRequest.getTimestamp());
+            String savedPath = firebaseService.saveImg(attendanceRequest.getImgSrcBase64(), attendanceRequest.getUserID().toString(), attendanceRequest.getTimestamp());
+            String downloadUrl = firebaseService.getDownloadUrlOnPath(savedPath);
+            logService.save(attendanceRequest);
             Map<String, Object> checkinResult = new HashMap<>();
             checkinResult.put("timestamp", attendanceRequest.getTimestamp());
             checkinResult.put("feature", attendanceRequest.getFeature());
@@ -63,15 +63,14 @@ public class AttendanceService {
         SubjectDto subjectDto = subjectService.find(new SubjectIDDto(attendanceRequest.getSubjectID(),
                 attendanceRequest.getGroupCode(),
                 attendanceRequest.getSemester()));
-        Optional<Schedule> schedule = scheduleService.existScheduleRightNow(attendanceRequest.getDeviceID());
-
-        if (enrollmentService.checkDidEnrolled(userDto, subjectDto)) {
-            if (!logService.checkAttendanceExist(attendanceRequest, schedule.get())) {
-                logService.save(attendanceRequest, "123");
-                return "Successfully";
-            }
-            return "Exists ";
-        }
-        return "Unknown";
+//        Optional<Schedule> schedule = scheduleService.existScheduleRightNow(attendanceRequest.getDeviceID());
+        return "Successfully";
+//        if (enrollmentService.checkDidEnrolled(userDto, subjectDto)) {
+//            if (!logService.checkAttendanceExist(attendanceRequest, schedule.get())) {
+//                return "Successfully";
+//            }
+//            return "Exists ";
+//        }
+//        return "Unknown";
     }
 }

@@ -63,4 +63,14 @@ public class AuthController {
     public ResponseEntity<Boolean> register(@Valid @RequestBody SignUpRequest signUpRequest) {
         return ResponseEntity.ok(userService.register(signUpRequest));
     }
+
+    @GetMapping("/fill_password")
+    public ResponseEntity<Boolean> fillPassword() {
+        return ResponseEntity.ok(userService.fillPassword());
+    }
+
+    @GetMapping("/fill_roles")
+    public ResponseEntity<Boolean> fillRoles() {
+        return ResponseEntity.ok(userService.fillRole());
+    }
 }

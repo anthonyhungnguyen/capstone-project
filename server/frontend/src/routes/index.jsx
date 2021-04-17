@@ -2,7 +2,6 @@ import React from "react"
 import { BrowserRouter } from "react-router-dom"
 import LoginRoute from "./LoginRoute"
 import LandingRoute from "./LandingRoute"
-import FaceEnrollRoute from "./FaceEnrollRoute"
 import FaceProfileRoute from "./FaceProfileRoute"
 import ProfileRoute from "./ProfileRoute"
 import TeacherHomeRoute from "./Teacher/TeacherHomeRoute"
@@ -16,7 +15,6 @@ export default function Routes() {
     <BrowserRouter>
       <LoginRoute />
       <LandingRoute />
-      <FaceEnrollRoute />
       <FaceProfileRoute />
       <StudentLogsRoute />
       <ProfileRoute />

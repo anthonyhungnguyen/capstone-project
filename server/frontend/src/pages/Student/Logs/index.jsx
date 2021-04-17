@@ -2,15 +2,24 @@ import MainLayout from "layouts/MainLayout"
 import React, { useEffect, useState } from "react"
 import { useSelector } from "react-redux"
 import { fetchLogs } from "apis/attendance"
+import { fetchFaces, fetchFacesMetadata } from "apis/face"
 
 export default function StudentLogs() {
   const [data, setData] = useState(null)
   const { user } = useSelector(state => state.auth)
   const { userid } = user
   useEffect(() => {
-    fetchLogs(userid).then(setData)
+    const fetchData = async () => {
+      const info = await fetchLogs(userid).then(data)
+      const photos = await fetchFaces(userid, "attendance").then(data)
+      const result = info.map((i, index) => ({
+        info: i,
+        photo: photos[index]
+      }))
+      setData(result)
+    }
+    fetchData()
   }, [])
-  console.log(data)
 
   return (
     <MainLayout>
@@ -18,14 +27,11 @@ export default function StudentLogs() {
         {data &&
           data.map(d => (
             <div>
-              <img
-                src={`data:image/jpeg;base64,${d.imgSrcBase64}`}
-                style={{ height: "200px" }}
-              />
-              <p>{d.semester}</p>
-              <p>{d.groupCode}</p>
-              <p>{d.subjectID}</p>
-              <p>{d.timestamp}</p>
+              <img src={d.photo} style={{ height: "200px" }} alt="attendance" />
+              <p>{d.info.semester}</p>
+              <p>{d.info.groupCode}</p>
+              <p>{d.info.subjectID}</p>
+              <p>{d.info.timestamp}</p>
             </div>
           ))}
       </div>

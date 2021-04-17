@@ -17,6 +17,36 @@ face_instance = face_request.FaceRequest(FACE_SERVER)
 drive = drive_instance.authorize_drive()
 
 
+def find_differences_drive_firebase():
+    all_student_folders = drive_instance.load_all_folders_files(
+        drive, drive_instance.ROOT_ID)
+    all_firebase_paths = firebase_instance.get_all_register_urls()
+    drive_raw = []
+    firebase_raw = []
+    drive_id = []
+    for folder_ in tqdm(all_student_folders):
+        student_id = folder_['title']
+        student_files = drive_instance.load_all_folders_files(
+            drive, folder_['id'])
+        for index, file_ in enumerate(student_files):
+            drive_raw.append(f'{student_id}_{index}.jpg')
+            drive_id.append(file_)
+    for file_ in tqdm(all_firebase_paths):
+        path_list = file_.split('/')
+        student_id = path_list[1]
+        filename = path_list[-1]
+        firebase_raw.append(f'{student_id}_{filename}')
+    differences = list(set(drive_raw) - set(firebase_raw))
+    for d in differences:
+        file_ = drive_id[drive_raw.index(d)]
+        path_list = d.split('_')
+        student_id = path_list[0]
+        index = path_list[1]
+        drive_instance.save_image_by_id(drive, file_['id'], 'temp.jpg')
+        firebase_instance.put_image(
+            f"student/{student_id}/register/photos/{index}", './temp.jpg', str(uuid.uuid4()))
+
+
 def sync_all_register_photos():
     all_students_folder = drive_instance.load_all_folders_files(
         drive, drive_instance.ROOT_ID)
@@ -85,4 +115,4 @@ def intt_students():
     df.to_csv('subjects_mysql.csv', index=False)
 
 
-init_class()
+save_features()
