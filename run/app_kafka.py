@@ -42,7 +42,7 @@ CHECKED_PATH = os.path.join(PYTHON_PATH, "ailibs_data/log/image/frame.jpg")
 VECTOR_PATH = os.path.join(PYTHON_PATH, "ailibs_data", "classifier", "faiss", "vector.index")
 INDEX_PATH = os.path.join(PYTHON_PATH, "ailibs_data", "classifier", "faiss", "index.npy")
 THRES_PATH = os.path.join(PYTHON_PATH, "ailibs_data", "classifier", "faiss", "threshold.npy")
-STREAM_PATH = 0
+STREAM_PATH = 2
 # STREAM_PATH = "/home/hoangphuc/Documents/semester202/thesis/deploy/test/video/test0.MOV"
 # STREAM_PATH = "/home/hoangphuc/Documents/semester202/thesis/deploy/test/image/dat.jpg"
 
