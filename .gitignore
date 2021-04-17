@@ -130,3 +130,7 @@ dmypy.json
 .DS_Store
 
 *.jpg
+*.csv
+*.json
+*.lock
+node_modules/*

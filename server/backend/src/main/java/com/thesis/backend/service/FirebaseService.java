@@ -2,14 +2,15 @@ package com.thesis.backend.service;
 
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.storage.*;
+import com.thesis.backend.util.DateUtil;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -64,16 +65,16 @@ public class FirebaseService {
         }).collect(Collectors.toList());
     }
 
-    public String saveMetadata(MultipartFile file, Map<String, String> map) throws IOException {
-        String imageName = generateFileName(file.getOriginalFilename());
+    public String saveImg(String base64, String studentID, String timestamp) throws IOException {
         Map<String, String> newMap = new HashMap<>();
+        String imageName = UUID.randomUUID().toString();
         newMap.put("firebaseStorageDownloadTokens", imageName);
-        BlobId blobId = BlobId.of("YOUR_BUCKET_NAME", imageName);
+        BlobId blobId = BlobId.of("capstone-bk.appspot.com", String.format("students/%s/attendance/photos/%s.jpg", studentID, timestamp));
         BlobInfo blobInfo = BlobInfo.newBuilder(blobId)
                 .setMetadata(newMap)
-                .setContentType(file.getContentType())
+                .setContentType("image/jpeg")
                 .build();
-        storage.create(blobInfo, file.getInputStream());
+        storage.create(blobInfo, base64.getBytes(StandardCharsets.UTF_8));
         return imageName;
     }
 
