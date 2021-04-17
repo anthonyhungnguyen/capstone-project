@@ -4,11 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thesis.backend.constant.EntityType;
 import com.thesis.backend.constant.ExceptionType;
 import com.thesis.backend.dto.mapper.ScheduleMapper;
-import com.thesis.backend.dto.model.SubjectIDDto;
 import com.thesis.backend.dto.request.ScheduleRequest;
 import com.thesis.backend.exception.CustomException;
 import com.thesis.backend.model.Schedule;
-import com.thesis.backend.model.User;
 import com.thesis.backend.repository.ScheduleRepository;
 import com.thesis.backend.util.DateUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +21,10 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -52,33 +53,39 @@ public class ScheduleService {
     }
 
     public Boolean registerSchedule(ScheduleRequest scheduleRequest) throws IOException {
-        String classCode = scheduleRequest.getSemester() + "_" + scheduleRequest.getSubjectID() + "_" + scheduleRequest.getGroupCode();
-        String lastMetaData = firebaseService.downloadMetadata(classCode);
-        List<String> allPathList = firebaseService.listFiles("student");
-        List<User> users = subjectService.findAllUsersTakeSubject(new SubjectIDDto(scheduleRequest.getSubjectID(),
-                scheduleRequest.getGroupCode(),
-                scheduleRequest.getSemester()));
-        List<String> studentList = new ArrayList<>();
-        for (User u : users) {
-            studentList.add(String.valueOf(u.getId()));
-        }
-        List<String> pathList = firebaseService.filterPathWithStudentList(allPathList, studentList);
-        List<String> studentInMetaData = loadMetadata();
-        pathList.removeAll(studentInMetaData);
-        Map<String, Object> message = new HashMap<>();
-        message.put("student", pathList);
-        message.put("lastMetaDataPath", lastMetaData);
-        kafkaTemplate.send(CHECKIN_TOPIC, message);
-        return true;
+        int semester = scheduleRequest.getSemester();
+        String subjectID = scheduleRequest.getSubjectID();
+        String groupCode = scheduleRequest.getGroupCode();
 //        LocalDateTime startDateTimeLdt = DateUtil.convertStringToLocalDateTime(scheduleRequest.getStartTime());
 //        LocalDateTime endDateTimeLdt = DateUtil.convertStringToLocalDateTime(scheduleRequest.getEndTime());
-//        // if (!checkOverlap(scheduleRequest.getDeviceID(), startDateTimeLdt, endDateTimeLdt)) {
-//        Schedule schedule = ScheduleMapper.toModel(scheduleRequest);
-//
-//        scheduleRepository.save(schedule);
-//        scheduleRequest.setId(schedule.getId());
-//        kafkaTemplate.send(SCHEDULE_TOPIC, scheduleRequest);
-        //throw CustomException.throwException(EntityType.SCHEDULE, ExceptionType.OVERLAP);
+//         if (!checkOverlap(scheduleRequest.getDeviceID(), startDateTimeLdt, endDateTimeLdt)) {
+        Schedule schedule = ScheduleMapper.toModel(scheduleRequest);
+
+
+        String classCode = String.format("%d_%s_%s", semester, subjectID, groupCode);
+        String lastMetaData = firebaseService.downloadMetadata(classCode);
+        List<String> studentPathNeedsToUpdate = getStudentDifferences(semester, subjectID, groupCode);
+        Map<String, Object> message = new HashMap<>();
+        message.put("request", scheduleRequest);
+        message.put("student", studentPathNeedsToUpdate);
+        message.put("lastMetaDataPath", lastMetaData);
+        scheduleRepository.save(schedule);
+        scheduleRequest.setId(schedule.getId());
+        kafkaTemplate.send(SCHEDULE_TOPIC, message);
+//        throw CustomException.throwException(EntityType.SCHEDULE, ExceptionType.OVERLAP);
+        return true;
+    }
+
+    public List<String> getStudentDifferences(int semester, String subjectID, String groupCode) throws IOException {
+        List<String> users = subjectService.findAllUsersTakeSubject(semester, subjectID, groupCode)
+                .stream()
+                .map(user -> String.valueOf(user.getId()))
+                .collect(Collectors.toList());
+        List<String> allPath = firebaseService.listFiles("student");
+        List<String> pathList = firebaseService.filterPathWithStudentList(allPath, users);
+        List<String> studentInMetaData = loadMetadata();
+        pathList.removeAll(studentInMetaData);
+        return pathList;
     }
 
     private List<String> loadMetadata() throws IOException {

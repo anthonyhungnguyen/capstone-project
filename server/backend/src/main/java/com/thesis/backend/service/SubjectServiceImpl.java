@@ -77,7 +77,8 @@ public class SubjectServiceImpl implements BaseService<SubjectDto, SubjectIDDto>
         throw CustomException.throwException(SUBJECT, ENTITY_NOT_FOUND, o.getSubjectIDDto().toString());
     }
 
-    public List<User> findAllUsersTakeSubject(SubjectIDDto o) {
+    public List<User> findAllUsersTakeSubject(int semester, String subjectID, String groupCode) {
+        SubjectIDDto o = new SubjectIDDto(subjectID, groupCode, semester);
         Optional<Subject> subject = subjectRepository.findById(modelMapper.map(o, SubjectId.class));
         if (subject.isPresent()) {
             return subject.get().getUsers();

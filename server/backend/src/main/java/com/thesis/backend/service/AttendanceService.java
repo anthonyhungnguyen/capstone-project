@@ -1,6 +1,5 @@
 package com.thesis.backend.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thesis.backend.dto.model.SubjectDto;
 import com.thesis.backend.dto.model.SubjectIDDto;
@@ -12,6 +11,7 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -28,27 +28,31 @@ public class AttendanceService {
     private final SubjectServiceImpl subjectService;
     private final ScheduleService scheduleService;
     private final KafkaTemplate<String, Object> kafkaTemplate;
+    private final FirebaseService firebaseService;
 
     @Autowired
-    public AttendanceService(LogService logService, EnrollmentServiceImpl enrollmentService, UserServiceImpl userService, SubjectServiceImpl subjectService, ScheduleService scheduleService, KafkaTemplate<String, Object> kafkaTemplate) {
+    public AttendanceService(LogService logService, EnrollmentServiceImpl enrollmentService, UserServiceImpl userService, SubjectServiceImpl subjectService, ScheduleService scheduleService, KafkaTemplate<String, Object> kafkaTemplate, FirebaseService firebaseService) {
         this.logService = logService;
         this.enrollmentService = enrollmentService;
         this.userService = userService;
         this.subjectService = subjectService;
         this.scheduleService = scheduleService;
         this.kafkaTemplate = kafkaTemplate;
+        this.firebaseService = firebaseService;
     }
 
     @KafkaListener(topics = ATTENDANCE_TOPIC, groupId = GROUP_ID)
-    public void receiveAttendance(String message) throws JsonProcessingException {
+    public void receiveAttendance(String message) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
         AttendanceRequest attendanceRequest = objectMapper.readValue(message, AttendanceRequest.class);
         String result = checkAttendanceUtil(attendanceRequest);
         kafkaTemplate.send(ATTENDANCE_RESULT_TOPIC, result);
         if (result.equals("Successfully")) {
+            firebaseService.saveImg(attendanceRequest.getImgSrcBase64(), attendanceRequest.getUserID().toString(), attendanceRequest.getTimestamp());
             Map<String, Object> checkinResult = new HashMap<>();
-            checkinResult.put("name", attendanceRequest.getUserID());
+            checkinResult.put("timestamp", attendanceRequest.getTimestamp());
             checkinResult.put("feature", attendanceRequest.getFeature());
+            checkinResult.put("npy_path", String.format("students/%s/attendance/photos/%s.jpg", attendanceRequest.getUserID(), attendanceRequest.getTimestamp()));
             kafkaTemplate.send(ONLINE_LEARNING, checkinResult);
         }
     }
