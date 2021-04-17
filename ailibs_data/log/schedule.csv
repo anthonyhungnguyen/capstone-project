@@ -1,2 +1,0 @@
-semester,groupCode,subjectID,teacherID,startTime,endTime,deviceID,id,vector,index,threshold
-201,CC01,CO0000,2,1618648580000,1618657200000,1,122,subject/201_CO0000_CC01/2021-04-17 15:46:54/vector.index,subject/201_CO0000_CC01/2021-04-17 15:46:54/index.pickle,subject/201_CO0000_CC01/2021-04-17 15:46:54/threshold.pickle
