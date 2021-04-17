@@ -24,6 +24,7 @@ STUDENT = "student"
 FEATURE = "feature"
 TIMESTAMP = "timestamp"
 NPY_PATH = "npy_path"
+REQUEST = "request"
 MIN_DIST = 60.15
 
 VECTOR_FILE = "vector.index"
@@ -77,7 +78,7 @@ class Main():
                 with open(METADATA_PATH) as json_file:
                     meta = json.load(json_file)
                 timestamp = str(datetime.now(gettz("Asia/Ho_Chi_Minh")).strftime("%Y-%m-%d %H:%M:%S"))
-                meta[STUDENT_PATH_LIST].append(data[STUDENT])
+                meta[STUDENT_PATH_LIST] += data[STUDENT]
                 meta[CREATED_AT] = timestamp
                 with open(METADATA_PATH, 'w') as outfile:
                     json.dump(meta, outfile)
@@ -96,7 +97,7 @@ class Main():
                 with open(THRESHOLD_PATH, "wb") as handle:
                     pickle.dump(threshold, handle,
                                 protocol=pickle.HIGHEST_PROTOCOL)
-                mCONFIG.send_data(timestamp, data[META])
+                mCONFIG.send_data(timestamp, data[META],data[REQUEST])
 
             data, flag = mCONFIG.checkin()
             if flag:

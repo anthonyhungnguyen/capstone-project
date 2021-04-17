@@ -107,7 +107,7 @@ class config():
         config.consumer_schedule.subscribe(
             TOPIC_SCHEDULE, on_assign=print_assignment)
         config.consumer_checkin.subscribe(
-            TOPIC_SCHEDULE, on_assign=print_assignment)
+            TOPIC_CHECKIN, on_assign=print_assignment)
 
         self.config = {"apiKey": "AIzaSyDvyKgZQdDzn49T_QX-vox-RwawATduCo0",
                        "authDomain": "capstone-bk.firebaseapp.com",
@@ -229,6 +229,7 @@ class config():
         log[INDEX] = BASE_INDEX_PATH
         log[THRESHOLD] = BASE_THRESHOLD_PATH
         msg = json.dumps(log)
+        print(msg)
         config.producer_data.produce(TOPIC_DATA, msg, callback=delivery_callback)
         config.producer_data.poll(0)
         sys.stderr.write('%% Waiting for %d deliveries\n' % len(config.producer_data))
