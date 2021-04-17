@@ -161,9 +161,9 @@ class config():
             sys.stderr.write('%% %s [%d] at offset %d with key %s:\n' %
                             (msg.topic(), msg.partition(), msg.offset(),
                             str(msg.key())))
-            print(msg.value())
             my_json = msg.value().decode('utf8').replace("'", '"')
             data = json.loads(my_json)
+            print(data.keys())
             data[STARTTIME] = self.parse_time(data[STARTTIME])
             data[ENDTIME] = self.parse_time(data[ENDTIME])
             print(data)
