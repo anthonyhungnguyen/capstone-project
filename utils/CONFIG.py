@@ -13,6 +13,7 @@ import cv2
 import pyrebase
 import faiss
 import pickle
+from dateutil.tz import gettz
 from datetime import datetime
 import pytz
 from time import time
@@ -205,6 +206,7 @@ class config():
                     self.download_file(df[THRESHOLD][0], THRESHOLD_PATH)
                 if os.path.exists(VECTOR_PATH) and os.path.exists(INDEX_PATH) and os.path.exists(THRESHOLD_PATH) and self.data_flag:
                     mAILIBS.CLASSIFIER.update(VECTOR_PATH, INDEX_PATH, THRESHOLD_PATH)
+                    print("*** UPDATE DATA ***")
                     self.data_flag = False          
             df.to_csv(SCHEDULE_PATH, index=False)
         return FREE 
@@ -231,13 +233,13 @@ class config():
         config.producer_attendance.flush()
         os.remove(CHECKED_PATH) 
 
-        print(user)
-        log = {FEATURE: user[FEATURE], NAME: user[NAME]}
-        msg = json.dumps(log)
-        config.producer_checkin.produce(TOPIC_CHECKIN, msg, callback=delivery_callback)
-        config.producer_checkin.poll(0)
-        sys.stderr.write('%% Waiting for %d deliveries\n' % len(config.producer_checkin))
-        config.producer_checkin.flush()
+        # print(user)
+        # log = {FEATURE: user[FEATURE], NAME: user[NAME]}
+        # msg = json.dumps(log)
+        # config.producer_checkin.produce(TOPIC_CHECKIN, msg, callback=delivery_callback)
+        # config.producer_checkin.poll(0)
+        # sys.stderr.write('%% Waiting for %d deliveries\n' % len(config.producer_checkin))
+        # config.producer_checkin.flush()
 
     def attendance_result(self):
         # Read messages from Kafka, print to stdout
