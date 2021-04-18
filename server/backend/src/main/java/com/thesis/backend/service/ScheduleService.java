@@ -30,13 +30,9 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 public class ScheduleService {
-    private final static String GROUP_ID = "group-id";
     private final static String SCHEDULE_TOPIC = "schedule";
-    private final static String ATTENDANCE_TOPIC = "attendance";
     private final static String MODIFY_TOPIC = "update";
     private final static String DELETE_TOPIC = "delete";
-    private final static String DATA_TOPIC = "data";
-    private final static String CHECKIN_TOPIC = "checkin";
     private final SubjectServiceImpl subjectService;
     private final UserServiceImpl userService;
     private final ScheduleRepository scheduleRepository;
@@ -52,28 +48,27 @@ public class ScheduleService {
         this.firebaseService = firebaseService;
     }
 
-    public Boolean registerSchedule(ScheduleRequest scheduleRequest) throws IOException {
+    public String registerSchedule(ScheduleRequest scheduleRequest) throws IOException {
         int semester = scheduleRequest.getSemester();
         String subjectID = scheduleRequest.getSubjectID();
         String groupCode = scheduleRequest.getGroupCode();
-//        LocalDateTime startDateTimeLdt = DateUtil.convertStringToLocalDateTime(scheduleRequest.getStartTime());
-//        LocalDateTime endDateTimeLdt = DateUtil.convertStringToLocalDateTime(scheduleRequest.getEndTime());
-//         if (!checkOverlap(scheduleRequest.getDeviceID(), startDateTimeLdt, endDateTimeLdt)) {
-        Schedule schedule = ScheduleMapper.toModel(scheduleRequest);
-
-
-        String classCode = String.format("%d_%s_%s", semester, subjectID, groupCode);
-        String lastMetaData = firebaseService.downloadMetadata(classCode);
-        List<String> studentPathNeedsToUpdate = getStudentDifferences(semester, subjectID, groupCode);
-        Map<String, Object> message = new HashMap<>();
-        message.put("request", scheduleRequest);
-        message.put("student", studentPathNeedsToUpdate);
-        message.put("lastMetaDataPath", lastMetaData);
-        scheduleRepository.save(schedule);
-        scheduleRequest.setId(schedule.getId());
-        kafkaTemplate.send(SCHEDULE_TOPIC, message);
-//        throw CustomException.throwException(EntityType.SCHEDULE, ExceptionType.OVERLAP);
-        return true;
+        LocalDateTime startDateTimeLdt = DateUtil.convertStringToLocalDateTime(scheduleRequest.getStartTime());
+        LocalDateTime endDateTimeLdt = DateUtil.convertStringToLocalDateTime(scheduleRequest.getEndTime());
+        if (!checkOverlap(scheduleRequest.getDeviceID(), startDateTimeLdt, endDateTimeLdt)) {
+            Schedule schedule = ScheduleMapper.toModel(scheduleRequest);
+            String classCode = String.format("%d_%s_%s", semester, subjectID, groupCode);
+            String lastMetaData = firebaseService.downloadMetadata(classCode);
+            List<String> studentPathNeedsToUpdate = getStudentDifferences(semester, subjectID, groupCode);
+            Map<String, Object> message = new HashMap<>();
+            message.put("request", scheduleRequest);
+            message.put("student", studentPathNeedsToUpdate);
+            message.put("lastMetaDataPath", lastMetaData);
+            scheduleRepository.save(schedule);
+            scheduleRequest.setId(schedule.getId());
+            kafkaTemplate.send(SCHEDULE_TOPIC, message);
+            return "Successfully";
+        }
+        return "Overlaps";
     }
 
     public List<String> getStudentDifferences(int semester, String subjectID, String groupCode) throws IOException {
@@ -125,8 +120,7 @@ public class ScheduleService {
 
     public Optional<Schedule> existScheduleRightNow(Integer deviceID) {
         Timestamp now = Timestamp.from(ZonedDateTime.ofInstant(Instant.now(), ZoneId.of("Asia/Ho_Chi_Minh")).toInstant());
-        Optional<Schedule> schedule = Optional.ofNullable(scheduleRepository.findByDeviceIDAndStartTimeBeforeAndEndTimeAfter(deviceID, now, now));
-        return schedule;
+        return Optional.ofNullable(scheduleRepository.findByDeviceIDAndStartTimeBeforeAndEndTimeAfter(deviceID, now, now));
     }
 
     public Optional<Schedule> fetchOne(Integer deviceID, Timestamp timestamp) {
@@ -139,11 +133,6 @@ public class ScheduleService {
         Timestamp endTimeTS = Timestamp.valueOf(endTime);
         List<Schedule> schedules = scheduleRepository.findByDeviceIDAndEndTimeAfterOrderByEndTime(deviceID, startTimeTS);
         Optional<Schedule> minEndTimeSchedule = schedules.stream().findFirst();
-        if (minEndTimeSchedule.isPresent()) {
-            if (endTimeTS.getTime() > minEndTimeSchedule.get().getStartTime().getTime()) {
-                return true;
-            }
-        }
-        return false;
+        return minEndTimeSchedule.filter(schedule -> endTimeTS.getTime() > schedule.getStartTime().getTime()).isPresent();
     }
 }

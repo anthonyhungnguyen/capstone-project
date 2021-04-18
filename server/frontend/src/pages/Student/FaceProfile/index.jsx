@@ -1,6 +1,5 @@
-import { getFaces } from "apis/face"
-import FaceCard from "components/Face/FaceCard"
-import { splitTimestamp } from "helpers/string"
+import { fetchFaces, fetchFacesMetadata, getFaces } from "apis/face"
+import FaceCard from "components/FaceCard"
 import MainLayout from "layouts/MainLayout"
 import React, { useEffect, useState } from "react"
 import { useSelector } from "react-redux"
@@ -11,27 +10,23 @@ export default function FaceProfile() {
 
   useEffect(() => {
     const onLoadFacePhotos = async () => {
-      await getFaces(userid)
-        .then(response => {
-          setPhotos(processResponse(response))
-        })
-        .catch(console.log)
-    }
-    const processResponse = data => {
-      return data.map(d => ({
-        base64: `data:image/jpeg;base64,${d.photo}`,
-        timestamp: splitTimestamp(d.timestamp),
-        status: d.status
+      const faces = await fetchFaces(userid, "register").then(data => data)
+      const metadata = await fetchFacesMetadata(userid, "register").then(
+        data => data
+      )
+      const result = faces.map((f, index) => ({
+        photo: f,
+        metadata: metadata[index]
       }))
+      setPhotos(result)
     }
     onLoadFacePhotos()
   }, [])
-
   return (
     <MainLayout>
       <div className="space-y-4 flex items-center justify-between">
-        {photos?.map(photo => (
-          <FaceCard photo={photo} />
+        {photos?.map(item => (
+          <FaceCard photo={item.photo} metadata={item.metadata} />
         ))}
       </div>
     </MainLayout>

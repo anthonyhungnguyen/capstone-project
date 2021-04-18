@@ -82,3 +82,13 @@ CREATE TABLE attendance_log(
     image_id VARCHAR(50),
     PRIMARY KEY(id)
 );
+
+USE capstone;
+
+CREATE TABLE register(
+    id INT AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    image_link VARCHAR(255),
+    PRIMARY KEY(id),
+    FOREIGN KEY(user_id) REFERENCES user(id) ON UPDATE CASCADE
+);

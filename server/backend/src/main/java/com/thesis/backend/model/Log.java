@@ -42,6 +42,6 @@ public class Log {
     @Column(name = "device_id")
     private Integer deviceID;
 
-    @Column(name = "image_id")
-    private String imageID;
+    @Column(name = "image_link")
+    private String imageLink;
 }

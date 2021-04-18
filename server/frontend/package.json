@@ -13,6 +13,7 @@
     "axios": "^0.21.0",
     "echarts": "^5.0.2",
     "echarts-for-react": "^3.0.1",
+    "firebase": "^8.4.1",
     "http-proxy-middleware": "^1.1.0",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",

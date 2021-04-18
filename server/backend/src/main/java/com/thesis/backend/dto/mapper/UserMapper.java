@@ -23,7 +23,6 @@ public class UserMapper {
     public UserMapper(ModelMapper modelMapper, PasswordEncoder passwordEncoder) {
         UserMapper.modelMapper = modelMapper;
         UserMapper.passwordEncoder = passwordEncoder;
-
     }
 
     public static UserDto toUserDto(User user) {
@@ -39,6 +38,7 @@ public class UserMapper {
                         .stream()
                         .map(role -> modelMapper.map(role, RoleDto.class))
                         .collect(Collectors.toList()))
+                .registers(user.getRegisters())
                 .build();
     }
 

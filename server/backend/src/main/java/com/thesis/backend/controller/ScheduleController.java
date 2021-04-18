@@ -24,7 +24,7 @@ public class ScheduleController {
     }
 
     @PostMapping
-    public ResponseEntity<Boolean> register(@Valid @RequestBody ScheduleRequest scheduleRequest) throws IOException {
+    public ResponseEntity<String> register(@Valid @RequestBody ScheduleRequest scheduleRequest) throws IOException {
         return ResponseEntity.ok(teacherService.registerSchedule(scheduleRequest));
     }
 

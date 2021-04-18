@@ -6,6 +6,7 @@ import com.thesis.backend.dto.model.SubjectIDDto;
 import com.thesis.backend.dto.model.UserDto;
 import com.thesis.backend.dto.request.AttendanceRequest;
 import com.thesis.backend.model.Schedule;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -17,6 +18,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @Service
+@Slf4j
 public class AttendanceService {
     private final String ATTENDANCE_TOPIC = "attendance";
     private final String ATTENDANCE_RESULT_TOPIC = "result";
@@ -43,16 +45,19 @@ public class AttendanceService {
 
     @KafkaListener(topics = ATTENDANCE_TOPIC, groupId = GROUP_ID)
     public void receiveAttendance(String message) throws IOException {
+        log.info("ATTENDANCE MESSAGE: {}", message);
         ObjectMapper objectMapper = new ObjectMapper();
         AttendanceRequest attendanceRequest = objectMapper.readValue(message, AttendanceRequest.class);
         String result = checkAttendanceUtil(attendanceRequest);
+        log.info("ATTENDANCE RESULT {}", result);
         kafkaTemplate.send(ATTENDANCE_RESULT_TOPIC, result);
         if (result.equals("Successfully")) {
-            firebaseService.saveImg(attendanceRequest.getImgSrcBase64(), attendanceRequest.getUserID().toString(), attendanceRequest.getTimestamp());
+            String imageLink = firebaseService.saveImg(attendanceRequest.getImgSrcBase64(), attendanceRequest.getUserID().toString(), attendanceRequest.getTimestamp());
+            logService.save(attendanceRequest, imageLink);
             Map<String, Object> checkinResult = new HashMap<>();
             checkinResult.put("timestamp", attendanceRequest.getTimestamp());
             checkinResult.put("feature", attendanceRequest.getFeature());
-            checkinResult.put("npy_path", String.format("students/%s/attendance/photos/%s.jpg", attendanceRequest.getUserID(), attendanceRequest.getTimestamp()));
+            checkinResult.put("npy_path", String.format("student/%s/attendance/features/", attendanceRequest.getUserID()));
             kafkaTemplate.send(ONLINE_LEARNING, checkinResult);
         }
     }
@@ -60,14 +65,15 @@ public class AttendanceService {
 
     public String checkAttendanceUtil(AttendanceRequest attendanceRequest) {
         UserDto userDto = userService.find(attendanceRequest.getUserID());
+        log.info("[checkAttendanceUtil] userDTO: {}", userDto);
         SubjectDto subjectDto = subjectService.find(new SubjectIDDto(attendanceRequest.getSubjectID(),
                 attendanceRequest.getGroupCode(),
                 attendanceRequest.getSemester()));
+        log.info("[checkAttendanceUtil] subjectDto {}", subjectDto);
         Optional<Schedule> schedule = scheduleService.existScheduleRightNow(attendanceRequest.getDeviceID());
-
+        log.info("[checkAttendanceUtil] schedule {}", schedule.get());
         if (enrollmentService.checkDidEnrolled(userDto, subjectDto)) {
             if (!logService.checkAttendanceExist(attendanceRequest, schedule.get())) {
-                logService.save(attendanceRequest, "123");
                 return "Successfully";
             }
             return "Exists ";

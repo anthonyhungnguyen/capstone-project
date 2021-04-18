@@ -62,6 +62,10 @@ export default function HeaderBar() {
     history.push(PATH.STUDENT.LOGS)
   }
 
+  const onManageUser = () => {
+    history.push(PATH.ADMIN.MANAGE_USER)
+  }
+
   const onToggleIsHidden = () => setIsHidden(old => !old)
 
   return (
@@ -138,12 +142,6 @@ export default function HeaderBar() {
                     </button>
                     <button
                       className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
-                      onClick={onFaceEnroll}
-                    >
-                      Enroll
-                    </button>
-                    <button
-                      className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
                       onClick={onLogs}
                     >
                       Logs
@@ -180,6 +178,12 @@ export default function HeaderBar() {
                       onClick={() => onHome(ROLE.ADMIN)}
                     >
                       Dashboard
+                    </button>
+                    <button
+                      className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+                      onClick={() => onManageUser()}
+                    >
+                      Manage User
                     </button>
                   </>
                 )}
