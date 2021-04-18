@@ -82,12 +82,12 @@ class Main():
                 meta[CREATED_AT] = timestamp
                 with open(METADATA_PATH, 'w') as outfile:
                     json.dump(meta, outfile)
-                # y_set = set(y)
-                # if len(y_set) == 1:
-                #     threshold = [MIN_DIST]*len(y)
-                # else:
-                #     threshold = mCONFIG.calculate_threshold(feature_vector, y)
-                threshold = [MIN_DIST]*len(y)
+                y_set = set(y)
+                if len(y_set) == 1:
+                    threshold = [MIN_DIST]*len(y)
+                else:
+                    threshold = mCONFIG.calculate_threshold(feature_vector, y)
+                # threshold = [MIN_DIST]*len(y)
                 print(threshold)
                 faiss.write_index(index, VECTOR_PATH)
                 with open(INDEX_PATH, "wb") as handle:
