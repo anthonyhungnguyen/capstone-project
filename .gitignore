@@ -131,6 +131,5 @@ dmypy.json
 
 *.jpg
 *.csv
-*.json
 *.lock
 node_modules/*
