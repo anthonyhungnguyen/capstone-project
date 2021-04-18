@@ -5,6 +5,7 @@ import {
   DatePicker,
   Form,
   Input,
+  message,
   Select,
   TimePicker
 } from "antd"
@@ -42,7 +43,7 @@ export default function TeacherRegister() {
       endTime: values.startEndTime[1].format("YYYY-MM-DD HH:mm:ss")
     }
     delete sentData["startEndTime"]
-    testPublishTopic(sentData)
+    testPublishTopic(sentData).then(result => message.info(result))
   }
 
   const onFinishFailed = errorInfo => {

@@ -7,6 +7,7 @@ import face_request
 import os
 import datetime
 import json
+import requests
 import pandas as pd
 
 FACE_SERVER = "http://localhost:5000"
@@ -102,7 +103,7 @@ def init_class():
     }, open("subject.json", "w"))
 
 
-def intt_students():
+def init_students():
     all_students = firebase_instance.get_all_student_ids()
     json_students = [{'id': student, 'password': ''}
                      for student in all_students]
@@ -115,4 +116,16 @@ def intt_students():
     df.to_csv('subjects_mysql.csv', index=False)
 
 
-save_features()
+def save_register_images():
+    all_files = firebase_instance.get_all_register_urls()
+    get_first_register_photo = [
+        x for x in all_files if x.split('/')[-1] == '0.jpg']
+    update_dict = {x.split('/')[1]: firebase_instance.get_url(x)
+                   for x in get_first_register_photo}
+    for student_id, image_link in tqdm(update_dict.items()):
+        requests.post(f"http://localhost:8080/api/auth/{student_id}/upload_register_photo", {
+            "imageLink": image_link
+        })
+
+
+save_register_images()

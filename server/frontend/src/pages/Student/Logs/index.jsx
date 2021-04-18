@@ -10,28 +10,25 @@ export default function StudentLogs() {
   const { userid } = user
   useEffect(() => {
     const fetchData = async () => {
-      const info = await fetchLogs(userid).then(data)
-      const photos = await fetchFaces(userid, "attendance").then(data)
-      const result = info.map((i, index) => ({
-        info: i,
-        photo: photos[index]
-      }))
-      setData(result)
+      const info = await fetchLogs(userid).then(setData)
     }
     fetchData()
   }, [])
-
   return (
     <MainLayout>
       <div className="space-y-4 flex items-center justify-between w-full flex-wrap">
         {data &&
           data.map(d => (
             <div>
-              <img src={d.photo} style={{ height: "200px" }} alt="attendance" />
-              <p>{d.info.semester}</p>
-              <p>{d.info.groupCode}</p>
-              <p>{d.info.subjectID}</p>
-              <p>{d.info.timestamp}</p>
+              <img
+                src={d.imageLink}
+                style={{ height: "200px" }}
+                alt="attendance"
+              />
+              <p>{d.semester}</p>
+              <p>{d.groupCode}</p>
+              <p>{d.subjectID}</p>
+              <p>{d.timestamp}</p>
             </div>
           ))}
       </div>

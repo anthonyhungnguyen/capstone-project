@@ -1,6 +1,5 @@
 import { fetchFaces, fetchFacesMetadata, getFaces } from "apis/face"
-import FaceCard from "components/Face/FaceCard"
-import { splitTimestamp } from "helpers/string"
+import FaceCard from "components/FaceCard"
 import MainLayout from "layouts/MainLayout"
 import React, { useEffect, useState } from "react"
 import { useSelector } from "react-redux"

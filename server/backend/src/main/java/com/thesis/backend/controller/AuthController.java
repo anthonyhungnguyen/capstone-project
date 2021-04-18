@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -72,5 +73,11 @@ public class AuthController {
     @GetMapping("/fill_roles")
     public ResponseEntity<Boolean> fillRoles() {
         return ResponseEntity.ok(userService.fillRole());
+    }
+
+
+    @PostMapping("/{userid}/upload_register_photo")
+    public ResponseEntity<Boolean> updateRegisterImageLink(@PathVariable Integer userid, @RequestParam Map<String, String> data) {
+        return ResponseEntity.ok(userService.updateRegisterImageLink(userid, data.get("imageLink")));
     }
 }

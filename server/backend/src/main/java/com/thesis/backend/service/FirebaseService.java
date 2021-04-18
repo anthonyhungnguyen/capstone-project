@@ -2,21 +2,25 @@ package com.thesis.backend.service;
 
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.storage.*;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.FirebaseOptions;
+import com.google.firebase.cloud.StorageClient;
 import com.thesis.backend.config.props.FirebaseProperties;
+import com.thesis.backend.util.ImageUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class FirebaseService {
     private Storage storage;
     private final FirebaseProperties firebaseProperties;
@@ -74,25 +78,18 @@ public class FirebaseService {
 
     public String saveImg(String base64, String studentID, String timestamp) throws IOException {
         Map<String, String> newMap = new HashMap<>();
-        newMap.put("firebaseStorageDownloadTokens", UUID.randomUUID().toString());
-        String path = String.format("students/%s/attendance/photos/%s.jpg", studentID, timestamp);
+        String token = UUID.randomUUID().toString();
+        newMap.put("firebaseStorageDownloadTokens", token);
+        String path = String.format("student/%s/attendance/photos/%s.jpg", studentID, timestamp);
         BlobId blobId = BlobId.of(firebaseProperties.getBucketName(), path);
         BlobInfo blobInfo = BlobInfo.newBuilder(blobId)
                 .setMetadata(newMap)
                 .setContentType("image/jpeg")
                 .build();
-        Blob blob = storage.create(blobInfo, base64.getBytes(StandardCharsets.UTF_8));
-        return path;
-    }
+        Blob blob = storage.create(blobInfo, ImageUtil.base64ToBytesArray(base64));
+        String mediaLink = "https://firebasestorage.googleapis.com/v0/" + blob.getMediaLink().split("/", 7)[6] + "&token=" + token;
+        log.info("Blob ID {}", mediaLink);
 
-    public String getDownloadUrlOnPath(String path) {
-        BlobId blobId = BlobId.of(firebaseProperties.getBucketName(), path);
-        System.out.println(blobId.toString());
-        return blobId.getName();
-    }
-
-
-    private String getExtension(String originalFileName) {
-        return StringUtils.getFilenameExtension(originalFileName);
+        return mediaLink;
     }
 }

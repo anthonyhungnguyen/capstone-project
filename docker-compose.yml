@@ -64,25 +64,25 @@ services:
             - mysql
             - kafka
 
-    face-server:
-        container_name: capstone_face_server
-        build: ./face-server
-        expose:
-            - 5000
-        ports:
-            - 5000:5000
-        volumes:
-            - ./face-server:/face-server
+    # face-server:
+    #     container_name: capstone_face_server
+    #     build: ./face-server
+    #     expose:
+    #         - 5000
+    #     ports:
+    #         - 5000:5000
+    #     volumes:
+    #         - ./face-server:/face-server
 
-    faiss-server:
-        container_name: capstone_faiss
-        build: ./faiss_server
-        expose:
-            - 6000
-        ports:
-            - 6000:6000
-        volumes:
-            - ./faiss_server:/faiss-server
+    # faiss-server:
+    #     container_name: capstone_faiss
+    #     build: ./faiss_server
+    #     expose:
+    #         - 6000
+    #     ports:
+    #         - 6000:6000
+    #     volumes:
+    #         - ./faiss_server:/faiss-server
 
     nginx:
         image: nginx:latest

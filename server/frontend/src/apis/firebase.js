@@ -22,8 +22,6 @@ export const firebaseConfig = {
   measurementId: REACT_APP_MEASUREMENT_ID
 }
 
-console.log("firebase config", firebaseConfig)
-
 const firebase_app = firebase.initializeApp(firebaseConfig)
 const firebase_storage = firebase_app.storage()
 

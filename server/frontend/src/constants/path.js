@@ -17,7 +17,8 @@ const TEACHER = {
 }
 
 const ADMIN = {
-  HOME: "/admin/home"
+  HOME: "/admin/home",
+  MANAGE_USER: "/admin/manage/user"
 }
 
 const PATH = {

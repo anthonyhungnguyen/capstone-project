@@ -2,6 +2,7 @@ package com.thesis.backend.dto.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.thesis.backend.model.Register;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -26,4 +27,5 @@ public class UserDto {
 
     private List<SubjectDto> subjectDtos;
     private List<RoleDto> roleDtos;
+    private List<Register> registers;
 }

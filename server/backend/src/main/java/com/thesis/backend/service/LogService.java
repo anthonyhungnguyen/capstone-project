@@ -30,7 +30,7 @@ public class LogService {
         return logs.size() > 0;
     }
 
-    public Log save(AttendanceRequest attendanceRequest) {
+    public void save(AttendanceRequest attendanceRequest, String imageLink) {
         Log log = Log.builder()
                 .userID(attendanceRequest.getUserID())
                 .semester(attendanceRequest.getSemester())
@@ -38,8 +38,9 @@ public class LogService {
                 .subjectID(attendanceRequest.getSubjectID())
                 .teacherID(attendanceRequest.getTeacherID())
                 .deviceID(attendanceRequest.getDeviceID())
+                .imageLink(imageLink)
                 .attendanceTime(DateUtil.convertStringToTimestamp(attendanceRequest.getTimestamp()))
                 .build();
-        return logRepository.save(log);
+        logRepository.save(log);
     }
 }
