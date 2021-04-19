@@ -27,6 +27,10 @@ mAILIBS = AILIBS
 from utils.CONFIG import config
 mCONFIG = config()
 
+# Check frontal face
+from ailibs.utilities.FaceUtilities import FaceUtilities as UTILS
+mUTILS = UTILS
+
 SIZE = (1152, 864)
 CHECKED_SIZE = (211, 288)
 SCALE = 1
@@ -125,9 +129,11 @@ class MainWindow(QMainWindow):
                     extract_flag = True
             if extract_flag:
                 for d in dets:
-                    # Features Extraction
-                    features = mAILIBS.EXTRACTOR.extract(check_frame, d)
-                    features_list.append(features)
+                    if mUTILS.is_frontal_face(check_frame, d, mAILIBS.EXTRACTOR):
+                        # Features Extraction
+                        features = mAILIBS.EXTRACTOR.extract(check_frame, d)
+                        features_list.append(features)
+                    break
 
             if len(features_list) > 0:
                 user_list = mAILIBS.CLASSIFIER.classify_list(features_list)
