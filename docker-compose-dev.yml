@@ -24,7 +24,7 @@ services:
         environment:
             - KAFKA_BROKER_ID=1
             - KAFKA_LISTENER=PLAINTEXT://kafka:9092
-            - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:9092
+            - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://34.87.104.34:9092
             - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
             - ALLOW_PLAINTEXT_LISTENER=yes
         depends_on:
@@ -40,27 +40,6 @@ services:
         environment:
             - ALLOW_ANONYMOUS_LOGIN=yes
 
-    # face-server:
-    #     container_name: capstone_face_server
-    #     build: ./face-server
-    #     expose:
-    #         - 5000
-    #     ports:
-    #         - 5000:5000
-    #     volumes:
-    #         - ./face-server:/face-server
-    #         - ./utils:/utils
-    #         - ./ailibs:/ailibs
-    #         - ./ailibs_data:/ailibs_data
-    # faiss-server:
-    #     container_name: capstone_faiss
-    #     build: ./faiss_server
-    #     expose:
-    #         - 6000
-    #     ports:
-    #         - 6000:6000
-    #     volumes:
-    #         - ./faiss_server:/faiss-server
 
 volumes:
     mysql-volume:
