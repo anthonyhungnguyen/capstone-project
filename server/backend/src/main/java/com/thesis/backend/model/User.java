@@ -3,6 +3,8 @@ package com.thesis.backend.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import lombok.experimental.Accessors;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -26,6 +28,7 @@ public class User implements Serializable {
 
     @ManyToMany(targetEntity = Subject.class,
             cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @Fetch(FetchMode.SUBSELECT)
     @JoinTable(name = "enrollment",
             joinColumns = {
                     @JoinColumn(name = "user_id", referencedColumnName = "id")
@@ -40,12 +43,14 @@ public class User implements Serializable {
     private List<Subject> subjects = new ArrayList<>();
 
     @ManyToMany(targetEntity = Role.class, fetch = FetchType.EAGER)
+    @Fetch(FetchMode.SUBSELECT)
     @JoinTable(name = "user_role",
             joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
     private Set<Role> roles = new HashSet<>();
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @Fetch(FetchMode.SUBSELECT)
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     @JsonIgnore
