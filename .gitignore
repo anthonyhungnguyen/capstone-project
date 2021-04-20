@@ -131,6 +131,5 @@ dmypy.json
 *.pickle
 *.txt
 *.csv
-*.json
 *.lock
 node_modules/*

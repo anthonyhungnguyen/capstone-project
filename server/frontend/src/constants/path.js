@@ -6,7 +6,6 @@ const COMMON = {
 
 const STUDENT = {
   HOME: "/student/home",
-  FACE_ENROLL: "/student/face_enroll",
   FACE_PROFILE: "/student/face_profile",
   LOGS: "/student/logs"
 }
@@ -18,7 +17,8 @@ const TEACHER = {
 }
 
 const ADMIN = {
-  HOME: "/admin/home"
+  HOME: "/admin/home",
+  MANAGE_USER: "/admin/manage/user"
 }
 
 const PATH = {
