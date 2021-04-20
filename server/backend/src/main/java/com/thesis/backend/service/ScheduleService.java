@@ -58,10 +58,11 @@ public class ScheduleService {
             Schedule schedule = ScheduleMapper.toModel(scheduleRequest);
             String classCode = String.format("%d_%s_%s", semester, subjectID, groupCode);
             String lastMetaData = firebaseService.downloadMetadata(classCode);
-            List<String> studentPathNeedsToUpdate = getStudentDifferences(semester, subjectID, groupCode);
+            Map<String, List<String>> studentPath = getStudentDifferences(semester, subjectID, groupCode);
             Map<String, Object> message = new HashMap<>();
             message.put("request", scheduleRequest);
-            message.put("student", studentPathNeedsToUpdate);
+            message.put("student", studentPath.get("differences"));
+            message.put("haveAttendance", studentPath.get("haveAttendance"));
             message.put("lastMetaDataPath", lastMetaData);
             scheduleRepository.save(schedule);
             scheduleRequest.setId(schedule.getId());
@@ -71,16 +72,30 @@ public class ScheduleService {
         return "Overlaps";
     }
 
-    public List<String> getStudentDifferences(int semester, String subjectID, String groupCode) throws IOException {
+    public Map<String, List<String>> getStudentDifferences(int semester, String subjectID, String groupCode) throws IOException {
         List<String> users = subjectService.findAllUsersTakeSubject(semester, subjectID, groupCode)
                 .stream()
                 .map(user -> String.valueOf(user.getId()))
                 .collect(Collectors.toList());
         List<String> allPath = firebaseService.listFiles("student");
         List<String> pathList = firebaseService.filterPathWithStudentList(allPath, users);
+
+        List<String> studentHaveAttendances = findStudentHaveCheckedAttendance(pathList);
+
         List<String> studentInMetaData = loadMetadata();
         pathList.removeAll(studentInMetaData);
-        return pathList;
+
+        Map<String, List<String>> studentPath = new HashMap<>();
+        studentPath.put("differences", pathList);
+        studentPath.put("haveAttendance", studentHaveAttendances);
+        return studentPath;
+    }
+
+    public List<String> findStudentHaveCheckedAttendance(List<String> pathList) {
+        return pathList.stream().filter(p -> p.contains("attendance")).map(p -> {
+            String[] pathElements = p.split("/", -1);
+            return pathElements[1];
+        }).collect(Collectors.toList());
     }
 
     private List<String> loadMetadata() throws IOException {

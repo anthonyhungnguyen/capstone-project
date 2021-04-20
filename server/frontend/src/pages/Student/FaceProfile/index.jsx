@@ -1,4 +1,5 @@
 import { fetchFaces, fetchFacesMetadata, getFaces } from "apis/face"
+import { fetchUserInfo, fetchUsersInfo } from "apis/user"
 import FaceCard from "components/FaceCard"
 import MainLayout from "layouts/MainLayout"
 import React, { useEffect, useState } from "react"
@@ -10,15 +11,10 @@ export default function FaceProfile() {
 
   useEffect(() => {
     const onLoadFacePhotos = async () => {
-      const faces = await fetchFaces(userid, "register").then(data => data)
-      const metadata = await fetchFacesMetadata(userid, "register").then(
-        data => data
-      )
-      const result = faces.map((f, index) => ({
-        photo: f,
-        metadata: metadata[index]
-      }))
-      setPhotos(result)
+      await fetchUserInfo(userid).then(data => {
+        console.log(data)
+      })
+      // setPhotos(result)
     }
     onLoadFacePhotos()
   }, [])
