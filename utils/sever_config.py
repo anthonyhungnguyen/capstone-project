@@ -30,6 +30,8 @@ VECTOR = "vector"
 INDEX = "index"
 THRESHOLD = "threshold"
 SUBJECT = "subject"
+HAVEATTENDANCE = "haveAttendance"
+
 
 VECTOR_FILE = "vector.index"
 FEATURE_FILE = "features.pickle"
@@ -135,6 +137,7 @@ class config():
             print("*** GET VECTOR SUCCESS ***")
             my_json = msg.value().decode('utf8').replace("'", '"')
             data = json.loads(my_json)
+            print(data)
             return data, True
 
     def checkin(self):
@@ -179,26 +182,42 @@ class config():
                 self.download_file(name, METADATA_PATH)
         return flag
 
-    def calculate_threshold(self, vector, y):
+    def calculate_threshold(self, vector, y, att_list):
+        print(att_list)
         threshold = []
+        # for i, x in enumerate(vector):
+        #     x = np.array(x).astype(np.float32)
+        #     max_thresh_same_label = float('-inf')
+        #     min_thresh = float('-inf')
+        #     for i_, x_ in enumerate(vector):
+        #         x_ = np.array(x_).astype(np.float32)
+        #         if (y[i] != y[i_]):
+        #             min_thresh = max(min_thresh, np.linalg.norm(
+        #                 x.reshape(1, 128)-x_.reshape(1, 128))**2)
+        #         else:
+        #             max_thresh_same_label = max(max_thresh_same_label, np.linalg.norm(
+        #                 x.reshape(1, 128) - x_.reshape(1, 128)) ** 2)
+        #     harmonic = 2*(min_thresh+max_thresh_same_label) / \
+        #         (min_thresh+max_thresh_same_label)
+        #     if harmonic < 30:
+        #         threshold.append((min_thresh+max_thresh_same_label)/4)
+        #     else:
+        #         threshold.append(harmonic)
+
         for i, x in enumerate(vector):
             x = np.array(x).astype(np.float32)
             max_thresh_same_label = float('-inf')
             min_thresh = float('-inf')
             for i_, x_ in enumerate(vector):
                 x_ = np.array(x_).astype(np.float32)
-                if (y[i] != y[i_]):
-                    min_thresh = max(min_thresh, np.linalg.norm(
-                        x.reshape(1, 128)-x_.reshape(1, 128))**2)
-                else:
-                    max_thresh_same_label = max(max_thresh_same_label, np.linalg.norm(
-                        x.reshape(1, 128) - x_.reshape(1, 128)) ** 2)
-            harmonic = 2*(min_thresh+max_thresh_same_label) / \
-                (min_thresh+max_thresh_same_label)
-            if harmonic < 30:
-                threshold.append((min_thresh+max_thresh_same_label)/4)
-            else:
-                threshold.append(harmonic)
+                if (y[i] == y[i_]):
+                    if y[i] in att_list:
+                        max_thresh_same_label = max(max_thresh_same_label, np.linalg.norm(
+                            x.reshape(1, 128) - x_.reshape(1, 128)) ** 2)
+                    else:
+                        max_thresh_same_label = 56.27
+            print(y[i], "----", max_thresh_same_label)
+            threshold. append(max_thresh_same_label)
         return threshold
 
     def send_data(self,timestamp, path_on_cloud, log):
