@@ -128,4 +128,4 @@ def save_register_images():
         })
 
 
-save_register_images()
+init_students()

@@ -48,17 +48,19 @@ public class AttendanceService {
         log.info("ATTENDANCE MESSAGE: {}", message);
         ObjectMapper objectMapper = new ObjectMapper();
         AttendanceRequest attendanceRequest = objectMapper.readValue(message, AttendanceRequest.class);
-        String result = checkAttendanceUtil(attendanceRequest);
-        log.info("ATTENDANCE RESULT {}", result);
-        kafkaTemplate.send(ATTENDANCE_RESULT_TOPIC, result);
-        if (result.equals("Successfully")) {
-            String imageLink = firebaseService.saveImg(attendanceRequest.getImgSrcBase64(), attendanceRequest.getUserID().toString(), attendanceRequest.getTimestamp());
-            logService.save(attendanceRequest, imageLink);
-            Map<String, Object> checkinResult = new HashMap<>();
-            checkinResult.put("timestamp", attendanceRequest.getTimestamp());
-            checkinResult.put("feature", attendanceRequest.getFeature());
-            checkinResult.put("npy_path", String.format("student/%s/attendance/features/", attendanceRequest.getUserID()));
-            kafkaTemplate.send(ONLINE_LEARNING, checkinResult);
+        if (attendanceRequest.getIsMatched().equals(true)) {
+            String result = checkAttendanceUtil(attendanceRequest);
+            log.info("ATTENDANCE RESULT {}", result);
+            kafkaTemplate.send(ATTENDANCE_RESULT_TOPIC, result);
+            if (result.equals("Successfully")) {
+                String imageLink = firebaseService.saveImg(attendanceRequest.getImgSrcBase64(), attendanceRequest.getUserID().toString(), attendanceRequest.getTimestamp());
+                logService.save(attendanceRequest, imageLink);
+                Map<String, Object> checkinResult = new HashMap<>();
+                checkinResult.put("timestamp", attendanceRequest.getTimestamp());
+                checkinResult.put("feature", attendanceRequest.getFeature());
+                checkinResult.put("npy_path", String.format("student/%s/attendance/features/", attendanceRequest.getUserID()));
+                kafkaTemplate.send(ONLINE_LEARNING, checkinResult);
+            }
         }
     }
 
