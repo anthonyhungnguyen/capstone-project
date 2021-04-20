@@ -13,6 +13,7 @@ import cv2
 import pyrebase
 import faiss
 import pickle
+from dateutil.tz import gettz
 from datetime import datetime
 import pytz
 from time import time
@@ -103,7 +104,8 @@ class config():
         """
         if not os.path.exists(SCHEDULE_PATH):
             COLUMN_NAMES = [SEMESTER, GROUPCODE, SUBJECTID,
-                            TEACHERID, STARTTIME, ENDTIME, DEVICEID, ID]
+                            TEACHERID, STARTTIME, ENDTIME, DEVICEID, 
+                            ID, VECTOR, INDEX, THRESHOLD]
             df = pd.DataFrame(columns=COLUMN_NAMES)
             df.to_csv(SCHEDULE_PATH, index=False)
         # Create logger for consumer (logs will be emitted when poll() is called)
@@ -118,7 +120,7 @@ class config():
         # Hint: try debug='fetch' to generate some log messages
         config.consumer_schedule = Consumer(conf_consumer, logger=logger)
         config.consumer_update = Consumer(conf_consumer, logger=logger)
-        config.consumer_data = Consumer(conf_consumer, logger=logger)
+        # config.consumer_data = Consumer(conf_consumer, logger=logger)
         # config.consumer_delete = Consumer(conf_consumer, logger=logger)
         config.consumer_result = Consumer(conf_consumer, logger=logger)
         config.producer_attendance = Producer(**conf_producer)
@@ -128,10 +130,10 @@ class config():
             print('Assignment:', partitions)
 
         # Subscribe to topics
-        config.consumer_schedule.subscribe(TOPIC_SCHEDULE, on_assign=print_assignment)
+        config.consumer_schedule.subscribe(TOPIC_DATA, on_assign=print_assignment)
         config.consumer_update.subscribe(TOPIC_UPDATE, on_assign=print_assignment)
         # config.consumer_delete.subscribe(TOPIC_DELETE, on_assign=print_assignment)
-        config.consumer_data.subscribe(TOPIC_DATA, on_assign=print_assignment)
+        # config.consumer_data.subscribe(TOPIC_DATA, on_assign=print_assignment)
         config.consumer_result.subscribe(TOPIC_RESULT, on_assign=print_assignment)  
 
         self.config = {"apiKey": "AIzaSyDvyKgZQdDzn49T_QX-vox-RwawATduCo0",
@@ -142,23 +144,15 @@ class config():
                        "databaseURL": "https://capstone-bk-default-rtdb.firebaseio.com",
                        "appId": "1:616596048413:web:b409fa85dca7cbe5d854f4",
                        "serviceAccount": "./serviceAccount.json"}
-        
-        # self.config = {"apiKey": "AIzaSyCjBIdU00hA1lPVz2VSJAq6SlSSwt0Xzb8",
-        #                "authDomain": "attendance-system-202.firebaseapp.com",
-        #                "projectId": "attendance-system-202",
-        #                "storageBucket": "attendance-system-202.appspot.com",
-        #                "messagingSenderId": "158714846973",
-        #                "databaseURL": "https://capstone-bk-default-rtdb.firebaseio.com",
-        #                "appId": "1:158714846973:web:69f2321172bb4a325c6894  ",
-        #                "serviceAccount": "./serviceAccount.json"}
 
         self.firebase = pyrebase.initialize_app(self.config)
         self.storage = self.firebase.storage()
-     
+
+        self.data_flag = True
 
     def schedule(self):
         # Read messages from Kafka, print to stdout
-        msg = config.consumer_schedule.poll(timeout=0.01)
+        msg = config.consumer_schedule.poll(0)
         if msg is None:
             return
         if msg.error():
@@ -168,15 +162,24 @@ class config():
             sys.stderr.write('%% %s [%d] at offset %d with key %s:\n' %
                             (msg.topic(), msg.partition(), msg.offset(),
                             str(msg.key())))
-            print(msg.value())
             my_json = msg.value().decode('utf8').replace("'", '"')
             data = json.loads(my_json)
+            print(data.keys())
             data[STARTTIME] = self.parse_time(data[STARTTIME])
             data[ENDTIME] = self.parse_time(data[ENDTIME])
             print(data)
             df = pd.read_csv(SCHEDULE_PATH)
             df = df.append(data, ignore_index=True)
             df.to_csv(SCHEDULE_PATH, index=False)
+            if os.path.exists(VECTOR_PATH):
+                os.remove(VECTOR_PATH)
+                print("*** DELETE VECTOR FILE ***")
+            if os.path.exists(INDEX_PATH):
+                os.remove(INDEX_PATH)
+                print("*** DELETE INDEX FILE ***")
+            if os.path.exists(THRESHOLD_PATH):
+                os.remove(THRESHOLD_PATH)
+                print("*** DELETE THRESHOLD FILE ***")
     
     def parse_time(self,time_str):
         return int(datetime.strptime(time_str, "%Y-%m-%d %H:%M:%S").timestamp())*1000
@@ -185,18 +188,39 @@ class config():
         df = pd.read_csv(SCHEDULE_PATH)
         if df.empty: 
             return FREE
-        df.sort_values(STARTTIME)
+        df = df.sort_values(STARTTIME)
+        df = df.reset_index(drop=True)
         if  get_time() >= df[STARTTIME][0] and  get_time() <= df[ENDTIME][0] and \
-            os.path.exists(VECTOR_PATH) and os.path.exists(INDEX_PATH) and os.path.exists(THRESHOLD_PATH):
-            mAILIBS.CLASSIFIER.update(VECTOR_PATH, INDEX_PATH, THRESHOLD_PATH)
+            os.path.exists(VECTOR_PATH) and os.path.exists(INDEX_PATH) and os.path.exists(THRESHOLD_PATH):    
             return CHECKIN
         else:
             while get_time() > int(df[ENDTIME][0]):
                 df = df.drop(df.index[0])
-                df = df.reset_index()
+                df = df.reset_index(drop=True)
                 print(df)
+                self.data_flag = True
+                if os.path.exists(VECTOR_PATH):
+                    os.remove(VECTOR_PATH)
+                    print("*** DELETE VECTOR FILE ***")
+                if os.path.exists(INDEX_PATH):
+                    os.remove(INDEX_PATH)
+                    print("*** DELETE INDEX FILE ***")
+                if os.path.exists(THRESHOLD_PATH):
+                    os.remove(THRESHOLD_PATH)
+                    print("*** DELETE THRESHOLD FILE ***")
                 if df.empty:
                     break
+            if not df.empty:
+                if not os.path.exists(VECTOR_PATH):
+                    self.download_file(df[VECTOR][0], VECTOR_PATH)      
+                if not os.path.exists(INDEX_PATH):
+                    self.download_file(df[INDEX][0], INDEX_PATH)
+                if not os.path.exists(THRESHOLD_PATH):
+                    self.download_file(df[THRESHOLD][0], THRESHOLD_PATH)
+                if os.path.exists(VECTOR_PATH) and os.path.exists(INDEX_PATH) and os.path.exists(THRESHOLD_PATH) and self.data_flag:
+                    mAILIBS.CLASSIFIER.update(VECTOR_PATH, INDEX_PATH, THRESHOLD_PATH)
+                    print("*** UPDATE DATA ***")
+                    self.data_flag = False          
             df.to_csv(SCHEDULE_PATH, index=False)
         return FREE 
 
@@ -213,7 +237,7 @@ class config():
             return FREE
         df.sort_values(STARTTIME)
         log = {USERID: user[NAME], FEATURE: user[FEATURE], SEMESTER: str(df[SEMESTER][0]), GROUPCODE: df[GROUPCODE][0], 
-               SUBJECTID: df[SUBJECTID][0], TIMESTAMP: str(get_time()), DEVICEID: str(df[DEVICEID][0]), 
+               SUBJECTID: df[SUBJECTID][0], TIMESTAMP: str(datetime.now(gettz("Asia/Ho_Chi_Minh")).strftime("%Y-%m-%d %H:%M:%S")), DEVICEID: str(df[DEVICEID][0]), 
                BASE64: encoded_string, TEACHERID: str(df[TEACHERID][0]), ISMATCHED: flag}
         msg = json.dumps(log)
         config.producer_attendance.produce(TOPIC_ATTENDANCE, msg, callback=delivery_callback)
@@ -222,17 +246,17 @@ class config():
         config.producer_attendance.flush()
         os.remove(CHECKED_PATH) 
 
-        print(user)
-        log = {FEATURE: user[FEATURE], NAME: user[NAME]}
-        msg = json.dumps(log)
-        config.producer_checkin.produce(TOPIC_CHECKIN, msg, callback=delivery_callback)
-        config.producer_checkin.poll(0)
-        sys.stderr.write('%% Waiting for %d deliveries\n' % len(config.producer_checkin))
-        config.producer_checkin.flush()
+        # print(user)
+        # log = {FEATURE: user[FEATURE], NAME: user[NAME]}
+        # msg = json.dumps(log)
+        # config.producer_checkin.produce(TOPIC_CHECKIN, msg, callback=delivery_callback)
+        # config.producer_checkin.poll(0)
+        # sys.stderr.write('%% Waiting for %d deliveries\n' % len(config.producer_checkin))
+        # config.producer_checkin.flush()
 
     def attendance_result(self):
         # Read messages from Kafka, print to stdout
-        msg = config.consumer_result.poll(timeout=0.01)
+        msg = config.consumer_result.poll(0)
         if msg is None:
             return ""
         if msg.error():
@@ -247,7 +271,7 @@ class config():
     
     def update(self):
         # Read messages from Kafka, print to stdout
-        msg = config.consumer_update.poll(timeout=0.01)
+        msg = config.consumer_update.poll(0)
         # time.sleep(10)
         if msg is None:
             return
@@ -262,8 +286,9 @@ class config():
             my_json = msg.value().decode('utf8')
             data = json.loads(my_json)
             df = pd.read_csv(SCHEDULE_PATH)
-            df = df.drop(df.index[df.index[df[ID] == data[ID]].tolist()[0]])
-            df = df.append(data, ignore_index=True)
+            df.loc[df.index[df[ID] == data[ID]],:][VECTOR] = data[VECTOR]
+            df.loc[df.index[df[ID] == data[ID]],:][INDEX] = data[INDEX]
+            df.loc[df.index[df[ID] == data[ID]],:][THRESHOLD] = data[THRESHOLD]
             df.to_csv(SCHEDULE_PATH, index=False)
     
     # def delete(self):
@@ -284,41 +309,42 @@ class config():
     #         data = json.loads(my_json)
     #         df = pd.read_csv(SCHEDULE_PATH)
     #         df = df.drop(df.index[df.index[df[ID] == data[ID]].tolist()[0]])
+    #         df = df.reset_index(drop=True)
     #         df.to_csv(SCHEDULE_PATH, index=False)
 
-    def update_data(self):
-        # Read messages from Kafka, print to stdout
-        msg = config.consumer_data.poll(timeout=0.01)
-        # time.sleep(10)
-        if msg is None:
-            return
-        if msg.error():
-            raise KafkaException(msg.error())
-        else:
-            # Proper message
-            sys.stderr.write('%% %s [%d] at offset %d with key %s:\n' %
-                            (msg.topic(), msg.partition(), msg.offset(),
-                            str(msg.key())))
-            print("****** UPDATE DATA SUCCESS *******")
-            my_json = msg.value().decode('utf8')
-            data = json.loads(my_json)
-            list_files = self.storage.child("faiss").list_files()
-            list_name = []
-            for file in list_files:
-                if file.name.split("/")[0]=="faiss" and len(file.name.split("/"))>1:
-                    list_name.append(file.name)
-            for name in list_name:
-                if name.split("/")[1]=="faiss":
-                    self.download_file(name.split("/",1)[1], METADATA_PATH)
-            for name in list_name:
-                if name.split("/")[1]!="faiss":
-                    if name.split("/")[3]==VECTOR_FILE:
-                        self.download_file(name, VECTOR_PATH)
-                    if name.split("/")[3]==INDEX_FILE:
-                        self.download_file(name, INDEX_PATH)
-                    if name.split("/")[3]==THRESHOLD_FILE:
-                        self.download_file(name, THRESHOLD_PATH)
-            mAILIBS.CLASSIFIER.update(VECTOR_PATH, INDEX_PATH, THRESHOLD_PATH)
+    # def update_data(self):
+    #     # Read messages from Kafka, print to stdout
+    #     msg = config.consumer_data.poll(timeout=0.01)
+    #     # time.sleep(10)
+    #     if msg is None:
+    #         return
+    #     if msg.error():
+    #         raise KafkaException(msg.error())
+    #     else:
+    #         # Proper message
+    #         sys.stderr.write('%% %s [%d] at offset %d with key %s:\n' %
+    #                         (msg.topic(), msg.partition(), msg.offset(),
+    #                         str(msg.key())))
+    #         print("****** UPDATE DATA SUCCESS *******")
+    #         my_json = msg.value().decode('utf8')
+    #         data = json.loads(my_json)
+    #         list_files = self.storage.child("faiss").list_files()
+    #         list_name = []
+    #         for file in list_files:
+    #             if file.name.split("/")[0]=="faiss" and len(file.name.split("/"))>1:
+    #                 list_name.append(file.name)
+    #         for name in list_name:
+    #             if name.split("/")[1]=="faiss":
+    #                 self.download_file(name.split("/",1)[1], METADATA_PATH)
+    #         for name in list_name:
+    #             if name.split("/")[1]!="faiss":
+    #                 if name.split("/")[3]==VECTOR_FILE:
+    #                     self.download_file(name, VECTOR_PATH)
+    #                 if name.split("/")[3]==INDEX_FILE:
+    #                     self.download_file(name, INDEX_PATH)
+    #                 if name.split("/")[3]==THRESHOLD_FILE:
+    #                     self.download_file(name, THRESHOLD_PATH)
+    #         mAILIBS.CLASSIFIER.update(VECTOR_PATH, INDEX_PATH, THRESHOLD_PATH)
     
     def download_file(self, path_on_cloud, path_local):
         self.storage.child(path_on_cloud).download(path_local)
