@@ -11,8 +11,6 @@ left_jaw = 0
 mid_jaw = 8
 right_jaw = 16
 mid_nose = 34
-FACE_REGISTERING_COUNT = 0
-FACE_REGISTERING_TOTAL = 100
 
 class FaceUtilities():
 
