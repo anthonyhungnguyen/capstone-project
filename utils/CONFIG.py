@@ -171,6 +171,15 @@ class config():
             df = pd.read_csv(SCHEDULE_PATH)
             df = df.append(data, ignore_index=True)
             df.to_csv(SCHEDULE_PATH, index=False)
+            if os.path.exists(VECTOR_PATH):
+                os.remove(VECTOR_PATH)
+                print("*** DELETE VECTOR FILE ***")
+            if os.path.exists(INDEX_PATH):
+                os.remove(INDEX_PATH)
+                print("*** DELETE INDEX FILE ***")
+            if os.path.exists(THRESHOLD_PATH):
+                os.remove(THRESHOLD_PATH)
+                print("*** DELETE THRESHOLD FILE ***")
     
     def parse_time(self,time_str):
         return int(datetime.strptime(time_str, "%Y-%m-%d %H:%M:%S").timestamp())*1000
@@ -179,22 +188,26 @@ class config():
         df = pd.read_csv(SCHEDULE_PATH)
         if df.empty: 
             return FREE
-        df.sort_values(STARTTIME)
+        df = df.sort_values(STARTTIME)
+        df = df.reset_index(drop=True)
         if  get_time() >= df[STARTTIME][0] and  get_time() <= df[ENDTIME][0] and \
             os.path.exists(VECTOR_PATH) and os.path.exists(INDEX_PATH) and os.path.exists(THRESHOLD_PATH):    
             return CHECKIN
         else:
             while get_time() > int(df[ENDTIME][0]):
                 df = df.drop(df.index[0])
-                df = df.reset_index()
+                df = df.reset_index(drop=True)
                 print(df)
                 self.data_flag = True
                 if os.path.exists(VECTOR_PATH):
                     os.remove(VECTOR_PATH)
+                    print("*** DELETE VECTOR FILE ***")
                 if os.path.exists(INDEX_PATH):
                     os.remove(INDEX_PATH)
+                    print("*** DELETE INDEX FILE ***")
                 if os.path.exists(THRESHOLD_PATH):
                     os.remove(THRESHOLD_PATH)
+                    print("*** DELETE THRESHOLD FILE ***")
                 if df.empty:
                     break
             if not df.empty:
@@ -273,8 +286,9 @@ class config():
             my_json = msg.value().decode('utf8')
             data = json.loads(my_json)
             df = pd.read_csv(SCHEDULE_PATH)
-            df = df.drop(df.index[df.index[df[ID] == data[ID]].tolist()[0]])
-            df = df.append(data, ignore_index=True)
+            df.loc[df.index[df[ID] == data[ID]],:][VECTOR] = data[VECTOR]
+            df.loc[df.index[df[ID] == data[ID]],:][INDEX] = data[INDEX]
+            df.loc[df.index[df[ID] == data[ID]],:][THRESHOLD] = data[THRESHOLD]
             df.to_csv(SCHEDULE_PATH, index=False)
     
     # def delete(self):
@@ -295,6 +309,7 @@ class config():
     #         data = json.loads(my_json)
     #         df = pd.read_csv(SCHEDULE_PATH)
     #         df = df.drop(df.index[df.index[df[ID] == data[ID]].tolist()[0]])
+    #         df = df.reset_index(drop=True)
     #         df.to_csv(SCHEDULE_PATH, index=False)
 
     # def update_data(self):
