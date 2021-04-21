@@ -52,10 +52,6 @@ public class UserMapper {
                         .stream()
                         .map(subject -> modelMapper.map(subject, Subject.class))
                         .collect(Collectors.toList()))
-                .roles(user.getRoleDtos()
-                        .stream()
-                        .map(role -> modelMapper.map(role, Role.class))
-                        .collect(Collectors.toSet()))
                 .registers(user.getRegisters())
                 .build();
     }

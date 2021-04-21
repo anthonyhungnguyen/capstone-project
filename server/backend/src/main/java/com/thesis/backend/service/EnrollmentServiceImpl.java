@@ -1,12 +1,12 @@
 package com.thesis.backend.service;
 
-import com.thesis.backend.dto.mapper.UserMapper;
 import com.thesis.backend.dto.model.EnrollmentDto;
 import com.thesis.backend.dto.model.SubjectDto;
 import com.thesis.backend.dto.model.SubjectIDDto;
 import com.thesis.backend.dto.model.UserDto;
 import com.thesis.backend.exception.CustomException;
 import com.thesis.backend.model.User;
+import com.thesis.backend.repository.EnrollmentRepository;
 import com.thesis.backend.repository.SubjectRepository;
 import com.thesis.backend.repository.UserRepository;
 import org.modelmapper.ModelMapper;
@@ -28,14 +28,16 @@ public class EnrollmentServiceImpl implements EnrollmentService {
     private final ModelMapper modelMapper;
     private final UserServiceImpl userService;
     private final SubjectServiceImpl subjectService;
+    private final EnrollmentRepository enrollmentRepository;
 
     @Autowired
-    public EnrollmentServiceImpl(UserRepository userRepository, SubjectRepository subjectRepository, ModelMapper modelMapper, UserServiceImpl userService, SubjectServiceImpl subjectService) {
+    public EnrollmentServiceImpl(UserRepository userRepository, SubjectRepository subjectRepository, ModelMapper modelMapper, UserServiceImpl userService, SubjectServiceImpl subjectService, EnrollmentRepository enrollmentRepository) {
         this.userRepository = userRepository;
         this.subjectRepository = subjectRepository;
         this.modelMapper = modelMapper;
         this.userService = userService;
         this.subjectService = subjectService;
+        this.enrollmentRepository = enrollmentRepository;
     }
 
     @Override
@@ -96,8 +98,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
     }
 
     private void saveEnrollmentToDatabase(UserDto user, SubjectDto subject) {
-        user.getSubjectDtos().add(subject);
-        userRepository.save(UserMapper.toUser(user));
+        enrollmentRepository.insertEnrollment(user.getId(), subject.getSubjectIDDto().getId(), subject.getSubjectIDDto().getGroupCode(), subject.getSubjectIDDto().getSemester());
     }
 
     private void deleteEnrollmentFromDatabase(UserDto user, SubjectDto subject) {

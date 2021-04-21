@@ -37,8 +37,8 @@ public class InitService {
         SubjectIDDto subjectIDDto = SubjectIDDto.builder().id(subjectID).groupCode(groupCode).semester(semester).build();
         SubjectDto subjectDto = SubjectDto.builder().subjectIDDto(subjectIDDto).name(name).build();
         List<Integer> studentList = (List<Integer>) requestData.get("studentList");
-        initSubject(subjectDto);
-        initUser(studentList);
+//        initSubject(subjectDto);
+//        initUser(studentList);
         initEnrollment(studentList, subjectIDDto);
         initFirebaseSubject(semester, subjectID, groupCode);
         return "Finish";
