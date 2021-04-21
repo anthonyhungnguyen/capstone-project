@@ -12,18 +12,20 @@ export default function FaceProfile() {
   useEffect(() => {
     const onLoadFacePhotos = async () => {
       await fetchUserInfo(userid).then(data => {
-        console.log(data)
+        const photosToInsert = data.registers.map(p => ({
+          photo: p.imageLink
+        }))
+        setPhotos(photosToInsert)
       })
-      // setPhotos(result)
     }
     onLoadFacePhotos()
   }, [])
   return (
     <MainLayout>
       <div className="space-y-4 flex items-center justify-between">
-        {/* {photos?.map(item => (
-          <FaceCard photo={item.photo} metadata={item.metadata} />
-        ))} */}
+        {photos?.map(item => (
+          <FaceCard photo={item.photo} />
+        ))}
       </div>
     </MainLayout>
   )

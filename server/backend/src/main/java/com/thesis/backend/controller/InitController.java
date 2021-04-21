@@ -23,4 +23,9 @@ public class InitController {
     public ResponseEntity<String> registerFull(@RequestBody Map<String, Object> requestData) throws IOException {
         return ResponseEntity.ok(initService.registerFull(requestData));
     }
+
+    @GetMapping("/fill_register_image")
+    public ResponseEntity<String> fillRegisterImage() {
+        return ResponseEntity.ok(initService.initFillRegisterImages());
+    }
 }

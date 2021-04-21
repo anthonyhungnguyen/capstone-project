@@ -70,7 +70,7 @@ export default function HeaderBar() {
 
   return (
     <nav className="bg-gray-800">
-      <div className="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8 " id="mobile-menu">
         <div className="relative flex items-center justify-between h-16">
           <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
             <button
@@ -260,18 +260,73 @@ export default function HeaderBar() {
       </div>
       <div className="sm:hidden" id="mobile-menu">
         <div className="px-2 pt-2 pb-3 space-y-1">
-          <button className="bg-gray-900 text-white block px-3 py-2 rounded-md text-base font-medium">
-            Dashboard
+          <button
+            className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium  "
+            onClick={onLanding}
+          >
+            Landing
           </button>
-          <button className="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">
-            Team
-          </button>
-          <button className="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">
-            Projects
-          </button>
-          <button className="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">
-            Calendar
-          </button>
+          {roles && roles.includes(ROLE.STUDENT) && (
+            <>
+              <button
+                className="bg-gray-900 text-white px-3 py-2 rounded-md text-sm font-medium"
+                onClick={() => onHome(ROLE.STUDENT)}
+              >
+                Dashboard
+              </button>
+              <button
+                className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+                onClick={onFaceProfile}
+              >
+                Profile
+              </button>
+              <button
+                className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+                onClick={onLogs}
+              >
+                Logs
+              </button>
+            </>
+          )}
+          {roles && roles.includes(ROLE.TEACHER) && (
+            <>
+              <button
+                className="bg-gray-900 text-white px-3 py-2 rounded-md text-sm font-medium"
+                onClick={() => onHome(ROLE.TEACHER)}
+              >
+                Dashboard
+              </button>
+              <button
+                className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+                onClick={onTeacherRegister}
+              >
+                Register
+              </button>
+
+              <button
+                className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+                onClick={onTeacherManage}
+              >
+                Manage
+              </button>
+            </>
+          )}
+          {roles && roles.includes(ROLE.ADMIN) && (
+            <>
+              <button
+                className="bg-gray-900 text-white px-3 py-2 rounded-md text-sm font-medium"
+                onClick={() => onHome(ROLE.ADMIN)}
+              >
+                Dashboard
+              </button>
+              <button
+                className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+                onClick={() => onManageUser()}
+              >
+                Manage User
+              </button>
+            </>
+          )}
         </div>
       </div>
     </nav>

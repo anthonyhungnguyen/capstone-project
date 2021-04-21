@@ -52,7 +52,7 @@ export const fetchUsersInfo = () =>
       })
   })
 
-export const fetchUserInfo = userid => [
+export const fetchUserInfo = userid =>
   new Promise((resolve, reject) => {
     axios
       .get(API_PATH.USER, {
@@ -68,4 +68,3 @@ export const fetchUserInfo = userid => [
         reject(error)
       })
   })
-]

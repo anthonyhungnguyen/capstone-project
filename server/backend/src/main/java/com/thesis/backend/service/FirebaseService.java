@@ -110,4 +110,27 @@ public class FirebaseService {
         storage.create(blobInfo, saveString.getBytes(StandardCharsets.UTF_8));
         return "Success";
     }
+
+    public Map<Integer, List<String>> requestRegisterPaths() {
+        List<String> filePaths = listFiles("student");
+        Map<Integer, List<String>> studentWithPaths = new HashMap<>();
+        filePaths.stream()
+                .filter(p -> p.contains("register") && p.contains("jpg"))
+                .forEach(p -> {
+                    String[] pathElements = p.split("/", -1);
+                    Integer studentID = Integer.valueOf(pathElements[1]);
+                    Blob blob = storage.get(BlobId.of(firebaseProperties.getBucketName(), p));
+                    String imageLink = "https://firebasestorage.googleapis.com/v0/" + blob.getMediaLink().split("/", 7)[6];
+                    List<String> registerLinks;
+                    if (studentWithPaths.containsKey(studentID)) {
+                        registerLinks = studentWithPaths.get(studentID);
+                    } else {
+                        registerLinks = new ArrayList<>();
+                    }
+                    registerLinks.add(imageLink);
+                    studentWithPaths.put(studentID, registerLinks);
+                });
+        return studentWithPaths;
+    }
+
 }
