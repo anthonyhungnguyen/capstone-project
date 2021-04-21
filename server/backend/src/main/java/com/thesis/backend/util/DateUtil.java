@@ -9,6 +9,7 @@ import java.time.format.DateTimeFormatter;
 
 public final class DateUtil {
     public static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+    public static final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     public static final String zoneId = "Asia/Ho_Chi_Minh";
 
     public static LocalDateTime convertStringToLocalDateTime(String ldt) {
@@ -25,6 +26,10 @@ public final class DateUtil {
 
     public static ZonedDateTime today() {
         return ZonedDateTime.now(ZoneId.of(zoneId));
+    }
+
+    public static String todayString() {
+        return today().format(dtf);
     }
 
 }

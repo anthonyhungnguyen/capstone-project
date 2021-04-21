@@ -4,6 +4,8 @@ import com.thesis.backend.dto.model.RoleDto;
 import com.thesis.backend.dto.model.SubjectDto;
 import com.thesis.backend.dto.model.UserDto;
 import com.thesis.backend.dto.request.SignUpRequest;
+import com.thesis.backend.model.Role;
+import com.thesis.backend.model.Subject;
 import com.thesis.backend.model.User;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +40,22 @@ public class UserMapper {
                         .stream()
                         .map(role -> modelMapper.map(role, RoleDto.class))
                         .collect(Collectors.toList()))
+                .registers(user.getRegisters())
+                .build();
+    }
+
+    public static User toUser(UserDto user) {
+        return User.builder()
+                .id(user.getId())
+                .subjects(user
+                        .getSubjectDtos()
+                        .stream()
+                        .map(subject -> modelMapper.map(subject, Subject.class))
+                        .collect(Collectors.toList()))
+                .roles(user.getRoleDtos()
+                        .stream()
+                        .map(role -> modelMapper.map(role, Role.class))
+                        .collect(Collectors.toSet()))
                 .registers(user.getRegisters())
                 .build();
     }

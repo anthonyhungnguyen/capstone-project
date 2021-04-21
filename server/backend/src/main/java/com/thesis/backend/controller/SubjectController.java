@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Map;
 
 @RestController(value = "Subject controller")
 @RequestMapping(value = "/api/subject",
@@ -56,4 +57,7 @@ public class SubjectController {
     public ResponseEntity<SubjectDto> update(@RequestBody @Valid SubjectDto subjectDto) {
         return ResponseEntity.ok(subjectServiceImpl.update(subjectDto));
     }
+
+
+
 }

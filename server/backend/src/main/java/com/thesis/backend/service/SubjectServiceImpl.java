@@ -86,4 +86,5 @@ public class SubjectServiceImpl implements BaseService<SubjectDto, SubjectIDDto>
         throw CustomException.throwException(SUBJECT, ENTITY_NOT_FOUND, o.toString());
     }
 
+
 }

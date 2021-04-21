@@ -1,5 +1,6 @@
 package com.thesis.backend.service;
 
+import com.thesis.backend.dto.mapper.UserMapper;
 import com.thesis.backend.dto.model.EnrollmentDto;
 import com.thesis.backend.dto.model.SubjectDto;
 import com.thesis.backend.dto.model.SubjectIDDto;
@@ -96,8 +97,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
 
     private void saveEnrollmentToDatabase(UserDto user, SubjectDto subject) {
         user.getSubjectDtos().add(subject);
-        User userToSave = modelMapper.map(user, User.class);
-        userRepository.save(userToSave);
+        userRepository.save(UserMapper.toUser(user));
     }
 
     private void deleteEnrollmentFromDatabase(UserDto user, SubjectDto subject) {

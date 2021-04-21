@@ -97,7 +97,7 @@ public class ScheduleService {
 
     private List<String> loadMetadata() throws IOException {
         ObjectMapper mapper = new ObjectMapper();
-        Map<String, Object> temp = mapper.readValue(new File("/home/anthonyhungnguyen276/temp.json"), Map.class);
+        Map<String, Object> temp = mapper.readValue(new File("/tmp/schedule.json"), Map.class);
         return (List<String>) temp.get("student_path_list");
     }
 

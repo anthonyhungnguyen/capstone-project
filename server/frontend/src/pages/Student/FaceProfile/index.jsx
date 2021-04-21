@@ -21,9 +21,9 @@ export default function FaceProfile() {
   return (
     <MainLayout>
       <div className="space-y-4 flex items-center justify-between">
-        {photos?.map(item => (
+        {/* {photos?.map(item => (
           <FaceCard photo={item.photo} metadata={item.metadata} />
-        ))}
+        ))} */}
       </div>
     </MainLayout>
   )

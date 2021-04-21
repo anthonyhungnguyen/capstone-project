@@ -9,6 +9,7 @@ import datetime
 import json
 import requests
 import pandas as pd
+import requests
 
 FACE_SERVER = "http://localhost:5000"
 
@@ -128,4 +129,36 @@ def save_register_images():
         })
 
 
-init_students()
+def send_request():
+    json = {
+        "semester": 201,
+        "groupCode": "CC01",
+        "subjectID": "CO3025",
+        "name": "System Design and Analysis",
+        "studentList": [1614058,
+                        1652595,
+                        1712187,
+                        1752015,
+                        1752041,
+                        1752044,
+                        1752067,
+                        1752089,
+                        1752139,
+                        1752169,
+                        1752244,
+                        1752255,
+                        1752259,
+                        1752290,
+                        1752335,
+                        1752394,
+                        1752494,
+                        1752516,
+                        1752522,
+                        1752567,
+                        1752637,
+                        2053234]
+    }
+    requests.post("http://localhost:8080/api/init/register_full", json=json)
+
+
+send_request()
