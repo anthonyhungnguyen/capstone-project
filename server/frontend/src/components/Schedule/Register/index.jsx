@@ -51,7 +51,7 @@ export default function TeacherRegister() {
   }
 
   return (
-    <MainLayout>
+    <>
       <Card className="w-2/3" title="Registration form">
         <Form
           {...layout}
@@ -131,6 +131,6 @@ export default function TeacherRegister() {
           </Form.Item>
         </Form>
       </Card>
-    </MainLayout>
+    </>
   )
 }

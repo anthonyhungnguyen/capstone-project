@@ -9,6 +9,8 @@ import java.util.List;
 public interface LogRepository extends JpaRepository<Log, Integer> {
     List<Log> findByUserID(Integer userid);
 
+    List<Log> findByTeacherID(Integer teacherid);
+
     List<Log> findByUserIDAndSemesterAndGroupCodeAndSubjectID(Integer userid,
                                                               Integer semester,
                                                               String groupCode,

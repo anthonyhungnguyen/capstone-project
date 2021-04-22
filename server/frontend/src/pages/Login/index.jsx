@@ -1,5 +1,6 @@
 import { Button, Card } from "antd"
 import PATH from "constants/path"
+import ROLE from "constants/role"
 import MainLayout from "layouts/MainLayout"
 import React, { useState } from "react"
 import { useForm } from "react-hook-form"
@@ -13,13 +14,12 @@ function Login() {
   const [fail, setFail] = useState(false)
   const dispatch = useDispatch()
   const history = useHistory()
-  const { isLoggedIn } = useSelector(state => state.auth)
+  const { isLoggedIn, user } = useSelector(state => state.auth)
   const { message } = useSelector(state => state.message)
   const onSubmit = data => {
     dispatch(login(data))
       .then(() => {
         setLoading(false)
-        history.push(PATH.COMMON.LANDING)
       })
       .catch(() => {
         setLoading(false)
@@ -28,7 +28,12 @@ function Login() {
   }
 
   if (isLoggedIn) {
-    history.push(PATH.COMMON.LANDING)
+    const { roles } = user
+    if (roles.includes(ROLE.STUDENT)) {
+      history.push(PATH.STUDENT.HOME)
+    } else if (roles.includes(ROLE.TEACHER)) {
+      history.push(PATH.TEACHER.HOME)
+    }
   }
 
   return (
@@ -86,7 +91,7 @@ function Login() {
                 {errors.password?.message}
               </p>
             </div>
-            <div className="flex items-center justify-between">
+            {/* <div className="flex items-center justify-between">
               <div className="flex items-center">
                 <input
                   id="remember_me"
@@ -106,7 +111,7 @@ function Login() {
                   Forgot your password?
                 </button>
               </div>
-            </div>
+            </div> */}
             <div>
               <button
                 type="submit"

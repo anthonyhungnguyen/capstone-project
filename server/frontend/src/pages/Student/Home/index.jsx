@@ -1,39 +1,37 @@
-import PieChart from "components/Chart/PieChart"
 import BarChart from "components/Chart/BarChart"
-import Logs from "components/Logs"
 import MainLayout from "layouts/MainLayout"
-import React from "react"
+import React, { useEffect, useState } from "react"
 import { Divider } from "antd"
-import SemesterSelect from "components/Filter/SemesterSelect"
-import DateRangePicker from "components/Filter/DateRangePicker"
-import { useSelector } from "react-redux"
-import Subject from "components/User/Subject"
+import SemesterSelect from "components/SemesterSelect"
+import { useDispatch, useSelector } from "react-redux"
+import FaceProfile from "../../../components/FaceProfile"
+import { logsRequest } from "slices/log"
+import StudentLogs from "components/Logs/StudentLogs"
+import ROLE from "constants/role"
 
 export default function Home() {
+  const dispatch = useDispatch()
   const { user } = useSelector(state => state.auth)
   const { userid } = user
+  useEffect(() => {
+    dispatch(logsRequest(userid, ROLE.STUDENT))
+  }, [])
   return (
     <MainLayout>
-      <div className="flex justify-around">
-        <div className="w-1/2 font-semibold text-lg">Hi, {userid}</div>
-        <div className="w-1/2 space-x-10">
-          <SemesterSelect />
-          <DateRangePicker />
-        </div>
+      <div className="flex justify-between">
+        <div className="font-semibold text-lg">Hi, {userid}</div>
+        <SemesterSelect />
       </div>
       <Divider />
-      <div className="flex flex-col">
-        <div className="flex  justify-center space-x-10">
-          <div className="w-1/3">
-            <PieChart />
-          </div>
-          <div className="w-2/3">
-            <BarChart />
-          </div>
+      <div className="flex flex-wrap justify-around">
+        <div className="w-full">
+          <BarChart />
         </div>
-        <div className="flex  justify-center space-x-10">
-          <Logs />
-          <Subject />
+        <div className="md:w-2/5">
+          <StudentLogs />
+        </div>
+        <div className="md:w-2/5">
+          <FaceProfile />
         </div>
       </div>
     </MainLayout>

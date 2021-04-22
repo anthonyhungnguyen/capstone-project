@@ -22,6 +22,10 @@ public class LogService {
         return logRepository.findByUserID(userid);
     }
 
+    public List<Log> findLogsBasedOnTeacherID(Integer teacherid) {
+        return logRepository.findByTeacherID(teacherid);
+    }
+
 
     public boolean checkAttendanceExist(AttendanceRequest request, Schedule schedule) {
         List<Log> logs =

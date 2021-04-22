@@ -1,9 +1,9 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit"
 import auth from "./auth"
-import faceEnroll from "./faceEnroll"
 import message from "./message"
+import log from "./log"
 
-const reducer = combineReducers({ auth, message, faceEnroll })
+const reducer = combineReducers({ auth, message, log })
 
 // Accept a single object because under the hook, the store has been
 // configured to allow using redux devtools and redux middleware

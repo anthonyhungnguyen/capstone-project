@@ -5,6 +5,7 @@ import React, { useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { useLocation, useHistory } from "react-router-dom"
 import { logout } from "slices/auth"
+import { clearAllRequest } from "slices/log"
 
 const { Header } = Layout
 
@@ -22,14 +23,8 @@ export default function HeaderBar() {
   // If no, render Login/SignUp navbar
 
   const onLogout = () => {
+    dispatch(clearAllRequest())
     dispatch(logout())
-  }
-  const onFaceEnroll = () => {
-    history.push(PATH.STUDENT.FACE_ENROLL)
-  }
-
-  const onLanding = () => {
-    history.push(PATH.COMMON.LANDING)
   }
 
   const onHome = role => {
@@ -42,28 +37,12 @@ export default function HeaderBar() {
     }
   }
 
-  const onTeacherRegister = () => {
-    history.push(PATH.TEACHER.REGISTER)
-  }
-
-  const onTeacherManage = () => {
-    history.push(PATH.TEACHER.MANAGE)
-  }
-
-  const onFaceProfile = () => {
-    history.push(PATH.STUDENT.FACE_PROFILE)
+  const onTeacherSchedule = () => {
+    history.push(PATH.TEACHER.SCHEDULE)
   }
 
   const onProfile = () => {
     history.push(PATH.COMMON.PROFILE)
-  }
-
-  const onLogs = () => {
-    history.push(PATH.STUDENT.LOGS)
-  }
-
-  const onManageUser = () => {
-    history.push(PATH.ADMIN.MANAGE_USER)
   }
 
   const onToggleIsHidden = () => setIsHidden(old => !old)
@@ -120,12 +99,6 @@ export default function HeaderBar() {
             </div>
             <div className="hidden sm:block sm:ml-6">
               <div className="flex space-x-4">
-                <button
-                  className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium  "
-                  onClick={onLanding}
-                >
-                  Landing
-                </button>
                 {roles && roles.includes(ROLE.STUDENT) && (
                   <>
                     <button
@@ -133,18 +106,6 @@ export default function HeaderBar() {
                       onClick={() => onHome(ROLE.STUDENT)}
                     >
                       Dashboard
-                    </button>
-                    <button
-                      className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
-                      onClick={onFaceProfile}
-                    >
-                      Profile
-                    </button>
-                    <button
-                      className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
-                      onClick={onLogs}
-                    >
-                      Logs
                     </button>
                   </>
                 )}
@@ -158,32 +119,9 @@ export default function HeaderBar() {
                     </button>
                     <button
                       className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
-                      onClick={onTeacherRegister}
+                      onClick={onTeacherSchedule}
                     >
-                      Register
-                    </button>
-
-                    <button
-                      className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
-                      onClick={onTeacherManage}
-                    >
-                      Manage
-                    </button>
-                  </>
-                )}
-                {roles && roles.includes(ROLE.ADMIN) && (
-                  <>
-                    <button
-                      className="bg-gray-900 text-white px-3 py-2 rounded-md text-sm font-medium"
-                      onClick={() => onHome(ROLE.ADMIN)}
-                    >
-                      Dashboard
-                    </button>
-                    <button
-                      className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
-                      onClick={() => onManageUser()}
-                    >
-                      Manage User
+                      Schedule
                     </button>
                   </>
                 )}
@@ -260,12 +198,6 @@ export default function HeaderBar() {
       </div>
       <div className="sm:hidden" id="mobile-menu">
         <div className="px-2 pt-2 pb-3 space-y-1">
-          <button
-            className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium  "
-            onClick={onLanding}
-          >
-            Landing
-          </button>
           {roles && roles.includes(ROLE.STUDENT) && (
             <>
               <button
@@ -273,18 +205,6 @@ export default function HeaderBar() {
                 onClick={() => onHome(ROLE.STUDENT)}
               >
                 Dashboard
-              </button>
-              <button
-                className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
-                onClick={onFaceProfile}
-              >
-                Profile
-              </button>
-              <button
-                className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
-                onClick={onLogs}
-              >
-                Logs
               </button>
             </>
           )}
@@ -298,32 +218,9 @@ export default function HeaderBar() {
               </button>
               <button
                 className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
-                onClick={onTeacherRegister}
+                onClick={onTeacherSchedule}
               >
-                Register
-              </button>
-
-              <button
-                className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
-                onClick={onTeacherManage}
-              >
-                Manage
-              </button>
-            </>
-          )}
-          {roles && roles.includes(ROLE.ADMIN) && (
-            <>
-              <button
-                className="bg-gray-900 text-white px-3 py-2 rounded-md text-sm font-medium"
-                onClick={() => onHome(ROLE.ADMIN)}
-              >
-                Dashboard
-              </button>
-              <button
-                className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
-                onClick={() => onManageUser()}
-              >
-                Manage User
+                Schedule
               </button>
             </>
           )}

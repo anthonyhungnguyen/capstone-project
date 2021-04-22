@@ -1,4 +1,4 @@
-import Loading from "components/Miscellaneous/Loading"
+import Loading from "components/Loading"
 import PATH from "constants/path"
 import TeacherGuard from "guards/TeacherGuard"
 import React, { lazy, Suspense } from "react"

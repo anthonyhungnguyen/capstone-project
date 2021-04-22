@@ -1,7 +1,23 @@
 import React from "react"
 import ReactECharts from "echarts-for-react"
+import { useSelector } from "react-redux"
 
 export default function BarChart() {
+  const { logs } = useSelector(state => state.log)
+  const parseData = logs => {
+    const subjectWithCount = {}
+    logs?.forEach(l => {
+      if (l.subjectID in subjectWithCount) {
+        subjectWithCount[l.subjectID] += 1
+      } else {
+        subjectWithCount[l.subjectID] = 1
+      }
+    })
+    return subjectWithCount
+  }
+
+  const tableData = parseData(logs)
+
   const option = {
     tooltip: {
       trigger: "axis",
@@ -29,7 +45,7 @@ export default function BarChart() {
       {
         type: "category",
         axisTick: { show: false },
-        data: ["CO3024", "CO3025", "CO3026", "CO3027", "CO3028"]
+        data: Object.keys(tableData)
       }
     ],
     yAxis: [
@@ -39,32 +55,16 @@ export default function BarChart() {
     ],
     series: [
       {
-        name: "On-time",
+        name: "Frequency",
         type: "bar",
         barGap: 0,
         emphasis: {
           focus: "series"
         },
-        data: [25, 26, 30, 20, 40]
-      },
-      {
-        name: "Late",
-        type: "bar",
-        emphasis: {
-          focus: "series"
-        },
-        data: [5, 2, 4, 8, 2]
-      },
-      {
-        name: "Miss",
-        type: "bar",
-        emphasis: {
-          focus: "series"
-        },
-        data: [20, 10, 15, 10, 12]
+        data: Object.values(tableData)
       }
     ]
   }
 
-  return <ReactECharts option={option} />
+  return <ReactECharts option={option} showLoading={logs === null} />
 }

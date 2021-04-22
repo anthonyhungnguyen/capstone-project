@@ -16,7 +16,7 @@ export default function TeacherGuard(children) {
           !localStorage.getItem("user") &&
           !user?.roles.includes(ROLE.TEACHER)
         ) {
-          return <Redirect to={PATH.COMMON.LANDING} />
+          return <Redirect to={PATH.COMMON.LOGIN} />
         }
         return <Component {...props} />
       }}

@@ -1,7 +1,5 @@
-import { fetchFaces, fetchFacesMetadata, getFaces } from "apis/face"
-import { fetchUserInfo, fetchUsersInfo } from "apis/user"
-import FaceCard from "components/FaceCard"
-import MainLayout from "layouts/MainLayout"
+import { Card, Image } from "antd"
+import { fetchUserInfo } from "apis/user"
 import React, { useEffect, useState } from "react"
 import { useSelector } from "react-redux"
 
@@ -21,12 +19,12 @@ export default function FaceProfile() {
     onLoadFacePhotos()
   }, [])
   return (
-    <MainLayout>
-      <div className="space-y-4 flex items-center justify-between">
+    <Card title="Register photos">
+      <div className="flex flex-wrap">
         {photos?.map(item => (
-          <FaceCard photo={item.photo} />
+          <Image src={item.photo} alt="face_photo" style={{ width: "150px" }} />
         ))}
       </div>
-    </MainLayout>
+    </Card>
   )
 }

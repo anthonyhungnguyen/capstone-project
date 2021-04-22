@@ -101,7 +101,7 @@ export default function TeacherManage() {
   }, [])
 
   return (
-    <MainLayout>
+    <>
       <Modal
         title="Change"
         visible={editting}
@@ -145,6 +145,6 @@ export default function TeacherManage() {
         dataSource={data}
         columns={columns}
       ></Table>
-    </MainLayout>
+    </>
   )
 }
