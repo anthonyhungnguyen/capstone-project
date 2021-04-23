@@ -5,6 +5,7 @@ from __init__ import PYTHON_PATH
 from ailibs.detector.dlib.FaceDetector import FaceDetector
 from ailibs.tracker.Kalman.FaceTracker import FaceTracker
 from ailibs.extractor.facenet.FaceExtractor import FaceExtractor
+from ailibs.utilities.FaceUtilities import FaceUtilities
 from ailibs.classifier.faiss.FaceClassifier import FaceClassifier
 from utils.LogFCI import setup_logger
 
@@ -30,11 +31,13 @@ LOG_TIME = True
 
 
 class AILIBS:
+    UTILITIES = FaceUtilities(log=LOG_TIME)
     DETECTOR = FaceDetector(log=LOG_TIME)
     TRACKER = FaceTracker(max_age=50, log=LOG_TIME)
     EXTRACTOR = FaceExtractor(shape_predictor=shape_predictor_path,
                               model=model_path, model_weight=weight_path, log=LOG_TIME)
     # CLASSIFIER = FaceClassifier(feature=feature_path, log=LOG_TIME)
-    CLASSIFIER = FaceClassifier(vector_faiss=vector_path, vector_index=y_path, threshold=thres_path, log=LOG_TIME)
+    CLASSIFIER = FaceClassifier(
+        vector_faiss=vector_path, vector_index=y_path, threshold=thres_path, log=LOG_TIME)
 
     LOGGER = setup_logger('streaming', LOG_STREAMING_PATH)

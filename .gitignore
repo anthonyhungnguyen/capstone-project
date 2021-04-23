@@ -132,4 +132,9 @@ dmypy.json
 *.txt
 *.csv
 
-./data
+*.lock
+node_modules/*
+data/*
+
+*.jpg
+
