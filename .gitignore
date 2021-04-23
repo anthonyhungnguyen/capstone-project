@@ -133,4 +133,3 @@ dmypy.json
 *.csv
 *.lock
 node_modules/*
-data/*
