@@ -134,3 +134,4 @@ dmypy.json
 *.lock
 node_modules/*
 data/*
+*.jpg
