@@ -25,7 +25,7 @@ FEATURE = "feature"
 TIMESTAMP = "timestamp"
 NPY_PATH = "npy_path"
 REQUEST = "request"
-MIN_DIST = 60.15
+MIN_DIST = 56.59
 
 VECTOR_FILE = "vector.index"
 FEATURE_FILE = "features.pickle"
