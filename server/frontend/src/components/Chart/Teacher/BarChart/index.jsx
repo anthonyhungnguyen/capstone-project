@@ -78,5 +78,5 @@ export default function BarChart() {
     }
   }
 
-  return <ReactECharts option={option} showLoading={data === null} />
+  return <ReactECharts option={option} />
 }

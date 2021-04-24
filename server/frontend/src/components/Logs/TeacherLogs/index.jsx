@@ -10,11 +10,11 @@ import ScheduleLogs from "./ScheduleLogs"
 export default function TeacherLogs() {
   const [chosenSchedule, setChosenSchedule] = useState(null)
   return (
-    <div className="flex justify-around">
-      <div className="w-2/5">
+    <div className="flex flex-col justify-around">
+      <div className="md:w-2/5 sm:w-full">
         <TeacherSchedule setChosenSchedule={setChosenSchedule} />
       </div>
-      <div className="w-2/5">
+      <div className="md:w-2/5 sm:w-full">
         <ScheduleLogs chosenSchedule={chosenSchedule} />
       </div>
     </div>
