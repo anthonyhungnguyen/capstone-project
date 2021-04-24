@@ -3,7 +3,6 @@ package com.thesis.backend.repository;
 import com.thesis.backend.model.Log;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.sql.Timestamp;
 import java.util.List;
 
 public interface LogRepository extends JpaRepository<Log, Integer> {
@@ -22,6 +21,6 @@ public interface LogRepository extends JpaRepository<Log, Integer> {
                                                                                       Integer semester,
                                                                                       String groupCode,
                                                                                       String subjectID,
-                                                                                      Timestamp startTime,
-                                                                                      Timestamp endTime);
+                                                                                      String startTime,
+                                                                                      String endTime);
 }

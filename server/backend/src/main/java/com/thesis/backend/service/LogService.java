@@ -43,7 +43,7 @@ public class LogService {
                 .teacherID(attendanceRequest.getTeacherID())
                 .deviceID(attendanceRequest.getDeviceID())
                 .imageLink(imageLink)
-                .attendanceTime(DateUtil.convertStringToTimestamp(attendanceRequest.getTimestamp()))
+                .attendanceTime(attendanceRequest.getTimestamp())
                 .build();
         logRepository.save(log);
     }

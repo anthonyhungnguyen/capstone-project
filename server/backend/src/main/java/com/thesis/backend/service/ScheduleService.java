@@ -8,7 +8,6 @@ import com.thesis.backend.dto.request.ScheduleRequest;
 import com.thesis.backend.exception.CustomException;
 import com.thesis.backend.model.Schedule;
 import com.thesis.backend.repository.ScheduleRepository;
-import com.thesis.backend.util.DateUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -16,11 +15,10 @@ import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.IOException;
-import java.sql.Timestamp;
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -49,9 +47,7 @@ public class ScheduleService {
         int semester = scheduleRequest.getSemester();
         String subjectID = scheduleRequest.getSubjectID();
         String groupCode = scheduleRequest.getGroupCode();
-        LocalDateTime startDateTimeLdt = DateUtil.convertStringToLocalDateTime(scheduleRequest.getStartTime());
-        LocalDateTime endDateTimeLdt = DateUtil.convertStringToLocalDateTime(scheduleRequest.getEndTime());
-        if (!checkOverlap(scheduleRequest.getDeviceID(), startDateTimeLdt, endDateTimeLdt)) {
+        if (!checkOverlap(scheduleRequest.getDeviceID(), scheduleRequest.getStartTime(), scheduleRequest.getEndTime())) {
             Schedule schedule = ScheduleMapper.toModel(scheduleRequest);
             String classCode = String.format("%d_%s_%s", semester, subjectID, groupCode);
             String lastMetaData = firebaseService.downloadMetadata(classCode);
@@ -104,8 +100,8 @@ public class ScheduleService {
     public ScheduleRequest updateSchedule(ScheduleRequest request) {
         Optional<Schedule> schedule = scheduleRepository.findById(request.getId());
         if (schedule.isPresent()) {
-            schedule.get().setStartTime(Timestamp.valueOf(DateUtil.convertStringToLocalDateTime(request.getStartTime())));
-            schedule.get().setEndTime(Timestamp.valueOf(DateUtil.convertStringToLocalDateTime(request.getEndTime())));
+            schedule.get().setStartTime(request.getStartTime());
+            schedule.get().setEndTime(request.getEndTime());
             Schedule scheduleUpdated = scheduleRepository.save(schedule.get());
             kafkaTemplate.send(MODIFY_TOPIC, scheduleUpdated);
             return ScheduleMapper.toDto(scheduleUpdated);
@@ -131,21 +127,19 @@ public class ScheduleService {
     }
 
     public Optional<Schedule> existScheduleRightNow(Integer deviceID) {
-        Timestamp now = Timestamp.from(ZonedDateTime.ofInstant(Instant.now(), ZoneId.of("Asia/Ho_Chi_Minh")).toInstant());
+        String now = ZonedDateTime.ofInstant(Instant.now(), ZoneId.of("Asia/Ho_Chi_Minh")).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         return Optional.ofNullable(scheduleRepository.findByDeviceIDAndStartTimeBeforeAndEndTimeAfter(deviceID, now, now));
     }
 
-    public Optional<Schedule> fetchOne(Integer deviceID, Timestamp timestamp) {
+    public Optional<Schedule> fetchOne(Integer deviceID, String timestamp) {
         return Optional.ofNullable(scheduleRepository.findByDeviceIDAndStartTimeBeforeAndEndTimeAfter(deviceID, timestamp, timestamp));
     }
 
 
-    public boolean checkOverlap(Integer deviceID, LocalDateTime startTime, LocalDateTime endTime) {
-        Timestamp startTimeTS = Timestamp.valueOf(startTime);
-        Timestamp endTimeTS = Timestamp.valueOf(endTime);
-        List<Schedule> schedules = scheduleRepository.findByDeviceIDAndEndTimeAfterOrderByEndTime(deviceID, startTimeTS);
+    public boolean checkOverlap(Integer deviceID, String startTime, String endTime) {
+        List<Schedule> schedules = scheduleRepository.findByDeviceIDAndEndTimeAfterOrderByEndTime(deviceID, startTime);
         Optional<Schedule> minEndTimeSchedule = schedules.stream().findFirst();
-        return minEndTimeSchedule.filter(schedule -> endTimeTS.getTime() > schedule.getStartTime().getTime()).isPresent();
+        return minEndTimeSchedule.filter(schedule -> endTime.compareTo(schedule.getStartTime()) > 0).isPresent();
     }
 
     public Integer countSchedulesWithID(int semester, String subjectID, String groupCode) {

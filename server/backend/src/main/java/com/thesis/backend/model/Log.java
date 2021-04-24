@@ -37,7 +37,7 @@ public class Log {
     private Integer teacherID;
 
     @Column(name = "attendance_time")
-    private Timestamp attendanceTime;
+    private String attendanceTime;
 
     @Column(name = "device_id")
     private Integer deviceID;

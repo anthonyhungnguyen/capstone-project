@@ -65,19 +65,7 @@ export default function TeacherSchedule({ setChosenSchedule }) {
   useEffect(() => {
     fetchSchedules({ teacherid: userid })
       .then(data => {
-        setData(
-          data.map(x => {
-            return {
-              ...x,
-              startTime: moment(x.startTime)
-                .subtract(7, "hour")
-                .format("YYYY-MM-DDTHH:mm:ss"),
-              endTime: moment(x.endTime)
-                .subtract(7, "hour")
-                .format("YYYY-MM-DDTHH:mm:ss")
-            }
-          })
-        )
+        setData(data)
       })
       .catch(console.error)
   }, [])
