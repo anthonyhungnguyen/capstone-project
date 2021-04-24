@@ -11,6 +11,8 @@ public interface LogRepository extends JpaRepository<Log, Integer> {
 
     List<Log> findByTeacherID(Integer teacherid);
 
+    Integer countBySemesterAndSubjectIDAndGroupCode(int semester, String subjectID, String groupCode);
+
     List<Log> findByUserIDAndSemesterAndGroupCodeAndSubjectID(Integer userid,
                                                               Integer semester,
                                                               String groupCode,

@@ -56,27 +56,3 @@ export const getFaces = userid => {
       .catch(reject)
   })
 }
-
-// export const fetchFaces = (userid, folder) => {
-//   return new Promise((resolve, reject) => {
-//     firebase_storage
-//       .ref(`/student/${userid}/${folder}/photos`)
-//       .list()
-//       .then(blob => {
-//         return blob.items.map(i => i.getDownloadURL())
-//       })
-//       .then(urlArray => Promise.all(urlArray).then(resolve))
-//   })
-// }
-
-// export const fetchFacesMetadata = (userid, folder) => {
-//   return new Promise((resolve, reject) => {
-//     firebase_storage
-//       .ref(`/student/${userid}/${folder}/photos`)
-//       .list()
-//       .then(blob => {
-//         return blob.items.map(i => i.getMetadata())
-//       })
-//       .then(urlArray => Promise.all(urlArray).then(resolve))
-//   })
-// }

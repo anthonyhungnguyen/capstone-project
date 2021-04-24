@@ -84,7 +84,7 @@ public class InitService {
 
     public String initFillRegisterImages() {
         List<Integer> studentList = userService.findAll().stream()
-                .filter(s -> s.getRoleDtos().contains(new RoleDto("STUDENT")))
+                .filter(s -> s.getRoles().contains(new RoleDto("STUDENT")))
                 .map(UserDto::getId)
                 .collect(Collectors.toList());
         Map<Integer, List<String>> registerPaths = firebaseService.requestRegisterPaths();

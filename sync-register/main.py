@@ -161,4 +161,4 @@ def send_request():
     requests.post("http://localhost:8080/api/init/register_full", json=json)
 
 
-send_request()
+find_differences_drive_firebase()

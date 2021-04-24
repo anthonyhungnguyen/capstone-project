@@ -49,11 +49,26 @@ public class User implements Serializable {
             inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
     private Set<Role> roles = new HashSet<>();
 
+    @ManyToMany(targetEntity = Subject.class,
+            cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @Fetch(FetchMode.SUBSELECT)
+    @JoinTable(name = "teacher_subject",
+            joinColumns = {
+                    @JoinColumn(name = "user_id", referencedColumnName = "id")
+            },
+            inverseJoinColumns = {
+                    @JoinColumn(name = "subject_id", referencedColumnName = "id"),
+                    @JoinColumn(name = "group_code", referencedColumnName = "group_code"),
+                    @JoinColumn(name = "semester", referencedColumnName = "semester")
+            })
+    private List<Subject> teachSubjects = new ArrayList<>();
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @Fetch(FetchMode.SUBSELECT)
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     @JsonIgnore
     private List<Register> registers;
+
 
 }

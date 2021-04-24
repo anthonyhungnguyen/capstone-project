@@ -1,12 +1,12 @@
 import { Divider } from "antd"
-import BarChart from "components/Chart/BarChart"
+import BarChart from "components/Chart/Teacher/BarChart"
 import TeacherLogs from "components/Logs/TeacherLogs"
 import SemesterSelect from "components/SemesterSelect"
 import ROLE from "constants/role"
 import MainLayout from "layouts/MainLayout"
 import React, { useEffect } from "react"
 import { useDispatch, useSelector } from "react-redux"
-import { logsRequest } from "slices/log"
+import { logsRequest, scheduleRequest } from "slices/log"
 
 export default function TeacherHome() {
   const dispatch = useDispatch()
@@ -14,6 +14,7 @@ export default function TeacherHome() {
   const { userid } = user
   useEffect(() => {
     dispatch(logsRequest(userid, ROLE.TEACHER))
+    dispatch(scheduleRequest(userid))
   }, [])
   return (
     <MainLayout>

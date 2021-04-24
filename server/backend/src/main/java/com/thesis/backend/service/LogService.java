@@ -47,4 +47,8 @@ public class LogService {
                 .build();
         logRepository.save(log);
     }
+
+    public Integer countAttendanceLogsBySubject(int semester, String subjectID, String groupCode) {
+        return logRepository.countBySemesterAndSubjectIDAndGroupCode(semester, subjectID, groupCode);
+    }
 }

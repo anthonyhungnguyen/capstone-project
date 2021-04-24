@@ -80,7 +80,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
     @Override
     public List<SubjectDto> findAllSubjectsTakenByUser(Integer userid) {
         UserDto userDto = userService.find(userid);
-        return new ArrayList<>(userDto.getSubjectDtos());
+        return new ArrayList<>(userDto.getSubjects());
     }
 
     @Override
@@ -102,7 +102,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
     }
 
     private void deleteEnrollmentFromDatabase(UserDto user, SubjectDto subject) {
-        user.getSubjectDtos().remove(subject);
+        user.getSubjects().remove(subject);
         User userToSave = modelMapper.map(user, User.class);
         userRepository.save(userToSave);
     }

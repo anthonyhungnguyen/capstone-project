@@ -1,5 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit"
 import { fetchLogsStudent, fetchLogsTeacher } from "apis/attendance"
+import { fetchSchedules } from "apis/register"
 import ROLE from "constants/role"
 import { setMessage } from "./message"
 
@@ -8,7 +9,8 @@ const slice = createSlice({
   initialState: {
     semesterList: [],
     semester: null,
-    logs: null
+    logs: null,
+    schedules: []
   },
   reducers: {
     logsRequestSuccess: (state, action) => {
@@ -23,6 +25,9 @@ const slice = createSlice({
     },
     semesterChange: (state, action) => {
       state.semester = action.payload
+    },
+    scheduleList: (state, action) => {
+      state.schedules = action.payload
     },
     clearAll: (state, _) => {
       state.semesterList = []
@@ -41,6 +46,7 @@ const {
   logsRequestFail,
   semesterList,
   semesterChange,
+  scheduleList,
   clearAll
 } = slice.actions
 
@@ -75,6 +81,19 @@ export const logsRequest = (userid, role) => async dispatch => {
     },
     error => {
       dispatch(logsRequestFail())
+      dispatch(setMessage(error))
+      return Promise.reject()
+    }
+  )
+}
+
+export const scheduleRequest = userid => async dispatch => {
+  return await fetchSchedules({ teacherid: userid }).then(
+    result => {
+      dispatch(scheduleList(result))
+      return Promise.resolve()
+    },
+    error => {
       dispatch(setMessage(error))
       return Promise.reject()
     }

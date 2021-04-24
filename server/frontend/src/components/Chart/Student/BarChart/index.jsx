@@ -25,9 +25,6 @@ export default function BarChart() {
         type: "shadow"
       }
     },
-    legend: {
-      data: ["On-time", "Late", "Miss"]
-    },
     toolbox: {
       show: true,
       orient: "vertical",

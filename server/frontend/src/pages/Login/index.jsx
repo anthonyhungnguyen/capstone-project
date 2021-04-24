@@ -1,12 +1,12 @@
 import { Button, Card } from "antd"
 import PATH from "constants/path"
 import ROLE from "constants/role"
-import MainLayout from "layouts/MainLayout"
 import React, { useState } from "react"
 import { useForm } from "react-hook-form"
 import { useDispatch, useSelector } from "react-redux"
 import { useHistory } from "react-router-dom"
 import { login } from "slices/auth"
+import { requestUserInfo } from "slices/user"
 
 function Login() {
   const { register, handleSubmit, errors } = useForm()
@@ -28,7 +28,8 @@ function Login() {
   }
 
   if (isLoggedIn) {
-    const { roles } = user
+    const { roles, userid } = user
+    dispatch(requestUserInfo(userid))
     if (roles.includes(ROLE.STUDENT)) {
       history.push(PATH.STUDENT.HOME)
     } else if (roles.includes(ROLE.TEACHER)) {

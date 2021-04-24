@@ -86,5 +86,7 @@ public class SubjectServiceImpl implements BaseService<SubjectDto, SubjectIDDto>
         throw CustomException.throwException(SUBJECT, ENTITY_NOT_FOUND, o.toString());
     }
 
-
+    public Integer countStudentsInSubject(int semester, String subjectID, String groupCode) {
+        return subjectRepository.countStudentsInSubject(semester, subjectID, groupCode);
+    }
 }

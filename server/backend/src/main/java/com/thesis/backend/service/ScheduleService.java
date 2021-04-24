@@ -147,4 +147,8 @@ public class ScheduleService {
         Optional<Schedule> minEndTimeSchedule = schedules.stream().findFirst();
         return minEndTimeSchedule.filter(schedule -> endTimeTS.getTime() > schedule.getStartTime().getTime()).isPresent();
     }
+
+    public Integer countSchedulesWithID(int semester, String subjectID, String groupCode) {
+        return scheduleRepository.countScheduleBySemesterAndSubjectIDAndGroupCode(semester, subjectID, groupCode);
+    }
 }
