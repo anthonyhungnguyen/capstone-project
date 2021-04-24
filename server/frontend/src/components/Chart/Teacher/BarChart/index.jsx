@@ -25,6 +25,9 @@ export default function BarChart() {
         if (response.data) {
           setData(response.data)
           setOption(getOption(response.data))
+        } else {
+          setData({})
+          setOption(getOption({}))
         }
       })
   }, [])
@@ -78,5 +81,5 @@ export default function BarChart() {
     }
   }
 
-  return <ReactECharts option={option} />
+  return <ReactECharts option={option} showLoading={data === null} />
 }
