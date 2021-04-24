@@ -15,7 +15,7 @@ export default function BarChart() {
 
   useEffect(() => {
     axios
-      .get("http://localhost:8080/api/stats/teacher/percentage", {
+      .get(API_PATH.TEACHER_PERCENTAGE, {
         params: {
           teacherid: userid
         },
