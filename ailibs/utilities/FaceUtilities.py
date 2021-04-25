@@ -1,7 +1,6 @@
 import base64
 import cv2
 import numpy as np
-<<<<<<< HEAD
 import os
 from time import time
 from imutils import face_utils
@@ -13,10 +12,6 @@ mid_jaw = 8
 right_jaw = 16
 mid_nose = 34
 
-=======
-
-
->>>>>>> master
 class FaceUtilities():
 
     def __init__(self, **kwargs):
@@ -35,11 +30,7 @@ class FaceUtilities():
         return np.array(img, dtype=np.uint8)
 
     @staticmethod
-<<<<<<< HEAD
-    def flip_face(img, flip_code):  
-=======
     def flip_face(img, flip_code):
->>>>>>> master
         return cv2.flip(img, flip_code)
 
     @staticmethod
@@ -54,7 +45,6 @@ class FaceUtilities():
         final_hsv = cv2.merge((h, s, v))
         img = cv2.cvtColor(final_hsv, cv2.COLOR_HSV2BGR)
         return img
-<<<<<<< HEAD
 
     @staticmethod
     def is_frontal_face(image, det, face_extractor):
@@ -89,5 +79,3 @@ class FaceUtilities():
                 return False
         else:
             return False
-=======
->>>>>>> master
