@@ -101,26 +101,6 @@ export default function ScheduleLogs({ logs }) {
           onFilter: (value, record) => record.userID === value
         },
         {
-          title: "Subject ID",
-          dataIndex: "subjectID",
-          key: "subjectID",
-          filters: [...new Set(logs?.map(x => x.subjectID))].map(x => ({
-            text: x,
-            value: x
-          })),
-          onFilter: (value, record) => record.subjectID === value
-        },
-        {
-          title: "Group Code",
-          dataIndex: "groupCode",
-          key: "groupCode",
-          filters: [...new Set(logs?.map(x => x.groupCode))].map(x => ({
-            text: x,
-            value: x
-          })),
-          onFilter: (value, record) => record.groupCode === value
-        },
-        {
           title: "At",
           dataIndex: "timestamp",
           key: "timestamp",

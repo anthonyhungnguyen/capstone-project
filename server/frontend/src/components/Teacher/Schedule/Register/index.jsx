@@ -1,4 +1,4 @@
-import { Button, Card, DatePicker, Form, Input, message, Select } from "antd"
+import { Button, Card, DatePicker, Form, message, Select } from "antd"
 import { testPublishTopic } from "apis/register"
 import React from "react"
 import { useSelector } from "react-redux"
@@ -37,6 +37,7 @@ export default function TeacherRegister({ subject }) {
       <Card
         className="w-2/3"
         title={`Registration form | ${subject?.id} - ${subject?.groupCode}`}
+        style={{ width: "100%" }}
       >
         <Form {...layout} name="basic" onFinish={onFinish}>
           <Form.Item

@@ -38,12 +38,16 @@ export default function TeacherHome() {
   const [date, setDate] = useState(null)
   return (
     <MainLayout>
-      <div className="flex justify-between">
+      <div className="flex justify-between ">
         <div className="font-semibold text-lg">Hi, {userid}</div>
         <SemesterSelect />
       </div>
       <Divider />
-      <Tabs defaultActiveKey={horizontalTab} onChange={onHorizontalTabChange}>
+      <Tabs
+        defaultActiveKey={horizontalTab}
+        onChange={onHorizontalTabChange}
+        type="card"
+      >
         <TabPane tab="Subject" key="subject">
           <SelectSubject setSubject={setSubject} subject={subject} />
           <Divider />
@@ -51,11 +55,13 @@ export default function TeacherHome() {
             <Tabs
               defaultActiveKey={verticalTab}
               onChange={onVerticalTabChange}
-              tabPosition={"left"}
+              tabPosition="top"
             >
               <TabPane tab="Schedule" key="schedule">
-                <TeacherRegister subject={subject} />
-                <TeacherManage />
+                <div className="flex flex-col justify-between items-center">
+                  <TeacherRegister subject={subject} />
+                  <TeacherManage subject={subject} />
+                </div>
               </TabPane>
               <TabPane tab="Statistics" key="statistics">
                 <TeacherLineChart

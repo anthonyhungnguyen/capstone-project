@@ -6,7 +6,7 @@ import { useSelector } from "react-redux"
 
 const { RangePicker } = DatePicker
 
-export default function TeacherManage() {
+export default function TeacherManage({ subject }) {
   const [data, setData] = useState(null)
   const [editting, setEditting] = useState(false)
   const [currentEdittingRecord, setCurrentEdittingRecord] = useState(null)
@@ -40,19 +40,6 @@ export default function TeacherManage() {
   }
 
   const columns = [
-    { title: "ID", dataIndex: "id", key: "key" },
-    {
-      title: "Semester",
-      dataIndex: "semester"
-    },
-    {
-      title: "Group Code",
-      dataIndex: "groupCode"
-    },
-    {
-      title: "Subject ID",
-      dataIndex: "subjectID"
-    },
     {
       title: "Start Time",
       dataIndex: "startTime",
@@ -69,8 +56,22 @@ export default function TeacherManage() {
       render: (_, record) =>
         data.length >= 1 ? (
           <>
-            <Button onClick={() => handleOnChange(record)}>Change</Button>
-            <Button onClick={() => handleDelete(record)}>Delete</Button>
+            <Button
+              onClick={() => handleOnChange(record)}
+              disabled={moment(record.endTime).isBefore(
+                moment.utc().add(7, "hours")
+              )}
+            >
+              Change
+            </Button>
+            <Button
+              onClick={() => handleDelete(record)}
+              disabled={moment(record.endTime).isBefore(
+                moment.utc().add(7, "hours")
+              )}
+            >
+              Delete
+            </Button>
           </>
         ) : null
     }
@@ -78,9 +79,17 @@ export default function TeacherManage() {
 
   useEffect(() => {
     fetchSchedules({ teacherid: userid }).then(data => {
-      setData(data)
+      const { id, groupCode, semester } = subject
+      setData(
+        data.filter(
+          d =>
+            d.subjectID === id &&
+            d.groupCode === groupCode &&
+            d.semester === semester
+        )
+      )
     })
-  }, [userid])
+  }, [userid, subject])
 
   return (
     <>
@@ -125,6 +134,7 @@ export default function TeacherManage() {
         loading={data === null}
         dataSource={data}
         columns={columns}
+        style={{ width: "100%" }}
       ></Table>
     </>
   )
