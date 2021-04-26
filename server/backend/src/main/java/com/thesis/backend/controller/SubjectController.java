@@ -2,7 +2,7 @@ package com.thesis.backend.controller;
 
 import com.thesis.backend.dto.model.SubjectDto;
 import com.thesis.backend.dto.model.SubjectIDDto;
-import com.thesis.backend.service.SubjectServiceImpl;
+import com.thesis.backend.service.SubjectService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,23 +19,23 @@ import java.util.List;
 @Slf4j
 @Tag(name = "Subject")
 public class SubjectController {
-    private final SubjectServiceImpl subjectServiceImpl;
+    private final SubjectService subjectService;
+
+    @Autowired
+    public SubjectController(SubjectService subjectService) {
+        this.subjectService = subjectService;
+    }
 
     @GetMapping("/all")
     public ResponseEntity<List<SubjectDto>> findAll() {
-        return ResponseEntity.ok(subjectServiceImpl.findAll());
-    }
-
-    @Autowired
-    public SubjectController(SubjectServiceImpl subjectServiceImpl) {
-        this.subjectServiceImpl = subjectServiceImpl;
+        return ResponseEntity.ok(subjectService.findAll());
     }
 
     @GetMapping
     public ResponseEntity<SubjectDto> find(@RequestParam String id,
                                            @RequestParam String groupCode,
                                            @RequestParam int semester) {
-        return ResponseEntity.ok(subjectServiceImpl.find(new SubjectIDDto(id, groupCode, semester)));
+        return ResponseEntity.ok(subjectService.find(new SubjectIDDto(id, groupCode, semester)));
     }
 
 
@@ -43,19 +43,5 @@ public class SubjectController {
     public ResponseEntity<SubjectDto> create(@RequestBody @Valid SubjectDto subjectDto) {
         return ResponseEntity.ok(subjectDto);
     }
-
-
-    @DeleteMapping
-    public ResponseEntity<String> delete(@RequestBody @Valid SubjectIDDto subjectIDDto) {
-        subjectServiceImpl.delete(subjectIDDto);
-        return ResponseEntity.ok("Success");
-    }
-
-
-    @PutMapping
-    public ResponseEntity<SubjectDto> update(@RequestBody @Valid SubjectDto subjectDto) {
-        return ResponseEntity.ok(subjectServiceImpl.update(subjectDto));
-    }
-
 
 }

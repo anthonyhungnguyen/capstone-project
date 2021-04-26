@@ -1,9 +1,8 @@
 import React from "react"
 import { BrowserRouter, Redirect } from "react-router-dom"
 import LoginRoute from "./LoginRoute"
-import TeacherHomeRoute from "./Teacher/TeacherHomeRoute"
-import StudentHomeRoute from "./Student/StudentHomeRoute"
-import TeacherScheduleRoute from "./Teacher/TeacherScheduleRoute"
+import TeacherHomeRoute from "./TeacherHomeRoute"
+import StudentHomeRoute from "./StudentHomeRoute"
 import PATH from "constants/path"
 
 export default function Routes() {
@@ -12,7 +11,6 @@ export default function Routes() {
       <LoginRoute />
       <StudentHomeRoute />
       <TeacherHomeRoute />
-      <TeacherScheduleRoute />
       <Redirect to={PATH.COMMON.LOGIN} />
     </BrowserRouter>
   )

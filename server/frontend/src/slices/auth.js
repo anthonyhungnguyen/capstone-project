@@ -1,6 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit"
 import { loginApi, signUpApi } from "apis/user"
-import { clearAllRequest } from "./log"
 import { setMessage } from "./message"
 
 // Slice

@@ -8,8 +8,7 @@ const STUDENT = {
 }
 
 const TEACHER = {
-  HOME: "/teacher/home",
-  SCHEDULE: "/teacher/schedule"
+  HOME: "/teacher/home"
 }
 
 const PATH = {

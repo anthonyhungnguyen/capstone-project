@@ -99,7 +99,7 @@ public class FirebaseService {
         String token = UUID.randomUUID().toString();
         Map<String, String> newMap = new HashMap<>();
 
-        String saveString = String.format("{\"student_path_list\": [], \"created_at\": \"%s\"}", currentDateTime.toString());
+        String saveString = String.format("{\"student_path_list\": [], \"created_at\": \"%s\"}", currentDateTime);
         newMap.put("firebaseStorageDownloadTokens", token);
         String path = String.format("subject/%s/%s/metadata.json", subjectID, currentDateTime);
         BlobId blobId = BlobId.of(firebaseProperties.getBucketName(), path);

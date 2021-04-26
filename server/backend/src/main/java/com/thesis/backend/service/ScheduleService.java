@@ -4,9 +4,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thesis.backend.constant.EntityType;
 import com.thesis.backend.constant.ExceptionType;
 import com.thesis.backend.dto.mapper.ScheduleMapper;
+import com.thesis.backend.dto.model.SubjectDto;
+import com.thesis.backend.dto.model.SubjectIDDto;
+import com.thesis.backend.dto.model.UserDto;
 import com.thesis.backend.dto.request.ScheduleRequest;
 import com.thesis.backend.exception.CustomException;
+import com.thesis.backend.model.CacheAttendance;
 import com.thesis.backend.model.Schedule;
+import com.thesis.backend.repository.RedisRepository;
 import com.thesis.backend.repository.ScheduleRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,19 +33,21 @@ public class ScheduleService {
     private final static String SCHEDULE_TOPIC = "schedule";
     private final static String MODIFY_TOPIC = "update";
     private final static String DELETE_TOPIC = "delete";
-    private final SubjectServiceImpl subjectService;
-    private final UserServiceImpl userService;
+    private final SubjectService subjectService;
+    private final UserService userService;
     private final ScheduleRepository scheduleRepository;
     private final KafkaTemplate<String, Object> kafkaTemplate;
     private final FirebaseService firebaseService;
+    private final RedisRepository redisRepository;
 
     @Autowired
-    public ScheduleService(SubjectServiceImpl subjectService, UserServiceImpl userService, ScheduleRepository scheduleRepository, KafkaTemplate<String, Object> kafkaTemplate, FirebaseService firebaseService) {
+    public ScheduleService(SubjectService subjectService, UserService userService, ScheduleRepository scheduleRepository, KafkaTemplate<String, Object> kafkaTemplate, FirebaseService firebaseService, RedisRepository redisRepository) {
         this.subjectService = subjectService;
         this.userService = userService;
         this.scheduleRepository = scheduleRepository;
         this.kafkaTemplate = kafkaTemplate;
         this.firebaseService = firebaseService;
+        this.redisRepository = redisRepository;
     }
 
     public String registerSchedule(ScheduleRequest scheduleRequest) throws IOException {
@@ -50,6 +57,7 @@ public class ScheduleService {
         if (!checkOverlap(scheduleRequest.getDeviceID(), scheduleRequest.getStartTime(), scheduleRequest.getEndTime())) {
             Schedule schedule = ScheduleMapper.toModel(scheduleRequest);
             String classCode = String.format("%d_%s_%s", semester, subjectID, groupCode);
+            cacheNewSchedule(scheduleRequest, classCode);
             String lastMetaData = firebaseService.downloadMetadata(classCode);
             Map<String, Object> studentPath = getStudentDifferences(semester, subjectID, groupCode);
             Map<String, Object> message = new HashMap<>();
@@ -63,6 +71,22 @@ public class ScheduleService {
             return "Successfully";
         }
         return "Overlaps";
+    }
+
+    public void cacheNewSchedule(ScheduleRequest scheduleRequest, String classCode) {
+        redisRepository.delete(classCode);
+        SubjectIDDto subjectID = new SubjectIDDto(scheduleRequest.getSubjectID(), scheduleRequest.getGroupCode(), scheduleRequest.getSemester());
+        SubjectDto subjectToRegister = subjectService.find(subjectID);
+        List<Integer> studentList = subjectToRegister.getUserDtos().stream().map(UserDto::getId).collect(Collectors.toList());
+        List<Integer> studentHaveCheckedAttendance = new ArrayList<>();
+        CacheAttendance cacheAttendance = CacheAttendance.builder()
+                .classCode(classCode)
+                .studentList(studentList)
+                .studentHaveAttendances(studentHaveCheckedAttendance)
+                .startTime(scheduleRequest.getStartTime())
+                .endTime(scheduleRequest.getEndTime())
+                .build();
+        redisRepository.save(cacheAttendance);
     }
 
     public Map<String, Object> getStudentDifferences(int semester, String subjectID, String groupCode) throws IOException {

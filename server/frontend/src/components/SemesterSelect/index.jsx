@@ -1,12 +1,12 @@
-import React from "react"
 import { Select } from "antd"
+import React from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { semesterRequest } from "slices/log"
 
 export default function SemesterSelect() {
   const { Option } = Select
   const dispatch = useDispatch()
-  const { semesterList, semester } = useSelector(state => state.log)
+  const { semesterList } = useSelector(state => state.log)
 
   function onChange(value) {
     dispatch(semesterRequest(value))

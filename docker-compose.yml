@@ -39,6 +39,18 @@ services:
             - "2181:2181"
         environment:
             - ALLOW_ANONYMOUS_LOGIN=yes
+
+    redis:
+        container_name: capstone_redis
+        image: bitnami/redis:latest
+        volumes:
+            - redis-volume:/bitnami/redis/data
+        ports:
+            - "6379:6379"
+        environment:
+            - ALLOW_EMPTY_PASSWORD=yes
+            - REDIS_DISABLE_COMMANDS=FLUSHDB, FLUSHALL
+
     nginx:
         image: nginx:latest
         container_name: capstone_nginx
@@ -54,3 +66,4 @@ volumes:
     kafka-volume:
     zookeeper-volume:
     nginx-volume:
+    redis-volume:

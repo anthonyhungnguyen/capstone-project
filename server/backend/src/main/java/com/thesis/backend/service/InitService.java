@@ -15,14 +15,14 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 public class InitService {
-    private final SubjectServiceImpl subjectService;
+    private final SubjectService subjectService;
     private final ModelMapper modelMapper;
-    private final UserServiceImpl userService;
+    private final UserService userService;
     private final EnrollmentService enrollmentService;
     private final FirebaseService firebaseService;
     private final RegisterRepository registerRepository;
 
-    public InitService(SubjectServiceImpl subjectService, ModelMapper modelMapper, UserServiceImpl userService, EnrollmentService enrollmentService, FirebaseService firebaseService, RegisterRepository registerRepository) {
+    public InitService(SubjectService subjectService, ModelMapper modelMapper, UserService userService, EnrollmentService enrollmentService, FirebaseService firebaseService, RegisterRepository registerRepository) {
         this.subjectService = subjectService;
         this.modelMapper = modelMapper;
         this.userService = userService;

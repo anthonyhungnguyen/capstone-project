@@ -64,21 +64,25 @@ def sync_all_register_photos():
 
 def save_crop_and_augment_photos():
     all_files = firebase_instance.get_all_register_urls()
-    track_list = []
+    track_list = {}
     for file_ in tqdm(all_files):
         path_list = file_.split('/')
         student_id = path_list[1]
         if student_id in track_list:
-            continue
-        track_list.append(student_id)
+            if track_list[student_id] > 1:
+                continue
+            else:
+                track_list[student_id] += 1
+        else:
+            track_list[student_id] = 1
         firebase_instance.download_image(file_, './raw.jpg')
         face_instance.crop('./raw.jpg')
         face_instance.augment('./crop.jpg')
         firebase_instance.put_image(
-            f"student/{student_id}/augment/photos/0.jpg", './crop.jpg', str(uuid.uuid4()))
+            f"student/{student_id}/augment/photos/{track_list[student_id]}.jpg", './crop.jpg', str(uuid.uuid4()))
         for i in range(4):
             firebase_instance.put_image(
-                f"student/{student_id}/augment/photos/0_{i}.jpg", f'./augment_{i}.jpg', str(uuid.uuid4()))
+                f"student/{student_id}/augment/photos/{track_list[student_id]}_{i}.jpg", f'./augment_{i}.jpg', str(uuid.uuid4()))
 
 
 def save_features():
@@ -161,4 +165,4 @@ def send_request():
     requests.post("http://localhost:8080/api/init/register_full", json=json)
 
 
-find_differences_drive_firebase()
+save_features()

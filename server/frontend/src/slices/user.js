@@ -1,8 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit"
-import { fetchLogsStudent, fetchLogsTeacher } from "apis/attendance"
-import { fetchSchedules } from "apis/register"
 import { fetchUserInfo } from "apis/user"
-import ROLE from "constants/role"
 import { setMessage } from "./message"
 
 const slice = createSlice({

@@ -2,7 +2,7 @@ import React, { lazy, Suspense } from "react"
 import { Switch, Route } from "react-router-dom"
 import Loading from "components/Loading"
 import PATH from "constants/path"
-const Login = lazy(() => import("pages/Login"))
+const Login = lazy(() => import("pages/Login.jsx"))
 
 export default function LoginRoute() {
   return (

@@ -1,22 +1,14 @@
-import { Menu, Layout, Row, Col, Button } from "antd"
 import PATH from "constants/path"
-import ROLE from "constants/role"
 import React, { useState } from "react"
-import { useDispatch, useSelector } from "react-redux"
-import { useLocation, useHistory } from "react-router-dom"
+import { useDispatch } from "react-redux"
+import { useHistory } from "react-router-dom"
 import { logout } from "slices/auth"
 import { clearAllRequest } from "slices/log"
 
-const { Header } = Layout
-
 export default function HeaderBar() {
-  const { user } = useSelector(state => state.auth)
   const [isHidden, setIsHidden] = useState(false)
   const history = useHistory()
   const dispatch = useDispatch()
-  const location = useLocation()
-  const { pathname } = location
-  const { userid, roles } = user
 
   // Check whether userid exists in store
   // If yes, render Home navbar
@@ -25,20 +17,6 @@ export default function HeaderBar() {
   const onLogout = () => {
     dispatch(clearAllRequest())
     dispatch(logout())
-  }
-
-  const onHome = role => {
-    if (role === ROLE.STUDENT) {
-      history.push(PATH.STUDENT.HOME)
-    } else if (role === ROLE.TEACHER) {
-      history.push(PATH.TEACHER.HOME)
-    } else if (role === ROLE.ADMIN) {
-      history.push(PATH.ADMIN.HOME)
-    }
-  }
-
-  const onTeacherSchedule = () => {
-    history.push(PATH.TEACHER.SCHEDULE)
   }
 
   const onProfile = () => {
@@ -98,34 +76,7 @@ export default function HeaderBar() {
               </p>
             </div>
             <div className="hidden sm:block sm:ml-6">
-              <div className="flex space-x-4">
-                {roles && roles.includes(ROLE.STUDENT) && (
-                  <>
-                    <button
-                      className="bg-gray-900 text-white px-3 py-2 rounded-md text-sm font-medium"
-                      onClick={() => onHome(ROLE.STUDENT)}
-                    >
-                      Dashboard
-                    </button>
-                  </>
-                )}
-                {roles && roles.includes(ROLE.TEACHER) && (
-                  <>
-                    <button
-                      className="bg-gray-900 text-white px-3 py-2 rounded-md text-sm font-medium"
-                      onClick={() => onHome(ROLE.TEACHER)}
-                    >
-                      Dashboard
-                    </button>
-                    <button
-                      className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
-                      onClick={onTeacherSchedule}
-                    >
-                      Schedule
-                    </button>
-                  </>
-                )}
-              </div>
+              <div className="flex space-x-4"></div>
             </div>
           </div>
           <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
@@ -194,36 +145,6 @@ export default function HeaderBar() {
               ) : null}
             </div>
           </div>
-        </div>
-      </div>
-      <div className="sm:hidden" id="mobile-menu">
-        <div className="px-2 pt-2 pb-3 space-y-1">
-          {roles && roles.includes(ROLE.STUDENT) && (
-            <>
-              <button
-                className="bg-gray-900 text-white px-3 py-2 rounded-md text-sm font-medium"
-                onClick={() => onHome(ROLE.STUDENT)}
-              >
-                Dashboard
-              </button>
-            </>
-          )}
-          {roles && roles.includes(ROLE.TEACHER) && (
-            <>
-              <button
-                className="bg-gray-900 text-white px-3 py-2 rounded-md text-sm font-medium"
-                onClick={() => onHome(ROLE.TEACHER)}
-              >
-                Dashboard
-              </button>
-              <button
-                className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
-                onClick={onTeacherSchedule}
-              >
-                Schedule
-              </button>
-            </>
-          )}
         </div>
       </div>
     </nav>
