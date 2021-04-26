@@ -4,7 +4,7 @@ import pandas as pd
 import requests
 import json
 
-HOST = "http://172.16.1.212:8080/api/init/register_full"
+HOST = "http://172.20.10.3:8080/api/init/register_full"
 
 REGISTER = "./script/register"
 
