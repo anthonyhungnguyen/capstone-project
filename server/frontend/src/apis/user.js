@@ -51,3 +51,20 @@ export const fetchUsersInfo = () =>
         reject(error)
       })
   })
+
+export const fetchUserInfo = userid =>
+  new Promise((resolve, reject) => {
+    axios
+      .get(API_PATH.USER, {
+        headers: { ...authHeader() },
+        params: {
+          id: userid
+        }
+      })
+      .then(response => {
+        resolve(response.data)
+      })
+      .catch(error => {
+        reject(error)
+      })
+  })

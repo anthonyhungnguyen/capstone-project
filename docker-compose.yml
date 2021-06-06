@@ -24,7 +24,7 @@ services:
         environment:
             - KAFKA_BROKER_ID=1
             - KAFKA_LISTENER=PLAINTEXT://kafka:9092
-            - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://34.87.104.34:9092
+            - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:9092
             - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
             - ALLOW_PLAINTEXT_LISTENER=yes
         depends_on:
@@ -39,6 +39,18 @@ services:
             - "2181:2181"
         environment:
             - ALLOW_ANONYMOUS_LOGIN=yes
+
+    redis:
+        container_name: capstone_redis
+        image: bitnami/redis:latest
+        volumes:
+            - redis-volume:/bitnami/redis/data
+        ports:
+            - "6379:6379"
+        environment:
+            - ALLOW_EMPTY_PASSWORD=yes
+            - REDIS_DISABLE_COMMANDS=FLUSHDB, FLUSHALL
+
     nginx:
         image: nginx:latest
         container_name: capstone_nginx
@@ -54,3 +66,4 @@ volumes:
     kafka-volume:
     zookeeper-volume:
     nginx-volume:
+    redis-volume:

@@ -25,7 +25,8 @@ public class UserDto {
         this.id = id;
     }
 
-    private List<SubjectDto> subjectDtos;
-    private List<RoleDto> roleDtos;
+    private List<SubjectDto> subjects;
+    private List<RoleDto> roles;
     private List<Register> registers;
+    private List<SubjectDto> teachSubjects;
 }

@@ -20,7 +20,7 @@ export const testPublishTopic = registerData => {
 export const fetchSchedules = ({ teacherid }) => {
   return new Promise((resolve, reject) => {
     axios
-      .get(API_PATH.TEACHER_SUBJECTS, {
+      .get(API_PATH.TEACHER_SCHEDULES, {
         params: { teacherid: teacherid },
         headers: { ...authHeader() }
       })

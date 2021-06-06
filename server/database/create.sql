@@ -92,3 +92,15 @@ CREATE TABLE register(
     PRIMARY KEY(id),
     FOREIGN KEY(user_id) REFERENCES user(id) ON UPDATE CASCADE
 );
+
+USE capstone;
+
+CREATE TABLE teacher_subject(
+    user_id INT NOT NULL,
+    subject_id VARCHAR(15) NOT NULL,
+    group_code VARCHAR(10) NOT NULL,
+    semester INT NOT NULL,
+    PRIMARY KEY (user_id, subject_id, group_code, semester),
+    FOREIGN KEY(user_id) REFERENCES user(id) ON UPDATE CASCADE,
+    FOREIGN KEY(subject_id, group_code, semester) REFERENCES subject(id, group_code, semester) ON UPDATE CASCADE
+);

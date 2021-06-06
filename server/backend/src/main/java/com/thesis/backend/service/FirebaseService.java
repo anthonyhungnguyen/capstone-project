@@ -2,10 +2,8 @@ package com.thesis.backend.service;
 
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.storage.*;
-import com.google.firebase.FirebaseApp;
-import com.google.firebase.FirebaseOptions;
-import com.google.firebase.cloud.StorageClient;
 import com.thesis.backend.config.props.FirebaseProperties;
+import com.thesis.backend.util.DateUtil;
 import com.thesis.backend.util.ImageUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +13,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -46,7 +45,7 @@ public class FirebaseService {
         List<String> metadataList = listFiles("subject/" + classCode).stream().filter(l -> l.contains("json")).collect(Collectors.toList());
         String lastMeta = metadataList.get(metadataList.size() - 1);
         Blob blob = storage.get(BlobId.of(firebaseProperties.getBucketName(), lastMeta));
-        blob.downloadTo(Paths.get("/home/anthonyhungnguyen276/temp.json"));
+        blob.downloadTo(Paths.get("/tmp/schedule.json"));
         return lastMeta;
     }
 
@@ -92,4 +91,46 @@ public class FirebaseService {
 
         return mediaLink;
     }
+
+    public String initSubject(String subjectID) throws IOException {
+
+        List<Integer> emptyArray = new ArrayList<>();
+        String currentDateTime = DateUtil.todayString();
+        String token = UUID.randomUUID().toString();
+        Map<String, String> newMap = new HashMap<>();
+
+        String saveString = String.format("{\"student_path_list\": [], \"created_at\": \"%s\"}", currentDateTime);
+        newMap.put("firebaseStorageDownloadTokens", token);
+        String path = String.format("subject/%s/%s/metadata.json", subjectID, currentDateTime);
+        BlobId blobId = BlobId.of(firebaseProperties.getBucketName(), path);
+        BlobInfo blobInfo = BlobInfo.newBuilder(blobId)
+                .setMetadata(newMap)
+                .setContentType("application/json")
+                .build();
+        storage.create(blobInfo, saveString.getBytes(StandardCharsets.UTF_8));
+        return "Success";
+    }
+
+    public Map<Integer, List<String>> requestRegisterPaths() {
+        List<String> filePaths = listFiles("student");
+        Map<Integer, List<String>> studentWithPaths = new HashMap<>();
+        filePaths.stream()
+                .filter(p -> p.contains("register") && p.contains("jpg"))
+                .forEach(p -> {
+                    String[] pathElements = p.split("/", -1);
+                    Integer studentID = Integer.valueOf(pathElements[1]);
+                    Blob blob = storage.get(BlobId.of(firebaseProperties.getBucketName(), p));
+                    String imageLink = "https://firebasestorage.googleapis.com/v0/" + blob.getMediaLink().split("/", 7)[6];
+                    List<String> registerLinks;
+                    if (studentWithPaths.containsKey(studentID)) {
+                        registerLinks = studentWithPaths.get(studentID);
+                    } else {
+                        registerLinks = new ArrayList<>();
+                    }
+                    registerLinks.add(imageLink);
+                    studentWithPaths.put(studentID, registerLinks);
+                });
+        return studentWithPaths;
+    }
+
 }

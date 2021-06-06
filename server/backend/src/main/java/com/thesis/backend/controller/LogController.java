@@ -21,8 +21,13 @@ public class LogController {
         this.logService = logService;
     }
 
-    @GetMapping("/user")
+    @GetMapping("/student")
     public ResponseEntity<List<Log>> queryBasedOnUserid(@RequestParam Integer userid) {
         return ResponseEntity.ok(logService.findLogsBasedOnUserID(userid));
+    }
+
+    @GetMapping("/teacher")
+    public ResponseEntity<List<Log>> queryBasedOnTeacherId(@RequestParam Integer teacherid) {
+        return ResponseEntity.ok(logService.findLogsBasedOnTeacherID(teacherid));
     }
 }

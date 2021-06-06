@@ -9,6 +9,7 @@ import datetime
 import json
 import requests
 import pandas as pd
+import requests
 
 FACE_SERVER = "http://localhost:5000"
 
@@ -63,21 +64,25 @@ def sync_all_register_photos():
 
 def save_crop_and_augment_photos():
     all_files = firebase_instance.get_all_register_urls()
-    track_list = []
+    track_list = {}
     for file_ in tqdm(all_files):
         path_list = file_.split('/')
         student_id = path_list[1]
         if student_id in track_list:
-            continue
-        track_list.append(student_id)
+            if track_list[student_id] > 1:
+                continue
+            else:
+                track_list[student_id] += 1
+        else:
+            track_list[student_id] = 1
         firebase_instance.download_image(file_, './raw.jpg')
         face_instance.crop('./raw.jpg')
         face_instance.augment('./crop.jpg')
         firebase_instance.put_image(
-            f"student/{student_id}/augment/photos/0.jpg", './crop.jpg', str(uuid.uuid4()))
+            f"student/{student_id}/augment/photos/{track_list[student_id]}.jpg", './crop.jpg', str(uuid.uuid4()))
         for i in range(4):
             firebase_instance.put_image(
-                f"student/{student_id}/augment/photos/0_{i}.jpg", f'./augment_{i}.jpg', str(uuid.uuid4()))
+                f"student/{student_id}/augment/photos/{track_list[student_id]}_{i}.jpg", f'./augment_{i}.jpg', str(uuid.uuid4()))
 
 
 def save_features():
@@ -128,4 +133,36 @@ def save_register_images():
         })
 
 
-save_register_images()
+def send_request():
+    json = {
+        "semester": 201,
+        "groupCode": "CC01",
+        "subjectID": "CO3025",
+        "name": "System Design and Analysis",
+        "studentList": [1614058,
+                        1652595,
+                        1712187,
+                        1752015,
+                        1752041,
+                        1752044,
+                        1752067,
+                        1752089,
+                        1752139,
+                        1752169,
+                        1752244,
+                        1752255,
+                        1752259,
+                        1752290,
+                        1752335,
+                        1752394,
+                        1752494,
+                        1752516,
+                        1752522,
+                        1752567,
+                        1752637,
+                        2053234]
+    }
+    requests.post("http://localhost:8080/api/init/register_full", json=json)
+
+
+save_features()

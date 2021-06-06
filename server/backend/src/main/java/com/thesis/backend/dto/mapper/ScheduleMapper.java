@@ -3,8 +3,6 @@ package com.thesis.backend.dto.mapper;
 import com.thesis.backend.dto.request.ScheduleRequest;
 import com.thesis.backend.model.Schedule;
 
-import java.sql.Timestamp;
-
 public class ScheduleMapper {
     public static Schedule toModel(ScheduleRequest request) {
         return Schedule.builder()
@@ -13,8 +11,8 @@ public class ScheduleMapper {
                 .subjectID(request.getSubjectID())
                 .groupCode(request.getGroupCode())
                 .semester(request.getSemester())
-                .startTime(Timestamp.valueOf(request.getStartTime()))
-                .endTime(Timestamp.valueOf(request.getEndTime()))
+                .startTime(request.getStartTime())
+                .endTime(request.getEndTime())
                 .build();
     }
 
@@ -26,8 +24,8 @@ public class ScheduleMapper {
                 .subjectID(schedule.getSubjectID())
                 .groupCode(schedule.getGroupCode())
                 .semester(schedule.getSemester())
-                .startTime(schedule.getStartTime().toLocalDateTime().toString())
-                .endTime(schedule.getEndTime().toLocalDateTime().toString())
+                .startTime(schedule.getStartTime())
+                .endTime(schedule.getEndTime())
                 .build();
     }
 }

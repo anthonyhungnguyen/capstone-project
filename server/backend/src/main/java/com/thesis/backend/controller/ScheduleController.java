@@ -14,18 +14,16 @@ import java.util.List;
 @RequestMapping(value = "/api/teacher")
 public class ScheduleController {
 
-    private final ScheduleService teacherService;
     private final ScheduleService scheduleService;
 
     @Autowired
-    public ScheduleController(ScheduleService teacherService, ScheduleService scheduleService) {
-        this.teacherService = teacherService;
+    public ScheduleController(ScheduleService scheduleService) {
         this.scheduleService = scheduleService;
     }
 
     @PostMapping
     public ResponseEntity<String> register(@Valid @RequestBody ScheduleRequest scheduleRequest) throws IOException {
-        return ResponseEntity.ok(teacherService.registerSchedule(scheduleRequest));
+        return ResponseEntity.ok(scheduleService.registerSchedule(scheduleRequest));
     }
 
     @PutMapping

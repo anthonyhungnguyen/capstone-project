@@ -16,7 +16,7 @@ export default function StudentGuard(children) {
           !localStorage.getItem("user") &&
           !user?.roles.includes(ROLE.STUDENT)
         ) {
-          return <Redirect to={PATH.COMMON.LANDING} />
+          return <Redirect to={PATH.COMMON.LOGIN} />
         }
         return <Component {...props} />
       }}

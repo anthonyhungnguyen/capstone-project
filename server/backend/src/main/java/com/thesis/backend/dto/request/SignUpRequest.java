@@ -13,6 +13,5 @@ import lombok.experimental.Accessors;
 @NoArgsConstructor
 public class SignUpRequest {
     private Integer id;
-    private String username;
     private String password;
 }

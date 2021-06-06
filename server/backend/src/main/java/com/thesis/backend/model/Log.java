@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 import javax.persistence.*;
-import java.sql.Timestamp;
 
 @Data
 @Builder
@@ -37,7 +36,7 @@ public class Log {
     private Integer teacherID;
 
     @Column(name = "attendance_time")
-    private Timestamp attendanceTime;
+    private String attendanceTime;
 
     @Column(name = "device_id")
     private Integer deviceID;

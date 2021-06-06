@@ -28,19 +28,25 @@ public class UserMapper {
     public static UserDto toUserDto(User user) {
         return UserDto.builder()
                 .id(user.getId())
-                .subjectDtos(user
+                .subjects(user
                         .getSubjects()
                         .stream()
                         .map(subject -> modelMapper.map(subject, SubjectDto.class))
                         .collect(Collectors.toList()))
-                .roleDtos(user
+                .roles(user
                         .getRoles()
                         .stream()
                         .map(role -> modelMapper.map(role, RoleDto.class))
                         .collect(Collectors.toList()))
+                .teachSubjects(user
+                        .getTeachSubjects()
+                        .stream()
+                        .map(subject -> modelMapper.map(subject, SubjectDto.class))
+                        .collect(Collectors.toList()))
                 .registers(user.getRegisters())
                 .build();
     }
+
 
     public static User signUpRequestToUser(SignUpRequest signUpRequest) {
         return User.builder()

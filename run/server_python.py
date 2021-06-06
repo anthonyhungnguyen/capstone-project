@@ -34,6 +34,7 @@ THRESHOLD_FILE = "threshold.pickle"
 FEATURE_NPY_FILE = "feature.npy"
 CHECKIN_NPY_FILE = "checkin.npy"
 METADATA_FILE = "metadata.json"
+HAVEATTENDANCE = "haveAttendance"
 STUDENT_PATH_LIST = "student_path_list"
 CREATED_AT = "created_at"
 VECTOR_PATH = os.path.join(PYTHON_PATH, "ailibs_data", "data", VECTOR_FILE)
@@ -86,7 +87,7 @@ class Main():
                 if len(y_set) == 1:
                     threshold = [MIN_DIST]*len(y)
                 else:
-                    threshold = mCONFIG.calculate_threshold(feature_vector, y)
+                    threshold = mCONFIG.calculate_threshold(feature_vector, y, data[HAVEATTENDANCE])
                 # threshold = [MIN_DIST]*len(y)
                 print(threshold)
                 faiss.write_index(index, VECTOR_PATH)
@@ -109,4 +110,5 @@ class Main():
 
 
 if __name__ == '__main__':
-    Main().run()
+    main = Main()
+    main.run()

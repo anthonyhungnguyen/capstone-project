@@ -42,12 +42,26 @@ public class User implements Serializable {
     @JsonIgnore
     private List<Subject> subjects = new ArrayList<>();
 
-    @ManyToMany(targetEntity = Role.class, fetch = FetchType.EAGER)
+    @ManyToMany(targetEntity = Role.class, fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @Fetch(FetchMode.SUBSELECT)
     @JoinTable(name = "user_role",
             joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
     private Set<Role> roles = new HashSet<>();
+
+    @ManyToMany(targetEntity = Subject.class,
+            cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @Fetch(FetchMode.SUBSELECT)
+    @JoinTable(name = "teacher_subject",
+            joinColumns = {
+                    @JoinColumn(name = "user_id", referencedColumnName = "id")
+            },
+            inverseJoinColumns = {
+                    @JoinColumn(name = "subject_id", referencedColumnName = "id"),
+                    @JoinColumn(name = "group_code", referencedColumnName = "group_code"),
+                    @JoinColumn(name = "semester", referencedColumnName = "semester")
+            })
+    private List<Subject> teachSubjects = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @Fetch(FetchMode.SUBSELECT)
@@ -55,5 +69,6 @@ public class User implements Serializable {
     @ToString.Exclude
     @JsonIgnore
     private List<Register> registers;
+
 
 }

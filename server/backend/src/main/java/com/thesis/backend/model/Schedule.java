@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 import javax.persistence.*;
-import java.sql.Timestamp;
 
 @Data
 @Accessors(chain = true)
@@ -36,8 +35,8 @@ public class Schedule {
     private String groupCode;
 
     @Column(name = "start_time")
-    private Timestamp startTime;
+    private String startTime;
 
     @Column(name = "end_time")
-    private Timestamp endTime;
+    private String endTime;
 }

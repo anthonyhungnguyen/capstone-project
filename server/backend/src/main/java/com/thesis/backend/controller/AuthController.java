@@ -5,7 +5,7 @@ import com.thesis.backend.dto.request.SignUpRequest;
 import com.thesis.backend.dto.response.LoginResponse;
 import com.thesis.backend.security.jwt.JwtUtils;
 import com.thesis.backend.security.services.UserDetailsImpl;
-import com.thesis.backend.service.UserServiceImpl;
+import com.thesis.backend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -28,10 +28,10 @@ public class AuthController {
 
     private final JwtUtils jwtUtils;
 
-    private final UserServiceImpl userService;
+    private final UserService userService;
 
     @Autowired
-    public AuthController(AuthenticationManager authenticationManager, JwtUtils jwtUtils, UserServiceImpl userService) {
+    public AuthController(AuthenticationManager authenticationManager, JwtUtils jwtUtils, UserService userService) {
         this.authenticationManager = authenticationManager;
         this.jwtUtils = jwtUtils;
         this.userService = userService;
@@ -64,17 +64,6 @@ public class AuthController {
     public ResponseEntity<Boolean> register(@Valid @RequestBody SignUpRequest signUpRequest) {
         return ResponseEntity.ok(userService.register(signUpRequest));
     }
-
-    @GetMapping("/fill_password")
-    public ResponseEntity<Boolean> fillPassword() {
-        return ResponseEntity.ok(userService.fillPassword());
-    }
-
-    @GetMapping("/fill_roles")
-    public ResponseEntity<Boolean> fillRoles() {
-        return ResponseEntity.ok(userService.fillRole());
-    }
-
 
     @PostMapping("/{userid}/upload_register_photo")
     public ResponseEntity<Boolean> updateRegisterImageLink(@PathVariable Integer userid, @RequestParam Map<String, String> data) {

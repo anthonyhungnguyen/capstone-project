@@ -14,3 +14,19 @@ export const findAllSubjects = () => {
       .catch(reject)
   })
 }
+
+export const findStudentCountForSubjectsByTeacherID = userid => {
+  return new Promise((resolve, reject) => {
+    axios
+      .get(API_PATH.SUBJECT + "/count", {
+        params: {
+          teacherid: userid
+        },
+        headers: { ...authHeader() }
+      })
+      .then(response => {
+        resolve(response.data)
+      })
+      .catch(reject)
+  })
+}
