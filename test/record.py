@@ -9,8 +9,9 @@ mAILIBS = AILIBS
 # STREAM_PATH = "/home/hoangphuc/Documents/thesis/vid/WIN_20210420_11_49_20_Pro.mp4"
 # STREAM_PATH = "/home/hoangphuc/Documents/thesis/vid/WIN_20210420_11_50_33_Pro.mp4"
 # STREAM_PATH = "/home/hoangphuc/Documents/thesis/vid/WIN_20210420_11_51_00_Pro.mp4"
-STREAM_PATH = "/home/hoangphuc/Documents/thesis/vid/WIN_20210420_11_51_27_Pro.mp4"
-STORAGE = "/home/hoangphuc/Documents/thesis/images/1752494"
+# STREAM_PATH = "/home/hoangphuc/Documents/thesis/vid/WIN_20210420_11_51_27_Pro.mp4"
+STREAM_PATH = "/home/hoangphuc/OneDrive/Documents/thesis/vid/2021-04-22-115426.webm"
+STORAGE = "/home/hoangphuc/OneDrive/Documents/thesis/images/1652595"
 
 if not os.path.exists(STORAGE):
     os.mkdir(STORAGE)

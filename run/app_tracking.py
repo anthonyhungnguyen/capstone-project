@@ -20,6 +20,14 @@ import cv2
 # import utils libs
 from utils.AIlibs import AILIBS
 
+# Check frontal face
+from ailibs.utilities.FaceUtilities import FaceUtilities as UTILS
+mUTILS = UTILS
+
+# Configuration networks, kafka
+from utils.CONFIG import config
+mCONFIG = config()
+
 
 mAILIBS = AILIBS
 
@@ -73,48 +81,69 @@ class MainWindow(QMainWindow):
         # extracting face features
         features_list = []
         face_list = []
+        extract_flag = False
 
         for d in dets:
             [left, top, right, bottom] = mAILIBS.DETECTOR.get_position(d)
             item = [left, top, right, bottom]
             face_list.append(item)
+            break
         final_faces = np.array(face_list)
         trackers = mAILIBS.TRACKER.update(final_faces, img_size)
-        print(CHECKED_LIST[trackers[0][4]]['name'])
-        if trackers[0][4] not in CHECKED_LIST or CHECKED_LIST[trackers[0][4]]['name'] == UNKNOWN:
+        if len(trackers) > 0:
+            trackID = trackers[0][4]
+        if len(trackers) > 0:
+            if trackID not in CHECKED_LIST.keys() and not bool(CHECKED_LIST):
+                extract_flag = True
+            elif trackID in CHECKED_LIST.keys():
+                if CHECKED_LIST[trackID]['name'] == UNKNOWN:
+                    extract_flag = True
+                else:
+                    NAME_LIST[CHECKED_LIST[trackID]['name']
+                              ]['latest_time'] = int(time())
+                    extract_flag = False
+            else:
+                # NAME_LIST[CHECKED_LIST[trackID]['name']]['latest_time'] = int(time())
+                extract_flag = True
+        if extract_flag:
             for d in dets:
-                # Features Extraction
-                features = mAILIBS.EXTRACTOR.extract(check_frame, d)
-                features_list.append(features)
+                if mUTILS.is_frontal_face(check_frame, d, mAILIBS.EXTRACTOR):
+                    # Features Extraction
+                    features = mAILIBS.EXTRACTOR.extract(check_frame, d)
+                    features_list.append(features)
+                break
         if len(features_list) > 0:
             user_list = mAILIBS.CLASSIFIER.classify_list(features_list)
             for i, user in enumerate(user_list):
                 user['latest_time'] = int(time())
                 NAME_LIST[user['name']] = user
-                CHECKED_LIST[trackers[0][4]] = user
+                if user['name'] != UNKNOWN:
+                    mCONFIG.checked_image(
+                        user['name'], features_list[i], check_frame)
+                    CHECKED_LIST[trackID] = user
         elif len(trackers) > 0:
-            if trackers[0][4] in CHECKED_LIST:
-                CHECKED_LIST[trackers[0][4]]['latest_time'] = int(time())
-                NAME_LIST[CHECKED_LIST[trackers[0][4]]['name']] = CHECKED_LIST[trackers[0][4]]
+            if trackID in CHECKED_LIST:
+                NAME_LIST[CHECKED_LIST[trackID]
+                          ['name']] = CHECKED_LIST[trackID]
         for key, value in list(NAME_LIST.items()):
-            if int(time()) - NAME_LIST[key]["latest_time"] > 0.5:
+            if int(time()) - NAME_LIST[key]["latest_time"] > 3:
                 mAILIBS.LOGGER.info(
                     "Cleaning...{} ".format(NAME_LIST[key]["name"]))
                 print('Cleaning', int(
                     time()) - NAME_LIST[key]["latest_time"], len(dets))
                 del NAME_LIST[key]
-                del CHECKED_LIST[trackers[0][4]]
+                CHECKED_LIST.clear()
             else:
                 mAILIBS.LOGGER.info(
                     "dets:{}- time {}- NAME_LIST: {}".format(len(dets), str(int(time())), str(NAME_LIST)))
         flag = True
         for key in NAME_LIST:
             name = NAME_LIST[key]['name']
-            if name != UNKNOWN:
+            if bool(CHECKED_LIST) or name != UNKNOWN:
                 flag = False
                 self.ui.info_label.setText("Hello, {} \n {}".format(
                     name, strftime('%H:%M:%S', localtime(NAME_LIST[key]['latest_time']))))
-            if name == UNKNOWN:
+            elif name == UNKNOWN:
                 flag = False
                 self.ui.info_label.setText("Unknown! \n {}".format(
                     strftime('%H:%M:%S', localtime(NAME_LIST[key]['latest_time']))))

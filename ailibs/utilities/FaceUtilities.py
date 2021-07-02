@@ -30,7 +30,7 @@ class FaceUtilities():
         return np.array(img, dtype=np.uint8)
 
     @staticmethod
-    def flip_face(img, flip_code):  
+    def flip_face(img, flip_code):
         return cv2.flip(img, flip_code)
 
     @staticmethod
