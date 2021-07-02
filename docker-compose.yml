@@ -45,6 +45,16 @@ services:
             - ALLOW_PLAINTEXT_LISTENER=yes
         depends_on:
             - zookeeper
+    kafka-setup:
+        container_name: capstone_kafka_setup
+        build:
+            context: ./server/kafka-setup
+        environment:
+            - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+            - KAFKA_BOOTSTRAP_SERVER=broker:29092
+        depends_on:
+            - kafka
+            - zookeeper
 
     zookeeper:
         container_name: capstone_zookeeper
