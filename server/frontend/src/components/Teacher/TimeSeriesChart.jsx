@@ -26,7 +26,7 @@ export default function TeacherTimeseriesChart({ logs }) {
       tooltip: {
         formatter: e => {
           const data = e.data
-          return `<div><p>${data[2]}</p><img src=${data[3]} style={{width: "100px"}}/></div>`
+          return `<div><p>${data[2]}</p><img src=${data[3]} style="width:150px;"/></div>`
         }
       },
       series: [
