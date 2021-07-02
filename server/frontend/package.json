@@ -1,6 +1,7 @@
 {
   "name": "frontend",
   "version": "0.1.0",
+  "proxy": "http://backend:8080/",
   "private": true,
   "dependencies": {
     "@ant-design/icons": "^4.5.0",

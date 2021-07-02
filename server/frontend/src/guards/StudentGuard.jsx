@@ -14,7 +14,7 @@ export default function StudentGuard(children) {
         if (
           !user?.isLoggedIn &&
           !localStorage.getItem("user") &&
-          !user?.roles.includes(ROLE.STUDENT)
+          !user?.roles?.includes(ROLE.STUDENT)
         ) {
           return <Redirect to={PATH.COMMON.LOGIN} />
         }

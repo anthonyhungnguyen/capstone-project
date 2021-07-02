@@ -167,6 +167,19 @@
                     <target>11</target>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>com.google.cloud.tools</groupId>
+                <artifactId>jib-maven-plugin</artifactId>
+                <version>3.1.1</version>
+                <configuration>
+                    <to>
+                        <image>docker.io/phuchung276/capstone_backend</image>
+                        <tags>
+                            <tag>latest</tag>
+                        </tags>
+                    </to>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
