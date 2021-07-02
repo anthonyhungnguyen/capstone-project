@@ -1,6 +1,23 @@
 version: "3.8"
 
 services:
+    frontend:
+        container_name: capstone_frontend
+        image: frontend:latest
+        build:
+            context: ./server/frontend
+            dockerfile: Dockerfile
+        volumes:
+            - "/frontend/node_modules"
+        depends_on:
+            - backend
+
+    backend:
+        container_name: capstone_backend
+        image: phuchung276/capstone_backend:latest
+        depends_on:
+            - mysql
+            - kafka
     mysql:
         container_name: capstone_mysql
         image: mysql:latest
@@ -11,6 +28,7 @@ services:
             MYSQL_PASS: admin
         volumes:
             - mysql-volume:/var/lib/mysql
+            - ./server/database/backup.sql:/docker-entrypoint-initdb.d/setup.sql
         ports:
             - 3306:3306
 
@@ -19,24 +37,28 @@ services:
         image: bitnami/kafka:latest
         ports:
             - "9092:9092"
-        volumes:
-            - kafka-volume:/bitnami/kafka
         environment:
             - KAFKA_BROKER_ID=1
             - KAFKA_LISTENER=PLAINTEXT://kafka:9092
-            - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:9092
+            - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
             - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
             - ALLOW_PLAINTEXT_LISTENER=yes
         depends_on:
+            - zookeeper
+    kafka-setup:
+        container_name: capstone_kafka_setup
+        build:
+            context: ./server/kafka-setup
+        environment:
+            - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+            - KAFKA_BOOTSTRAP_SERVER=broker:29092
+        depends_on:
+            - kafka
             - zookeeper
 
     zookeeper:
         container_name: capstone_zookeeper
         image: bitnami/zookeeper:latest
-        volumes:
-            - zookeeper-volume:/bitnami/zookeeper
-        ports:
-            - "2181:2181"
         environment:
             - ALLOW_ANONYMOUS_LOGIN=yes
 
@@ -50,7 +72,6 @@ services:
         environment:
             - ALLOW_EMPTY_PASSWORD=yes
             - REDIS_DISABLE_COMMANDS=FLUSHDB, FLUSHALL
-
     nginx:
         image: nginx:latest
         container_name: capstone_nginx
@@ -60,10 +81,13 @@ services:
             - "80:80"
             - "443:443"
         volumes:
-            - ./server/nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+            - ./server/reverse-proxy/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+        depends_on:
+            - frontend
 volumes:
     mysql-volume:
-    kafka-volume:
-    zookeeper-volume:
-    nginx-volume:
     redis-volume:
+
+networks:
+    default:
+        name: capstone

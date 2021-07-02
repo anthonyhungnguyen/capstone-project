@@ -14,7 +14,7 @@ export default function AdminGuard(children) {
         if (
           !user?.isLoggedIn &&
           !localStorage.getItem("user") &&
-          !user?.roles.includes(ROLE.ADMIN)
+          !user?.roles?.includes(ROLE.ADMIN)
         ) {
           return <Redirect to={PATH.STUDENT.HOME} />
         }

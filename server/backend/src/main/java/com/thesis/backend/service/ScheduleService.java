@@ -169,4 +169,6 @@ public class ScheduleService {
     public Integer countSchedulesWithID(int semester, String subjectID, String groupCode) {
         return scheduleRepository.countScheduleBySemesterAndSubjectIDAndGroupCode(semester, subjectID, groupCode);
     }
+
+
 }

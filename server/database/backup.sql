@@ -1,4 +1,3 @@
-mysqldump: [Warning] Using a password on the command line interface can be insecure.
 -- MySQL dump 10.13  Distrib 8.0.23, for Linux (x86_64)
 --
 -- Host: localhost    Database: capstone
@@ -19,6 +18,11 @@ mysqldump: [Warning] Using a password on the command line interface can be insec
 --
 -- Table structure for table `attendance_log`
 --
+
+DROP DATABASE IF EXISTS capstone;
+
+CREATE DATABASE capstone;
+USE capstone;
 
 DROP TABLE IF EXISTS `attendance_log`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;

@@ -29,9 +29,9 @@ function Login() {
   if (isLoggedIn) {
     const { roles, userid } = user
     dispatch(requestUserInfo(userid))
-    if (roles.includes(ROLE.STUDENT)) {
+    if (roles?.includes(ROLE.STUDENT)) {
       history.push(PATH.STUDENT.HOME)
-    } else if (roles.includes(ROLE.TEACHER)) {
+    } else if (roles?.includes(ROLE.TEACHER)) {
       history.push(PATH.TEACHER.HOME)
     }
   }
