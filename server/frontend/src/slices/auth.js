@@ -51,8 +51,10 @@ const {
 export const login = data => async dispatch => {
   return await loginApi(data).then(
     result => {
-      dispatch(loginSuccess(result))
-      return Promise.resolve()
+      if (typeof result === "object") {
+        dispatch(loginSuccess(result))
+        return Promise.resolve()
+      }
     },
     error => {
       dispatch(loginFail())

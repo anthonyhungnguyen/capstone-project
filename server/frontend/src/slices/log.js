@@ -51,7 +51,7 @@ const {
 } = slice.actions
 
 const parseLogs = logs => {
-  return logs.map(d => ({
+  return logs?.map(d => ({
     userID: d?.userID,
     subjectID: d?.subjectID,
     groupCode: d?.groupCode,
