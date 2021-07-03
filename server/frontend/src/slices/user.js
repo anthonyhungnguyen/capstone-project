@@ -27,12 +27,12 @@ export default slice.reducer
 const { init } = slice.actions
 
 export const requestUserInfo = userid => async dispatch => {
-  return await fetchUserInfo(userid).then(
+  return fetchUserInfo(userid).then(
     data => {
       dispatch(init(data))
     },
     error => {
-      dispatch(setMessage(error))
+      dispatch(setMessage(error.response.statusText))
     }
   )
 }

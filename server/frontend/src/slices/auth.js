@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit"
-import { loginApi, signUpApi } from "apis/user"
+import { loginApi, signUpApi, verifyApi } from "apis/user"
 import { setMessage } from "./message"
 
 // Slice
@@ -49,7 +49,7 @@ const {
 } = slice.actions
 
 export const login = data => async dispatch => {
-  return await loginApi(data).then(
+  return loginApi(data).then(
     result => {
       if (typeof result === "object") {
         dispatch(loginSuccess(result))
@@ -65,7 +65,7 @@ export const login = data => async dispatch => {
 }
 
 export const signup = data => async dispatch => {
-  return await signUpApi(data).then(
+  return signUpApi(data).then(
     () => {
       dispatch(signUpSuccess())
       return Promise.resolve()
@@ -74,6 +74,17 @@ export const signup = data => async dispatch => {
       dispatch(signUpFail())
       dispatch(setMessage(error))
       return Promise.reject()
+    }
+  )
+}
+
+export const verify = () => async dispatch => {
+  return verifyApi().then(
+    () => {},
+    error => {
+      if (error.response.status === 401) {
+        dispatch(logout())
+      }
     }
   )
 }

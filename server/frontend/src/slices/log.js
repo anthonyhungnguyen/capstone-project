@@ -71,7 +71,7 @@ export const logsRequest = (userid, role) => async dispatch => {
   } else if (role === ROLE.STUDENT) {
     request = fetchLogsStudent(userid)
   }
-  return await request.then(
+  return request.then(
     result => {
       dispatch(logsRequestSuccess(parseLogs(result)))
       const semesters = parseSemesterList(result)
@@ -88,7 +88,7 @@ export const logsRequest = (userid, role) => async dispatch => {
 }
 
 export const scheduleRequest = userid => async dispatch => {
-  return await fetchSchedules({ teacherid: userid }).then(
+  return fetchSchedules({ teacherid: userid }).then(
     result => {
       dispatch(scheduleList(result))
       return Promise.resolve()

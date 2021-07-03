@@ -19,8 +19,10 @@ export default function SemesterSelect() {
       optionFilterProp="children"
       onChange={onChange}
     >
-      {semesterList.map(s => (
-        <Option value={s}>{s}</Option>
+      {semesterList.map((s, i) => (
+        <Option value={s} key={i}>
+          {s}
+        </Option>
       ))}
     </Select>
   )

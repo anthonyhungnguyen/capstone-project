@@ -27,6 +27,17 @@ export const logoutApi = () =>
         reject(error)
       })
   })
+export const verifyApi = () =>
+  new Promise((resolve, reject) => {
+    axios
+      .get(API_PATH.VERIFY, { headers: { ...authHeader() } })
+      .then(response => {
+        resolve(response.data)
+      })
+      .catch(error => {
+        reject(error)
+      })
+  })
 
 export const signUpApi = ({ id, userid, password }) =>
   new Promise((resolve, reject) => {
