@@ -1,28 +1,6 @@
 version: "3.8"
 
 services:
-    frontend:
-        container_name: capstone_frontend
-        image: phuchung276/capstone_frontend:latest
-        build:
-            context: ./server/frontend
-            dockerfile: Dockerfile.prod
-        ports:
-            - 80:80
-        volumes:
-            - "/frontend/node_modules"
-        depends_on:
-            - backend
-
-    backend:
-        container_name: capstone_backend
-        image: phuchung276/capstone_backend:latest
-        ports:
-            - 8080:8080
-        depends_on:
-            - mysql
-            - kafka
-
     faiss:
         container_name: capstone_faiss
         image: phuchung276/capstone_faiss:latest

@@ -1,48 +1,10 @@
 version: "3.8"
 
 services:
-    mysql:
-        container_name: capstone_mysql
-        image: mysql:latest
-        command: --default-authentication-plugin=mysql_native_password
-        environment:
-            MYSQL_ROOT_PASSWORD: admin
-            MYSQL_USER: root
-            MYSQL_PASS: admin
-        volumes:
-            - mysql-volume:/var/lib/mysql
-        ports:
-            - 3306:3306
-
     kafka:
-        container_name: capstone_kafka
-        image: bitnami/kafka:latest
-        ports:
-            - "9092:9092"
-        volumes:
-            - kafka-volume:/bitnami/kafka
         environment:
             - KAFKA_BROKER_ID=1
             - KAFKA_LISTENER=PLAINTEXT://kafka:9092
-            - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://34.87.104.34:9092
+            - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:9092
             - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
             - ALLOW_PLAINTEXT_LISTENER=yes
-        depends_on:
-            - zookeeper
-
-    zookeeper:
-        container_name: capstone_zookeeper
-        image: bitnami/zookeeper:latest
-        volumes:
-            - zookeeper-volume:/bitnami/zookeeper
-        ports:
-            - "2181:2181"
-        environment:
-            - ALLOW_ANONYMOUS_LOGIN=yes
-
-
-volumes:
-    mysql-volume:
-    kafka-volume:
-    zookeeper-volume:
-    nginx-volume:
