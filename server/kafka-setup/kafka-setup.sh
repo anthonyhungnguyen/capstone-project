@@ -12,6 +12,6 @@ kafka-topics --create --if-not-exists --zookeeper $KAFKA_ZOOKEEPER_CONNECT --rep
 
 kafka-topics --create --if-not-exists --zookeeper $KAFKA_ZOOKEEPER_CONNECT --replication-factor $REPLICATION_FACTOR --partitions $PARTITIONS --topic $SCHEDULE_EVENT_NAME
 
-kafka-topics --create --if-not-exists --zookeeper $KAFKA_ZOOKEEPER_CONNECT --replication-factor $REPLICATION_FACTOR --partitions $PARTITIONS --topic $UPDATE_ENVENT_NAME
+kafka-topics --create --if-not-exists --zookeeper $KAFKA_ZOOKEEPER_CONNECT --replication-factor $REPLICATION_FACTOR --partitions $PARTITIONS --topic $UPDATE_EVENT_NAME
 
-kafka-topics --create --if-not-exists --zookeeper $KAFKA_ZOOKEEPER_CONNECT --replication-factor $REPLICATION_FACTOR --partitions $PARTITIONS --topic $UPDATE_ENVENT_NAME
+kafka-topics --create --if-not-exists --zookeeper $KAFKA_ZOOKEEPER_CONNECT --replication-factor $REPLICATION_FACTOR --partitions $PARTITIONS --topic $DELETE_EVENT_NAME
