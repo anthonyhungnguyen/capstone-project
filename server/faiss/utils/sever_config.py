@@ -18,7 +18,7 @@ import pyrebase
 import faiss
 
 
-BOOTSTRAP_SERVER = "localhost:9092"
+BOOTSTRAP_SERVER = "kafka:9092"
 GROUP = "None"
 TOPIC_REGISTER = ["register"]
 TOPIC_SCHEDULE = ["schedule"]
@@ -46,7 +46,8 @@ INDEX_PATH = os.path.join(PYTHON_PATH, "ailibs_data", "data", INDEX_FILE)
 THRESHOLD_PATH = os.path.join(
     PYTHON_PATH, "ailibs_data", "data", THRESHOLD_FILE)
 METADATA_PATH = os.path.join(PYTHON_PATH, "ailibs_data", "data", METADATA_FILE)
-CHECKIN_NPY_PATH = os.path.join(PYTHON_PATH, "ailibs_data", "data", CHECKIN_NPY_FILE)
+CHECKIN_NPY_PATH = os.path.join(
+    PYTHON_PATH, "ailibs_data", "data", CHECKIN_NPY_FILE)
 
 
 conf_consumer = {'bootstrap.servers': BOOTSTRAP_SERVER, 'group.id': GROUP, 'session.timeout.ms': 6000,
@@ -177,7 +178,7 @@ class config():
             if name.split("/")[3] == THRESHOLD_FILE:
                 self.download_file(name, THRESHOLD_PATH)
             if name.split("/")[3] == FEATURE_FILE:
-                self.download_file(name, FEATURE_PATH)   
+                self.download_file(name, FEATURE_PATH)
             if name.split("/")[3] == METADATA_FILE:
                 self.download_file(name, METADATA_PATH)
         return flag
@@ -220,7 +221,7 @@ class config():
             threshold. append(max_thresh_same_label)
         return threshold
 
-    def send_data(self,timestamp, path_on_cloud, log):
+    def send_data(self, timestamp, path_on_cloud, log):
         SUBJECT_CODE = path_on_cloud.split("/")[1]
         BASE_METADATA_PATH = os.path.join(
             SUBJECT, SUBJECT_CODE, timestamp, METADATA_FILE)
@@ -249,9 +250,11 @@ class config():
         log[THRESHOLD] = BASE_THRESHOLD_PATH
         msg = json.dumps(log)
         print(msg)
-        config.producer_data.produce(TOPIC_DATA, msg, callback=delivery_callback)
+        config.producer_data.produce(
+            TOPIC_DATA, msg, callback=delivery_callback)
         config.producer_data.poll(0)
-        sys.stderr.write('%% Waiting for %d deliveries\n' % len(config.producer_data))
+        sys.stderr.write('%% Waiting for %d deliveries\n' %
+                         len(config.producer_data))
         config.producer_data.flush()
 
     def commit_checkin(self, name, path_on_cloud):
