@@ -1,36 +1,22 @@
-<!-- Autorun Start Up -->
-sudo nano /etc/xdg/lxsession/LXDE-pi/autostart 
-@python3 /home/pi/Documents/thesis/app.py
+# Introduction
 
-<!-- Transform pyqt5 to .py -->
-pyuic5 -x uiempty.ui -o ui.py
+This is the capstone project: Facial Recognition Attendance System
 
-<!-- Run app -->
-python3 run/app.py
+Made by:
+- Anthony Nguyen
+- Hoang Phuc
+- Duc Sy
 
-<!-- Test app by flask -->
-python3 test/apptest.py
+# Quickstart
 
-<!-- unofficial userspace V4L2 driver for the Raspberry Pi Camera Module -->
-uv4l --driver raspicam --auto-video_nr
+This script allows you to quickly load all docker components
 
-<!-- Fast API -->
-uvicorn main:app --reload
+> quickstart.sh
 
-https://realpython.com/python-sockets/
+**Access your host to see the result**
 
+# Nuke
 
-<!-- Kafka -->
-systemctl daemon-reload
-sudo systemctl start zookeeper
-sudo systemctl start kafka
-sudo systemctl status kafka
+> nuke.sh
 
-34.87.138.205
-34.87.104.34
-
-<!-- Server Python -->
-mkdir ailibs_data/data
-
-<!-- Docker Bitnami -->
-docker exec kafka bash  /opt/bitnami/kafka/bin/kafka-topics.sh --create --bootstrap-server kafka:9092 --replication-factor 1 --partitions 1 --topic test
+**Prune all containers**

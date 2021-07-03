@@ -77,18 +77,6 @@ services:
         environment:
             - ALLOW_EMPTY_PASSWORD=yes
             - REDIS_DISABLE_COMMANDS=FLUSHDB, FLUSHALL
-    # nginx:
-    #     image: nginx:latest
-    #     container_name: capstone_nginx
-    #     restart: unless-stopped
-    #     tty: true
-    #     ports:
-    #         - "80:80"
-    #         - "443:443"
-    #     volumes:
-    #         - ./server/reverse-proxy/nginx.conf:/etc/nginx/conf.d/default.conf:ro
-    #     depends_on:
-    #         - frontend
 volumes:
     mysql-volume:
     redis-volume:
