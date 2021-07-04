@@ -1,6 +1,6 @@
 from confluent_kafka import Consumer
 
-conf = {'bootstrap.servers': "127.0.0.1:9093",
+conf = {'bootstrap.servers': "34.126.168.244:9093",
         'group.id': "None",
         'auto.offset.reset': 'earliest'}
 
