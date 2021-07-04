@@ -34,7 +34,6 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: ./server/frontend
-          file: Dockerfile.prod
           push: true
           tags: |
             ${{ secrets.DOCKER_USERNAME }}/capstone_frontend:latest
