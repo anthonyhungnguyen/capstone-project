@@ -14,6 +14,10 @@ services:
             - ./server/database/backup.sql:/docker-entrypoint-initdb.d/setup.sql
         ports:
             - 3306:3306
+        healthcheck:
+            test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+            timeout: 20s
+            retries: 10
 
     kafka:
         container_name: capstone_kafka
@@ -57,6 +61,8 @@ services:
     zookeeper:
         container_name: capstone_zookeeper
         image: bitnami/zookeeper:latest
+        ports:
+            - 2181:2181
         environment:
             - ALLOW_ANONYMOUS_LOGIN=yes
 
