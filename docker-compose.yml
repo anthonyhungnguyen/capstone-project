@@ -28,6 +28,18 @@ services:
             - ALLOW_PLAINTEXT_LISTENER=yes
         depends_on:
             - zookeeper
+        healthcheck:
+            test:
+                [
+                    "CMD",
+                    "kafka-topics.sh",
+                    "--list",
+                    "--zookeeper",
+                    "zookeeper:2181",
+                ]
+            interval: 30s
+            timeout: 10s
+            retries: 4
     kafka-setup:
         image: phuchung276/capstone_kafka_setup:latest
         container_name: capstone_kafka_setup
@@ -37,8 +49,8 @@ services:
             - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
             - KAFKA_BOOTSTRAP_SERVER=broker:29092
         depends_on:
-            - kafka
-            - zookeeper
+            kafka:
+                condition: service_healthy
 
     zookeeper:
         container_name: capstone_zookeeper
