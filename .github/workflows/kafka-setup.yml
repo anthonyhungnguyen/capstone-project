@@ -28,7 +28,7 @@ jobs:
         uses: docker/login-action@v1
         with:
           registry: ghcr.io
-          username: ${{ github.actor }}
+          username: ${{ github.repository_owner }}
           password: ${{ secrets.GH_TOKEN }}
       - name: Build and push
         uses: docker/build-push-action@v2
@@ -37,5 +37,5 @@ jobs:
           push: true
           tags: |
             ${{ secrets.DOCKER_USERNAME }}/capstone_kafka_setup:latest
-            ghcr.io/${{ github.actor }}/capstone_kafka_setup:latest
+            ghcr.io/${{ github.repository_owner }}/capstone_kafka_setup:latest
             
