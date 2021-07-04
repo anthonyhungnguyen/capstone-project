@@ -2,7 +2,7 @@ from confluent_kafka import Producer
 
 import socket
 
-conf = {'bootstrap.servers': "127.0.0.1:9093",
+conf = {'bootstrap.servers': "34.126.168.244:9093",
         'client.id': socket.gethostname()}
 
 producer = Producer(conf)
