@@ -11,7 +11,7 @@ on:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   push_to_registries:
-    name: Push DOcker image to Github & DockerHub registries
+    name: Push Docker image to Github & DockerHub registries
     runs-on: ubuntu-latest
     permissions:
       packages: write
@@ -35,5 +35,7 @@ jobs:
         with:
           context: ./server/kafka-setup
           push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/capstone_kafka_setup:latest
+          tags: |
+            ${{ secrets.DOCKER_USERNAME }}/capstone_kafka_setup:latest
+            ghcr.io/${{ github.actor }}/capstone_kafka_setup:latest
             
