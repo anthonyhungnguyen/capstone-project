@@ -23,6 +23,14 @@ services:
             - mysql
             - kafka
 
+    faiss:
+        container_name: capstone_faiss
+        image: phuchung276/capstone_faiss:latest
+        build:
+            context: ./server/faiss
+        depends_on:
+            - kafka
+
 networks:
     default:
         name: capstone

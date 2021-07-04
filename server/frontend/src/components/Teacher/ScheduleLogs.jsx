@@ -113,7 +113,7 @@ export default function ScheduleLogs({ logs }) {
           dataIndex: "photo",
           key: "photo",
           render: d => (
-            <Image src={d} alt="attendance" style={{ width: "120px" }} />
+            <img src={d} alt="attendance" style={{ width: "80px" }} />
           )
         }
       ]
