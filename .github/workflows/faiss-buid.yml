@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: kafka-setup-build-push
+name: faiss-build-push
 
 # Controls when the workflow will run
 on:
@@ -33,9 +33,9 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v2
         with:
-          context: ./server/kafka-setup
+          context: ./server/faiss
           push: true
           tags: |
-            ${{ secrets.DOCKER_USERNAME }}/capstone_kafka_setup:latest
-            ghcr.io/${{ github.repository_owner }}/capstone_kafka_setup:latest
+            ${{ secrets.DOCKER_USERNAME }}/capstone_faiss:latest
+            ghcr.io/${{ github.repository_owner }}/capstone_faiss:latest
             
