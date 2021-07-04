@@ -129,7 +129,6 @@ dmypy.json
 .pyre/
 .DS_Store
 *.pickle
-*.txt
 *.csv
 *.lock
 node_modules/*

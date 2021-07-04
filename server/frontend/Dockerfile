@@ -1,11 +1,16 @@
-FROM node:12-slim
-
+FROM node:12-slim as build
 WORKDIR /frontend
-
 COPY package.json ./
-RUN yarn install -- && yarn add tailwindcss@npm:@tailwindcss/postcss7-compat postcss@^7 autoprefixer@^9
-
 COPY . ./
-EXPOSE 3000
+RUN yarn 
+RUN yarn build
 
-CMD ["yarn", "start"]
+FROM nginx:stable-alpine
+WORKDIR /usr/share/nginx/html
+RUN rm -rf ./*
+COPY --from=build /frontend/build .
+
+COPY --from=build /frontend/nginx.conf /etc/nginx/conf.d/default.conf
+
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
